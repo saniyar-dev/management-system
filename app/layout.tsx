@@ -6,8 +6,12 @@ import clsx from "clsx";
 import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
-import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
+import localfont from "next/font/local";
+
+const estedad = localfont({
+  src: "../public/Estedad[KSHD,wght].woff2",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -37,8 +41,8 @@ export default function RootLayout({
       <head />
       <body
         className={clsx(
-          "min-h-screen text-foreground bg-background font-sans antialiased",
-          fontSans.variable
+          "min-h-screen text-foreground bg-background antialiased leading-relaxed",
+          estedad.className
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
