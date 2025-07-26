@@ -1,16 +1,16 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Next.js + HeroUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "پنل مدیریت سیمان بان",
+  description: "این پنل در راستای اهداف داخلی شرکت سیمان بان جهت مدیریت طراحی شده است.",
   navItems: [
     {
       label: "کمک",
       href: "/help-feedback",
     },
     {
-      label: "خروج",
-      href: "/logout",
+      label: "ورود",
+      href: "/login",
     },
   ],
   navMenuItems: [
@@ -19,8 +19,8 @@ export const siteConfig = {
       href: "/help-feedback",
     },
     {
-      label: "خروج",
-      href: "/logout",
+      label: "ورود",
+      href: "/login",
     },
   ],
   links: {
