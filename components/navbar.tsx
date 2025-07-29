@@ -20,6 +20,7 @@ import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon } from "@/components/icons";
 import { Logout } from "@/lib/actions";
+import Loading from "./loading";
 
 export const Navbar = () => {
   const [session, setSession] = useState<Session | null>();
@@ -64,71 +65,24 @@ export const Navbar = () => {
   );
 
   return (
-    <HeroUINavbar maxWidth="xl" position="sticky">
-      <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-        <NavbarBrand as="li" className="gap-3 max-w-fit">
-          <NextLink className="flex justify-start items-center gap-1" href="/">
-            <p className="font-bold text-inherit">پنل مدیریت سیمان بان</p>
-          </NextLink>
-        </NavbarBrand>
-        <ul className="hidden lg:flex gap-4 justify-start ml-2">
-          {siteConfig.navItems.map((item, index) =>
-            index === siteConfig.navItems.length - 1 && session ? (
-              <NavbarMenuItem key={`${item}-${index}`}>
-                <Link
-                  color="danger"
-                  href="#"
-                  size="lg"
-                  onClick={() =>
-                    startTransistion(async () => {
-                      await Logout();
-                    })
-                  }
-                >
-                  {item.label}
-                </Link>
-              </NavbarMenuItem>
-            ) : (
-              index < siteConfig.navItems.length - 1 && (
-                <NavbarMenuItem key={`${item}-${index}`}>
-                  <Link color="foreground" href="#" size="lg">
-                    {item.label}
-                  </Link>
-                </NavbarMenuItem>
-              )
-            ),
-          )}
-        </ul>
-      </NavbarContent>
-
-      <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
-        justify="end"
-      >
-        <NavbarItem className="hidden sm:flex gap-2">
-          <ThemeSwitch />
-        </NavbarItem>
-      </NavbarContent>
-
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <ThemeSwitch />
-        <NavbarMenuToggle />
-      </NavbarContent>
-
-      <NavbarMenu>
-        <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.navMenuItems.map((item, index) =>
-            index === siteConfig.navMenuItems.length - 1 && session ? (
-              <NavbarMenuItem key={`${item}-${index}`}>
-                <Link color="danger" href="#" size="lg">
-                  {item.label}
-                </Link>
-              </NavbarMenuItem>
-            ) : (
-              index < siteConfig.navMenuItems.length - 1 && (
+    <>
+      <Loading pending={pending} />
+      <HeroUINavbar maxWidth="xl" position="sticky">
+        <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
+          <NavbarBrand as="li" className="gap-3 max-w-fit">
+            <NextLink
+              className="flex justify-start items-center gap-1"
+              href="/"
+            >
+              <p className="font-bold text-inherit">پنل مدیریت سیمان بان</p>
+            </NextLink>
+          </NavbarBrand>
+          <ul className="hidden lg:flex gap-4 justify-start ml-2">
+            {siteConfig.navItems.map((item, index) =>
+              index === siteConfig.navItems.length - 1 && session ? (
                 <NavbarMenuItem key={`${item}-${index}`}>
                   <Link
-                    color="foreground"
+                    color="danger"
                     href="#"
                     size="lg"
                     onClick={() =>
@@ -140,11 +94,64 @@ export const Navbar = () => {
                     {item.label}
                   </Link>
                 </NavbarMenuItem>
+              ) : (
+                index < siteConfig.navItems.length - 1 && (
+                  <NavbarMenuItem key={`${item}-${index}`}>
+                    <Link color="foreground" href="#" size="lg">
+                      {item.label}
+                    </Link>
+                  </NavbarMenuItem>
+                )
               )
-            ),
-          )}
-        </div>
-      </NavbarMenu>
-    </HeroUINavbar>
+            )}
+          </ul>
+        </NavbarContent>
+
+        <NavbarContent
+          className="hidden sm:flex basis-1/5 sm:basis-full"
+          justify="end"
+        >
+          <NavbarItem className="hidden sm:flex gap-2">
+            <ThemeSwitch />
+          </NavbarItem>
+        </NavbarContent>
+
+        <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
+          <ThemeSwitch />
+          <NavbarMenuToggle />
+        </NavbarContent>
+
+        <NavbarMenu>
+          <div className="mx-4 mt-2 flex flex-col gap-2">
+            {siteConfig.navMenuItems.map((item, index) =>
+              index === siteConfig.navMenuItems.length - 1 && session ? (
+                <NavbarMenuItem key={`${item}-${index}`}>
+                  <Link color="danger" href="#" size="lg">
+                    {item.label}
+                  </Link>
+                </NavbarMenuItem>
+              ) : (
+                index < siteConfig.navMenuItems.length - 1 && (
+                  <NavbarMenuItem key={`${item}-${index}`}>
+                    <Link
+                      color="foreground"
+                      href="#"
+                      size="lg"
+                      onClick={() =>
+                        startTransistion(async () => {
+                          await Logout();
+                        })
+                      }
+                    >
+                      {item.label}
+                    </Link>
+                  </NavbarMenuItem>
+                )
+              )
+            )}
+          </div>
+        </NavbarMenu>
+      </HeroUINavbar>
+    </>
   );
 };
