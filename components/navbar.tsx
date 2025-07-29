@@ -14,7 +14,7 @@ import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { supabase } from "@/lib/utils";
 import { Session } from "@supabase/supabase-js";
 
@@ -29,10 +29,12 @@ import {
   Logo,
 } from "@/components/icons";
 import Image from "next/image";
+import { Logout } from "@/lib/actions";
 
 export const Navbar = () => {
   const [session, setSession] = useState<Session | null>();
   const [isLoading, setLoading] = useState(true);
+  const [pending, startTransistion] = useTransition();
 
   useEffect(() => {
     // Check for an existing session
@@ -85,16 +87,27 @@ export const Navbar = () => {
           {siteConfig.navItems.map((item, index) =>
             index === siteConfig.navItems.length - 1 && session ? (
               <NavbarMenuItem key={`${item}-${index}`}>
-                <Link color="danger" href="#" size="lg">
+                <Link
+                  color="danger"
+                  href="#"
+                  size="lg"
+                  onClick={() =>
+                    startTransistion(async () => {
+                      await Logout();
+                    })
+                  }
+                >
                   {item.label}
                 </Link>
               </NavbarMenuItem>
             ) : (
-              <NavbarMenuItem key={`${item}-${index}`}>
-                <Link color="foreground" href="#" size="lg">
-                  {item.label}
-                </Link>
-              </NavbarMenuItem>
+              index < siteConfig.navItems.length - 1 && (
+                <NavbarMenuItem key={`${item}-${index}`}>
+                  <Link color="foreground" href="#" size="lg">
+                    {item.label}
+                  </Link>
+                </NavbarMenuItem>
+              )
             )
           )}
         </ul>
@@ -124,11 +137,22 @@ export const Navbar = () => {
                 </Link>
               </NavbarMenuItem>
             ) : (
-              <NavbarMenuItem key={`${item}-${index}`}>
-                <Link color="foreground" href="#" size="lg">
-                  {item.label}
-                </Link>
-              </NavbarMenuItem>
+              index < siteConfig.navMenuItems.length - 1 && (
+                <NavbarMenuItem key={`${item}-${index}`}>
+                  <Link
+                    color="foreground"
+                    href="#"
+                    size="lg"
+                    onClick={() =>
+                      startTransistion(async () => {
+                        await Logout();
+                      })
+                    }
+                  >
+                    {item.label}
+                  </Link>
+                </NavbarMenuItem>
+              )
             )
           )}
         </div>

@@ -1,4 +1,3 @@
-import { Session } from "@supabase/supabase-js";
 import { supabase } from "./utils";
 
 export type ServerActionState = {
@@ -38,5 +37,20 @@ export async function Login(prevState: ServerActionState, formData: FormData): P
             message:"با موفقیت وارد شدید.",
             success: true
         }
+    }
+}
+
+export async function Logout(): Promise<ServerActionState> {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+        console.log(error)
+        return {
+            message:"خروج موفقیت آمیز نبود دوباره تلاش کنید.",
+            success: false
+        }
+    }
+    return {
+        message:"با موفقیت خارج شدید.",
+        success: true
     }
 }
