@@ -9,7 +9,7 @@ secret:
       serviceKey: serviceKey
       secret: secret
   smtp:
-    username: your-mail@example.com
+    username: your-mail@simanban.ir
     password: test
   dashboard:
     secretRef: "supabase-dashboard"
@@ -45,7 +45,7 @@ studio:
   environment:
     STUDIO_DEFAULT_ORGANIZATION: "My Organization"
     STUDIO_DEFAULT_PROJECT: "My Project"
-    SUPABASE_PUBLIC_URL: http://example.com/
+    SUPABASE_PUBLIC_URL: http://simanban.ir/
     NEXT_PUBLIC_ENABLE_LOGS: "true"
   livenessProbe:
     httpGet:
@@ -57,14 +57,14 @@ auth:
   image:
     tag: v2.143.0
   environment:
-    API_EXTERNAL_URL: http://example.com
-    GOTRUE_SITE_URL: http://example.com
+    API_EXTERNAL_URL: http://simanban.ir
+    GOTRUE_SITE_URL: http://simanban.ir
     GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
     GOTRUE_MAILER_AUTOCONFIRM: "true"
-    GOTRUE_SMTP_ADMIN_EMAIL: "your-mail@example.com"
-    GOTRUE_SMTP_HOST: "smtp.example.com"
+    GOTRUE_SMTP_ADMIN_EMAIL: "your-mail@simanban.ir"
+    GOTRUE_SMTP_HOST: "smtp.simanban.ir"
     GOTRUE_SMTP_PORT: "587"
-    GOTRUE_SMTP_SENDER_NAME: "your-mail@example.com"
+    GOTRUE_SMTP_SENDER_NAME: "your-mail@simanban.ir"
 
 rest:
   image:
@@ -115,8 +115,13 @@ kong:
   environment:
     KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
     KONG_LOG_LEVEL: info
-  ingress:
+  gateway:
     enabled: true
+    className: "traefik"
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-cloudflare-prod"
+  ingress:
+    enabled: false
     className: "nginx"
     annotations:
       nginx.ingress.kubernetes.io/rewrite-target: /
@@ -124,9 +129,9 @@ kong:
       []
       # - secretName: example-ingress-tls
       #   hosts:
-      #     - example.com
+      #     - simanban.ir
     hosts:
-      - host: example.com
+      - host: supabase.simanban.ir
         paths:
           - path: /
             pathType: Prefix

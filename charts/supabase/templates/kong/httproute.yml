@@ -1,0 +1,30 @@
+{{- if and .Values.kong.enabled .Values.kong.gateway.enabled -}}
+{{- $fullName := include "supabase.kong.fullname" . -}}
+{{- $svcPort := .Values.kong.service.port -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+    - name: {{ include "supabase.kong.fullname" . }}-gateway
+      namespace: {{ .Release.Namespace }}
+  hostnames:
+    {{- range .Values.kong.ingress.hosts }}
+    - {{ .host | quote }}
+    {{- end }}
+  rules:
+    {{- range .Values.kong.ingress.hosts }}
+    {{- range .paths }}
+    - matches:
+        - path:
+            type:  PathPrefix
+            value: {{ .path }}
+      backendRefs:
+        - name: {{ $fullName }}
+          port: {{ $svcPort }}
+    {{- end }}
+    {{- end }}
+{{- end }}

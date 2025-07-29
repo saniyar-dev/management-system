@@ -1,0 +1,26 @@
+{{- if and .Values.kong.enabled .Values.kong.gateway.enabled -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ include "supabase.kong.fullname" . }}-gateway
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+  {{- with .Values.kong.gateway.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  gatewayClassName: {{ .Values.kong.gateway.className }}
+  listeners:
+    - name: websecure
+      hostname: "{{ (first .Values.kong.ingress.hosts).host }}"
+      port: 8443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: kong-cert
+      allowedRoutes:
+        namespaces:
+          from: Same
+{{- end }}
