@@ -2,15 +2,16 @@ export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "پنل مدیریت سیمان بان",
-  description: "این پنل در راستای اهداف داخلی شرکت سیمان بان جهت مدیریت طراحی شده است.",
+  description:
+    "این پنل در راستای اهداف داخلی شرکت سیمان بان جهت مدیریت طراحی شده است.",
   navItems: [
     {
       label: "کمک",
       href: "/help-feedback",
     },
     {
-      label: "ورود",
-      href: "/login",
+      label: "خروج",
+      href: "/",
     },
   ],
   navMenuItems: [
@@ -19,10 +20,9 @@ export const siteConfig = {
       href: "/help-feedback",
     },
     {
-      label: "ورود",
-      href: "/login",
+      label: "خروج",
+      href: "/",
     },
   ],
-  links: {
-  },
+  links: {},
 };

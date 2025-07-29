@@ -2,12 +2,12 @@ import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import { Link } from "@heroui/link";
 import clsx from "clsx";
+import localfont from "next/font/local";
 
 import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
 import { Navbar } from "@/components/navbar";
-import localfont from "next/font/local";
 
 const estedad = localfont({
   src: "../public/Estedad[KSHD,wght].woff2",
@@ -37,12 +37,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="fa" dir="rtl">
+    <html suppressHydrationWarning dir="rtl" lang="fa">
       <head />
       <body
         className={clsx(
           "min-h-screen text-foreground bg-background antialiased leading-relaxed",
-          estedad.className
+          estedad.className,
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
