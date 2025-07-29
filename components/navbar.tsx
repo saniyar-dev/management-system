@@ -11,36 +11,24 @@ import {
 import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
-import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
-import clsx from "clsx";
 import { useState, useEffect, useTransition } from "react";
 import { supabase } from "@/lib/utils";
 import { Session } from "@supabase/supabase-js";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import {
-  TwitterIcon,
-  GithubIcon,
-  DiscordIcon,
-  HeartFilledIcon,
-  SearchIcon,
-  Logo,
-} from "@/components/icons";
-import Image from "next/image";
+import { SearchIcon } from "@/components/icons";
 import { Logout } from "@/lib/actions";
 
 export const Navbar = () => {
   const [session, setSession] = useState<Session | null>();
-  const [isLoading, setLoading] = useState(true);
   const [pending, startTransistion] = useTransition();
 
   useEffect(() => {
     // Check for an existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setLoading(false);
     });
 
     // Listen for auth state changes
