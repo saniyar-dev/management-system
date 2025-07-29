@@ -1,30 +1,42 @@
-import { User } from "@supabase/supabase-js";
-import { createClient } from "./supabase/client";
+import { Session } from "@supabase/supabase-js";
+import { supabase } from "./utils";
 
-export async function Login(formData: FormData): Promise<User | null> {
-    const supabase = createClient()
-    const email = formData.get('email')
-    const password = formData.get('password')
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email: email as string,
-        password: password as string
-    })
-    if (error) {
-        console.log(error)
-    }
-    return data.user
+export type ServerActionState = {
+    message: string,
+    success: boolean
 }
 
-export async function Register(formData: FormData): Promise<User | null> {
-    const supabase = createClient()
+export async function Login(prevState: ServerActionState, formData: FormData): Promise<ServerActionState> {
     const email = formData.get('email')
     const password = formData.get('password')
-    const { data, error } = await supabase.auth.signUp({
-        email: email as string,
-        password: password as string
-    })
-    if (error) {
-        console.log(error)
+    try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email as string,
+            password: password as string
+        })
+        if (error) {
+            console.log(error)
+            throw error
+        }
+        return {
+            message:"با موفقیت وارد شدید.",
+            success: true
+        }
+    } catch (e) {
+        const { data, error } = await supabase.auth.signUp({
+            email: email as string,
+            password: password as string
+        })
+        if (error) {
+            console.log(error)
+        return {
+            message:"ورود موفقیت آمیز نبود دوباره تلاش کنید.",
+            success: false
+        }
+        }
+        return {
+            message:"با موفقیت وارد شدید.",
+            success: true
+        }
     }
-    return data.user
 }
