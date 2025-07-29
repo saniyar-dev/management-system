@@ -1,0 +1,170 @@
+secret:
+  jwt:
+    anonKey: ""
+    serviceKey: ""
+    secret: ""
+    secretRef: "supabase-jwt"
+    secretRefKey:
+      anonKey: anonKey
+      serviceKey: serviceKey
+      secret: secret
+  smtp:
+    username: your-mail@simanban.ir
+    password: test
+  dashboard:
+    secretRef: "supabase-dashboard"
+    secretRefKey:
+      username: username
+      password: password
+  db:
+    secretRef: "supabase-db-credentials"
+    secretRefKey:
+      username: username
+      password: password
+      database: database
+  analytics:
+    apiKey: your-super-secret-and-long-logflare-key
+
+db:
+  enabled: true
+  image:
+    tag: 15.1.0.147
+  livenessProbe:
+    exec:
+      command:
+        - pg_isready
+        - -U
+        - postgres
+    initialDelaySeconds: 3
+  persistence:
+    enabled: false
+
+studio:
+  image:
+    tag: 20240326-5e5586d
+  environment:
+    STUDIO_DEFAULT_ORGANIZATION: "My Organization"
+    STUDIO_DEFAULT_PROJECT: "My Project"
+    SUPABASE_PUBLIC_URL: https://supbase.simanban.ir/
+    NEXT_PUBLIC_ENABLE_LOGS: "true"
+  livenessProbe:
+    httpGet:
+      path: /api/profile
+      port: 3000
+    initialDelaySeconds: 3
+
+auth:
+  image:
+    tag: v2.143.0
+  environment:
+    API_EXTERNAL_URL: https://supbase.simanban.ir
+    GOTRUE_SITE_URL: https://supabase.simanban.ir
+    GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+    GOTRUE_MAILER_AUTOCONFIRM: "true"
+    GOTRUE_SMTP_ADMIN_EMAIL: "your-mail@simanban.ir"
+    GOTRUE_SMTP_HOST: "smtp.simanban.ir"
+    GOTRUE_SMTP_PORT: "587"
+    GOTRUE_SMTP_SENDER_NAME: "your-mail@simanban.ir"
+
+rest:
+  image:
+    tag: v12.0.1
+
+realtime:
+  image:
+    tag: v2.27.5
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 4000
+    initialDelaySeconds: 3
+
+meta:
+  image:
+    tag: v0.80.0
+
+storage:
+  image:
+    tag: v0.46.4
+  livenessProbe:
+    httpGet:
+      path: /status
+      port: 5000
+    initialDelaySeconds: 3
+  persistence:
+    enabled: false
+
+imgproxy:
+  image:
+    tag: v3.8.0
+  environment:
+    IMGPROXY_ENABLE_WEBP_DETECTION: "true"
+  livenessProbe:
+    exec:
+      command:
+        - imgproxy
+        - health
+    initialDelaySeconds: 3
+  persistence:
+    enabled: false
+
+kong:
+  image:
+    repository: hub.hamdocker.ir/library/kong
+    tag: 2.8.1
+  environment:
+    KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
+    KONG_LOG_LEVEL: info
+  gateway:
+    enabled: true
+    className: "traefik"
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-cloudflare-prod"
+  ingress:
+    enabled: false
+    className: "nginx"
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+    tls:
+      []
+      # - secretName: example-ingress-tls
+      #   hosts:
+      #     - simanban.ir
+    hosts:
+      - host: supabase.simanban.ir
+        paths:
+          - path: /
+            pathType: Prefix
+
+analytics:
+  image:
+    tag: 1.4.0
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 4000
+    initialDelaySeconds: 3
+
+vector:
+  image:
+    tag: 0.34.0-alpine
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 9001
+    initialDelaySeconds: 3
+  ## Vector requires logs from the control plane to function.
+  ## This is normally stored in /var/log/pods
+  ## Modify these values according to your environment.
+  volumeMounts:
+    - name: pod-logs
+      mountPath: /var/log/pods
+  volumes:
+    - name: pod-logs
+      hostPath:
+        path: /var/log/pods
+
+functions:
+  enabled: false
+  image:
+    tag: v1.41.2
