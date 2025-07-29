@@ -9,8 +9,8 @@ export const siteConfig = {
       href: "/help-feedback",
     },
     {
-      label: "ورود",
-      href: "/login",
+      label: "خروج",
+      href: "/",
     },
   ],
   navMenuItems: [
@@ -19,8 +19,8 @@ export const siteConfig = {
       href: "/help-feedback",
     },
     {
-      label: "ورود",
-      href: "/login",
+      label: "خروج",
+      href: "/",
     },
   ],
   links: {
