@@ -13,9 +13,9 @@ import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
 import NextLink from "next/link";
 import { useState, useEffect, useTransition } from "react";
-import { supabase } from "@/lib/utils";
 import { Session } from "@supabase/supabase-js";
 
+import { supabase } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon } from "@/components/icons";
@@ -96,7 +96,7 @@ export const Navbar = () => {
                   </Link>
                 </NavbarMenuItem>
               )
-            )
+            ),
           )}
         </ul>
       </NavbarContent>
@@ -141,7 +141,7 @@ export const Navbar = () => {
                   </Link>
                 </NavbarMenuItem>
               )
-            )
+            ),
           )}
         </div>
       </NavbarMenu>

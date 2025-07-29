@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect, useActionState } from "react";
-import { title, subtitle } from "@/components/primitives";
-import LoginPage from "./login/page";
-import { supabase } from "@/lib/utils";
+import { useState, useEffect } from "react";
 import { Session } from "@supabase/supabase-js";
+
+import LoginPage from "./login/page";
+
+import { title, subtitle } from "@/components/primitives";
+import { supabase } from "@/lib/utils";
 
 const WelcomePage = ({ session }: { session: Session }) => {
   return (
