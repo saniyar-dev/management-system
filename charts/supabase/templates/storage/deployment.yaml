@@ -31,7 +31,7 @@ spec:
         {{- toYaml .Values.storage.podSecurityContext | nindent 8 }}
       initContainers:
         - name: init-db
-          image: postgres:15-alpine
+          image: hub.hamdocker.ir/postgres:15-alpine
           imagePullPolicy: IfNotPresent
           env:
             - name: DB_HOST
@@ -73,7 +73,7 @@ spec:
                   name: {{ include "supabase.secret.s3" . }}
                   key: accessKey
           name: init-bucket
-          image: minio/mc
+          image: hub.hamdocker.ir/minio/mc
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh

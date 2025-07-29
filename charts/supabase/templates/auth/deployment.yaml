@@ -30,7 +30,7 @@ spec:
         {{- toYaml .Values.auth.podSecurityContext | nindent 8 }}
       initContainers:
         - name: init-db
-          image: postgres:15-alpine
+          image: hub.hamdocker.ir/postgres:15-alpine
           imagePullPolicy: IfNotPresent
           env:
             - name: DB_HOST

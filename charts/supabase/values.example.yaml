@@ -101,7 +101,7 @@ imgproxy:
 
 kong:
   image:
-    repository: kong
+    repository: hub.hamdocker.ir/library/kong
     tag: 2.8.1
   environment:
     KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
@@ -111,7 +111,8 @@ kong:
     className: "nginx"
     annotations:
       nginx.ingress.kubernetes.io/rewrite-target: /
-    tls: []
+    tls:
+      []
       # - secretName: example-ingress-tls
       #   hosts:
       #     - example.com
