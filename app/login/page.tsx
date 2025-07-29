@@ -3,10 +3,11 @@
 import { Input } from "@heroui/input";
 import { useActionState } from "react";
 
-import { title, subtitle } from "@/components/primitives";
+import { subtitle } from "@/components/primitives";
 import { Login } from "@/lib/actions";
 import { InputEmail, InputPassword } from "@/components/input";
 import { Button } from "@heroui/button";
+import Loading from "@/components/loading";
 
 export default function LoginPage() {
   const [message, login, pending] = useActionState(Login, {
@@ -29,7 +30,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <div className="w-screen h-screen bg-primary-300"></div>
+      <Loading pending={pending} />
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
         <div className="w-full max-w-sm p-8 space-y-6 bg-content1 rounded-xl shadow-lg">
           <div className="text-center">

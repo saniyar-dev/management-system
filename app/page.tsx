@@ -7,6 +7,7 @@ import LoginPage from "./login/page";
 
 import { title, subtitle } from "@/components/primitives";
 import { supabase } from "@/lib/utils";
+import Loading from "@/components/loading";
 
 const WelcomePage = ({ session }: { session: Session }) => {
   return (
@@ -44,11 +45,7 @@ export default function Home() {
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <p>در حال بارگذاری...</p>
-      </div>
-    );
+    return <Loading pending={isLoading} />;
   }
 
   return session ? <WelcomePage session={session} /> : <LoginPage />;
