@@ -45,7 +45,7 @@ studio:
   environment:
     STUDIO_DEFAULT_ORGANIZATION: "My Organization"
     STUDIO_DEFAULT_PROJECT: "My Project"
-    SUPABASE_PUBLIC_URL: http://simanban.ir/
+    SUPABASE_PUBLIC_URL: https://supbase.simanban.ir/
     NEXT_PUBLIC_ENABLE_LOGS: "true"
   livenessProbe:
     httpGet:
@@ -57,8 +57,8 @@ auth:
   image:
     tag: v2.143.0
   environment:
-    API_EXTERNAL_URL: http://simanban.ir
-    GOTRUE_SITE_URL: http://simanban.ir
+    API_EXTERNAL_URL: https://supbase.simanban.ir
+    GOTRUE_SITE_URL: https://supabase.simanban.ir
     GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
     GOTRUE_MAILER_AUTOCONFIRM: "true"
     GOTRUE_SMTP_ADMIN_EMAIL: "your-mail@simanban.ir"
