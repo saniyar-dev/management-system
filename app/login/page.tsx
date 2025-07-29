@@ -1,32 +1,18 @@
 "use client";
 
-import { Input } from "@heroui/input";
 import { useActionState } from "react";
+import { Button } from "@heroui/button";
 
 import { subtitle } from "@/components/primitives";
 import { Login } from "@/lib/actions";
 import { InputEmail, InputPassword } from "@/components/input";
-import { Button } from "@heroui/button";
 import Loading from "@/components/loading";
 
 export default function LoginPage() {
-  const [message, login, pending] = useActionState(Login, {
+  const [_, login, pending] = useActionState(Login, {
     message: "",
     success: false,
   });
-
-  const inputElement = (
-    <Input
-      aria-label=""
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      labelPlacement="outside"
-      placeholder="Search..."
-      type="search"
-    />
-  );
 
   return (
     <>
@@ -46,7 +32,7 @@ export default function LoginPage() {
               <InputEmail />
               <InputPassword />
             </div>
-            <Button type="submit" variant="solid" className="w-full">
+            <Button className="w-full" type="submit" variant="solid">
               ورود
             </Button>
           </form>

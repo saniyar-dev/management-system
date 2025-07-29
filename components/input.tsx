@@ -98,12 +98,12 @@ export const InputEmail = () => {
   return (
     <Input
       isRequired
-      label="ایمیل"
-      placeholder="نام کاربری خود را وارد کنید"
-      name="email"
-      id="email"
-      type="email"
       className="w-full"
+      id="email"
+      label="ایمیل"
+      name="email"
+      placeholder="نام کاربری خود را وارد کنید"
+      type="email"
     />
   );
 };

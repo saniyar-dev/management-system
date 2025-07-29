@@ -15,12 +15,13 @@ import NextLink from "next/link";
 import { useState, useEffect, useTransition } from "react";
 import { Session } from "@supabase/supabase-js";
 
+import Loading from "./loading";
+
 import { supabase } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon } from "@/components/icons";
 import { Logout } from "@/lib/actions";
-import Loading from "./loading";
 
 export const Navbar = () => {
   const [session, setSession] = useState<Session | null>();
@@ -102,7 +103,7 @@ export const Navbar = () => {
                     </Link>
                   </NavbarMenuItem>
                 )
-              )
+              ),
             )}
           </ul>
         </NavbarContent>
@@ -147,7 +148,7 @@ export const Navbar = () => {
                     </Link>
                   </NavbarMenuItem>
                 )
-              )
+              ),
             )}
           </div>
         </NavbarMenu>
