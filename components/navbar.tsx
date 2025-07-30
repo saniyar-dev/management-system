@@ -8,45 +8,54 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@heroui/navbar";
-import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
-import { Input } from "@heroui/input";
 import NextLink from "next/link";
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 import Loading from "./loading";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { SearchIcon } from "@/components/icons";
-import { Logout } from "@/lib/action";
+import { Logout, ServerActionState } from "@/lib/action";
 import { useSession } from "@/lib/hooks";
 
+// const searchInput = (
+//   <Input
+//     aria-label="Search"
+//     classNames={{
+//       inputWrapper: "bg-default-100",
+//       input: "text-sm",
+//     }}
+//     endContent={
+//       <Kbd className="hidden lg:inline-block" keys={["command"]}>
+//         K
+//       </Kbd>
+//     }
+//     labelPlacement="outside"
+//     placeholder="Search..."
+//     startContent={
+//       <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+//     }
+//     type="search"
+//   />
+// );
+
 export const Navbar = () => {
+  const [message, setMessage] = useState<ServerActionState>({
+    message: "",
+    success: false,
+  });
   const [pending, startTransistion] = useTransition();
+  const router = useRouter();
 
   const { session } = useSession();
 
-  const searchInput = (
-    <Input
-      aria-label="Search"
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
-          K
-        </Kbd>
-      }
-      labelPlacement="outside"
-      placeholder="Search..."
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
-  );
+  useEffect(() => {
+    if (message.success) {
+      router.push("/login");
+    }
+  }, [message]);
 
   return (
     <>
@@ -71,7 +80,9 @@ export const Navbar = () => {
                     size="lg"
                     onClick={() =>
                       startTransistion(async () => {
-                        await Logout();
+                        const msg = await Logout();
+
+                        setMessage(msg);
                       })
                     }
                   >
@@ -123,7 +134,9 @@ export const Navbar = () => {
                       size="lg"
                       onClick={() =>
                         startTransistion(async () => {
-                          await Logout();
+                          const msg = await Logout();
+
+                          setMessage(msg);
                         })
                       }
                     >
