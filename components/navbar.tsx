@@ -19,7 +19,7 @@ import Loading from "./loading";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon } from "@/components/icons";
-import { Logout } from "@/lib/actions";
+import { Logout } from "@/lib/action";
 import { useSession } from "@/lib/hooks";
 
 export const Navbar = () => {

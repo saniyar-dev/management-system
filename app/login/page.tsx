@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { Button } from "@heroui/button";
 
 import { subtitle } from "@/components/primitives";
-import { Login } from "@/lib/actions";
+import { Login } from "@/lib/action";
 import { InputEmail, InputPassword } from "@/components/input";
 import Loading from "@/components/loading";
 
