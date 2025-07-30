@@ -42,7 +42,7 @@ export default function RootLayout({
       <body
         className={clsx(
           "min-h-screen text-foreground bg-background antialiased leading-relaxed",
-          estedad.className,
+          estedad.className
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>

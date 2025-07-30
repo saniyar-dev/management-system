@@ -8,62 +8,54 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@heroui/navbar";
-import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
-import { Input } from "@heroui/input";
 import NextLink from "next/link";
-import { useState, useEffect, useTransition } from "react";
-import { Session } from "@supabase/supabase-js";
+import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 import Loading from "./loading";
 
-import { supabase } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { SearchIcon } from "@/components/icons";
-import { Logout } from "@/lib/actions";
+import { Logout, ServerActionState } from "@/lib/action";
+import { useSession } from "@/lib/hooks";
+
+// const searchInput = (
+//   <Input
+//     aria-label="Search"
+//     classNames={{
+//       inputWrapper: "bg-default-100",
+//       input: "text-sm",
+//     }}
+//     endContent={
+//       <Kbd className="hidden lg:inline-block" keys={["command"]}>
+//         K
+//       </Kbd>
+//     }
+//     labelPlacement="outside"
+//     placeholder="Search..."
+//     startContent={
+//       <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+//     }
+//     type="search"
+//   />
+// );
 
 export const Navbar = () => {
-  const [session, setSession] = useState<Session | null>();
+  const [message, setMessage] = useState<ServerActionState>({
+    message: "",
+    success: false,
+  });
   const [pending, startTransistion] = useTransition();
+  const router = useRouter();
+
+  const { session } = useSession();
 
   useEffect(() => {
-    // Check for an existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    // Listen for auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    // Unsubscribe when the component unmounts
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const searchInput = (
-    <Input
-      aria-label="Search"
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
-          K
-        </Kbd>
-      }
-      labelPlacement="outside"
-      placeholder="Search..."
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
-  );
+    if (message.success) {
+      router.push("/login");
+    }
+  }, [message]);
 
   return (
     <>
@@ -88,7 +80,9 @@ export const Navbar = () => {
                     size="lg"
                     onClick={() =>
                       startTransistion(async () => {
-                        await Logout();
+                        const msg = await Logout();
+
+                        setMessage(msg);
                       })
                     }
                   >
@@ -103,7 +97,7 @@ export const Navbar = () => {
                     </Link>
                   </NavbarMenuItem>
                 )
-              ),
+              )
             )}
           </ul>
         </NavbarContent>
@@ -140,7 +134,9 @@ export const Navbar = () => {
                       size="lg"
                       onClick={() =>
                         startTransistion(async () => {
-                          await Logout();
+                          const msg = await Logout();
+
+                          setMessage(msg);
                         })
                       }
                     >
@@ -148,7 +144,7 @@ export const Navbar = () => {
                     </Link>
                   </NavbarMenuItem>
                 )
-              ),
+              )
             )}
           </div>
         </NavbarMenu>

@@ -1,52 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Session } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-import LoginPage from "./login/page";
-
-import { title, subtitle } from "@/components/primitives";
-import { supabase } from "@/lib/utils";
 import Loading from "@/components/loading";
-
-const WelcomePage = ({}: { session: Session }) => {
-  return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <div className="inline-block max-w-xl text-center justify-center">
-        <h1 className={title()}>خوش آمدید</h1>
-        <h2 className={subtitle({ class: "mt-4" })}>
-          شما با موفقیت وارد شدید.
-        </h2>
-      </div>
-    </section>
-  );
-};
+import { useSession } from "@/lib/hooks";
 
 export default function Home() {
-  const [session, setSession] = useState<Session | null>();
-  const [isLoading, setLoading] = useState(true);
+  const { session, pending } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
-    // Check for an existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
+    if (session) {
+      router.push("/dashboard");
+    } else {
+      router.push("/login");
+    }
+  }, [pending]);
 
-    // Listen for auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    // Unsubscribe when the component unmounts
-    return () => subscription.unsubscribe();
-  }, []);
-
-  if (isLoading) {
-    return <Loading pending={isLoading} />;
-  }
-
-  return session ? <WelcomePage session={session} /> : <LoginPage />;
+  return (
+    <>
+      <Loading pending={pending} />
+    </>
+  );
 }

@@ -23,7 +23,7 @@ export async function Login(
     }
 
     return {
-      message: "با موفقیت وارد شدید.",
+      message: "با موفقیت وارد شدید. در حال انتقال ...",
       success: true,
     };
   } catch {
@@ -40,7 +40,7 @@ export async function Login(
     }
 
     return {
-      message: "با موفقیت وارد شدید.",
+      message: "با موفقیت وارد شدید. در حال انتقال ...",
       success: true,
     };
   }
