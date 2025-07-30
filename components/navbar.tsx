@@ -12,37 +12,20 @@ import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
 import NextLink from "next/link";
-import { useState, useEffect, useTransition } from "react";
-import { Session } from "@supabase/supabase-js";
+import { useTransition } from "react";
 
 import Loading from "./loading";
 
-import { supabase } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon } from "@/components/icons";
 import { Logout } from "@/lib/actions";
+import { useSession } from "@/lib/hooks";
 
 export const Navbar = () => {
-  const [session, setSession] = useState<Session | null>();
   const [pending, startTransistion] = useTransition();
 
-  useEffect(() => {
-    // Check for an existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    // Listen for auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    // Unsubscribe when the component unmounts
-    return () => subscription.unsubscribe();
-  }, []);
+  const { session } = useSession();
 
   const searchInput = (
     <Input
@@ -103,7 +86,7 @@ export const Navbar = () => {
                     </Link>
                   </NavbarMenuItem>
                 )
-              ),
+              )
             )}
           </ul>
         </NavbarContent>
@@ -148,7 +131,7 @@ export const Navbar = () => {
                     </Link>
                   </NavbarMenuItem>
                 )
-              ),
+              )
             )}
           </div>
         </NavbarMenu>

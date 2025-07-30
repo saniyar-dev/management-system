@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Session } from "@supabase/supabase-js";
 
 import LoginPage from "./login/page";
 
 import { title, subtitle } from "@/components/primitives";
-import { supabase } from "@/lib/utils";
 import Loading from "@/components/loading";
+import { useSession } from "@/lib/hooks";
 
 const WelcomePage = ({}: { session: Session }) => {
   return (
@@ -23,29 +22,10 @@ const WelcomePage = ({}: { session: Session }) => {
 };
 
 export default function Home() {
-  const [session, setSession] = useState<Session | null>();
-  const [isLoading, setLoading] = useState(true);
+  const { session, pending } = useSession();
 
-  useEffect(() => {
-    // Check for an existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
-
-    // Listen for auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    // Unsubscribe when the component unmounts
-    return () => subscription.unsubscribe();
-  }, []);
-
-  if (isLoading) {
-    return <Loading pending={isLoading} />;
+  if (pending) {
+    return <Loading pending={pending} />;
   }
 
   return session ? <WelcomePage session={session} /> : <LoginPage />;
