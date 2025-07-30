@@ -97,7 +97,7 @@ export const Navbar = () => {
                     </Link>
                   </NavbarMenuItem>
                 )
-              )
+              ),
             )}
           </ul>
         </NavbarContent>
@@ -144,7 +144,7 @@ export const Navbar = () => {
                     </Link>
                   </NavbarMenuItem>
                 )
-              )
+              ),
             )}
           </div>
         </NavbarMenu>
