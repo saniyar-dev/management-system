@@ -1,17 +1,26 @@
 "use client";
 
-import LoginPage from "./login/page";
-import Dashboard from "./dashboard/page";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 import Loading from "@/components/loading";
 import { useSession } from "@/lib/hooks";
 
 export default function Home() {
   const { session, pending } = useSession();
+  const router = useRouter();
 
-  if (pending) {
-    return <Loading pending={pending} />;
-  }
+  useEffect(() => {
+    if (session) {
+      router.push("/dashboard");
+    } else {
+      router.push("/login");
+    }
+  }, [pending]);
 
-  return session ? <Dashboard /> : <LoginPage />;
+  return (
+    <>
+      <Loading pending={pending} />
+    </>
+  );
 }
