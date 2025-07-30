@@ -9,14 +9,14 @@ import { InputEmail, InputPassword } from "@/components/input";
 import Loading from "@/components/loading";
 
 export default function LoginPage() {
-  const [_, login, pending] = useActionState(Login, {
+  const [message, login, submitPending] = useActionState(Login, {
     message: "",
     success: false,
   });
 
   return (
     <>
-      <Loading pending={pending} />
+      <Loading pending={submitPending} />
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
         <div className="w-full max-w-sm p-8 space-y-6 bg-content1 rounded-xl shadow-lg">
           <div className="text-center">
@@ -36,6 +36,16 @@ export default function LoginPage() {
               ورود
             </Button>
           </form>
+          {message.message !== "" && (
+            <div
+              className={
+                "text-right px-3 py-1" +
+                ` ${message.success ? "text-success" : "text-danger"}`
+              }
+            >
+              {message.message}
+            </div>
+          )}
         </div>
       </section>
     </>
