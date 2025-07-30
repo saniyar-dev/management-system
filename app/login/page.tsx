@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { Button } from "@heroui/button";
+import { useRouter } from "next/navigation";
 
 import { subtitle } from "@/components/primitives";
 import { Login } from "@/lib/action";
@@ -13,6 +14,13 @@ export default function LoginPage() {
     message: "",
     success: false,
   });
+  const router = useRouter();
+
+  useEffect(() => {
+    if (message.success) {
+      router.push("/dashboard");
+    }
+  }, [message]);
 
   return (
     <>
