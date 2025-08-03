@@ -1,6 +1,9 @@
 "use client";
 
 import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
+import { Suspense } from "react";
+
+import Loading from "@/components/loading";
 
 export default function DashboardsLayout({
   children,
@@ -29,7 +32,7 @@ export default function DashboardsLayout({
           </ListboxSection>
         </Listbox>
       </div>
-      {children}
+      <Suspense fallback={<Loading pending={true} />}>{children}</Suspense>
     </section>
   );
 }
