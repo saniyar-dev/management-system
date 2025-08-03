@@ -28,6 +28,9 @@ export default function DashboardsLayout({
             >
               پیش سفارش‌ها
             </ListboxItem>
+            <ListboxItem key="orders" as={Link} href="/dashboard/orders">
+              ‌سفارش‌ها
+            </ListboxItem>
           </ListboxSection>
           <ListboxSection title="مالی">
             <ListboxItem
