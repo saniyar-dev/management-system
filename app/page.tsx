@@ -16,7 +16,7 @@ export default function Home() {
     } else {
       router.push("/login");
     }
-  }, [pending]);
+  }, [session]);
 
   return (
     <>
