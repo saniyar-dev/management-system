@@ -13,7 +13,7 @@ export default function DashboardsLayout({
       <div className="w-[180px] h-full border-l-1 pl-2">
         <Listbox aria-label="sidebar menu" variant="flat">
           <ListboxSection showDivider>
-            <ListboxItem key="clients" as={Link} href="/dashboard">
+            <ListboxItem key="home" as={Link} href="/dashboard">
               ‌خانه
             </ListboxItem>
           </ListboxSection>

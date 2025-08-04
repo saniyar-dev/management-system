@@ -1,5 +1,5 @@
 "use client";
-import type { SVGProps } from "react";
+import type { Key, SVGProps } from "react";
 import type { Selection, ChipProps, SortDescriptor } from "@heroui/react";
 
 import React from "react";
@@ -23,7 +23,15 @@ import {
 } from "@heroui/react";
 
 import { AddClientComponent } from "./addClient";
-import { Client, statusNameMap } from "./types";
+import {
+  ClientData,
+  ClientRender,
+  ClientStatus,
+  clientStatusNameMap,
+  ClientType,
+  Company,
+  Person,
+} from "./types";
 
 import {
   ChevronDownIcon,
@@ -41,70 +49,119 @@ export function capitalize(s: string) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
-export const columns = [
+type ColumnUID = keyof ClientData | "status" | "actions";
+
+export const columns: Array<{
+  name: string;
+  uid: ColumnUID;
+  sortable?: boolean;
+}> = [
   { name: "ID", uid: "id", sortable: true },
-  { name: "نام", uid: "name", sortable: true },
-  { name: "نام شرکت", uid: "org_name", sortable: true },
+  { name: "نام / نام شرکت", uid: "name", sortable: true },
+  { name: "کد ملی / شناسه ملی", uid: "ssn", sortable: true },
   { name: "شماره موبایل", uid: "phone" },
+  { name: "آدرس", uid: "address" },
+  { name: "کد پستی", uid: "postal_code" },
   { name: "وضعیت", uid: "status", sortable: true },
   { name: "ACTIONS", uid: "actions" },
 ];
 
-export const statusOptions = [
+export const statusOptions: Array<{ name: string; uid: ClientStatus }> = [
   { name: "اتمام یافته", uid: "done" },
-  { name: "نیاز به پیگیری", uid: "paused" },
-  { name: "انجام نشده", uid: "not_started" },
+  { name: "نیاز به پیگیری", uid: "waiting" },
+  { name: "انجام نشده", uid: "todo" },
 ];
 
-export const users: Array<Client> = [
+const clientOptions: Array<{ name: string; uid: ClientType }> = [
+  { name: "حقیقی", uid: "personal" },
+  { name: "حقوقی", uid: "company" },
+];
+
+const persons: Array<Person> = [
   {
     id: 1,
     name: "اکبر مبرز",
     phone: "09900790244",
-    org_name: "سیمان‌بان",
-    status: "paused",
+    ssn: "0312825706",
+    address: "کیش ساختمان فناوری",
+    postal_code: "448891102",
   },
   {
     id: 2,
     name: "سانیار کرمی",
     phone: "09900790244",
-    org_name: "سیمان‌بان",
-    status: "done",
+    ssn: "0312825706",
+    address: "کیش نوبنیاد دو بیستون ۹",
+    postal_code: "448891102",
   },
   {
     id: 3,
     name: "محمد قاآنی",
-    phone: "09900790244",
-    org_name: "سیمان‌بان",
-    status: "not_started",
+    phone: "09197893068",
+    ssn: "0312825555",
+    address: "کیش نوبنیاد دو بیستون ۱",
+    postal_code: "448891107",
   },
 ];
 
-const statusColorMap: Record<string, ChipProps["color"]> = {
+const companies: Array<Company> = [
+  {
+    id: 1,
+    name: "سیمان‌بان",
+    ssn: "0061879460",
+    address: "تهران خیابان آزادی",
+    phone: "09126650997",
+    postal_code: "7931790001",
+  },
+];
+
+export const clients: Array<ClientRender> = [
+  {
+    id: 1,
+    type: "personal",
+    data: persons[1],
+    status: "done",
+  },
+  {
+    id: 2,
+    type: "personal",
+    data: persons[2],
+    status: "waiting",
+  },
+  {
+    id: 3,
+    type: "company",
+    data: companies[0],
+    status: "todo",
+  },
+];
+
+const statusColorMap: Record<ClientStatus, ChipProps["color"]> = {
   done: "success",
-  paused: "warning",
-  not_started: "danger",
+  waiting: "warning",
+  todo: "danger",
 };
 
-const INITIAL_VISIBLE_COLUMNS = [
+const INITIAL_VISIBLE_COLUMNS: Array<ColumnUID> = [
   "name",
+  "ssn",
   "phone",
-  "org_name",
+  "address",
   "status",
   "actions",
 ];
 
-type User = (typeof users)[0];
-
 export default function App() {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
-    new Set([]),
+    new Set([])
   );
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
-    new Set(INITIAL_VISIBLE_COLUMNS),
+    new Set(INITIAL_VISIBLE_COLUMNS)
   );
   const [statusFilter, setStatusFilter] = React.useState<Selection>("all");
+  const [clientTypeFilter, setClientTypeFilter] =
+    React.useState<Selection>("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
     column: "name",
@@ -119,29 +176,40 @@ export default function App() {
     if (visibleColumns === "all") return columns;
 
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid),
+      Array.from(visibleColumns).includes(column.uid)
     );
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...users];
+    let filteredClients = [...clients];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase()),
+      filteredClients = filteredClients.filter(
+        (client) =>
+          client.data.name.toLowerCase().includes(filterValue.toLowerCase())
+        // find the specific company name or personal name
       );
     }
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status),
+      filteredClients = filteredClients.filter((client) =>
+        Array.from(statusFilter).includes(client.status)
       );
     }
 
-    return filteredUsers;
-  }, [users, filterValue, statusFilter]);
+    if (
+      clientTypeFilter !== "all" &&
+      Array.from(clientTypeFilter).length !== clientOptions.length
+    ) {
+      filteredClients = filteredClients.filter((client) => {
+        Array.from(clientTypeFilter).includes(client.type);
+      });
+    }
+
+    return filteredClients;
+  }, [clients, filterValue, statusFilter, clientTypeFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage) || 1;
 
@@ -153,56 +221,57 @@ export default function App() {
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
-    return [...items].sort((a: User, b: User) => {
-      const first = a[sortDescriptor.column as keyof User] as number;
-      const second = b[sortDescriptor.column as keyof User] as number;
+    return [...items].sort((a: ClientRender, b: ClientRender) => {
+      const first = a[sortDescriptor.column as keyof ClientRender] as number;
+      const second = b[sortDescriptor.column as keyof ClientRender] as number;
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
-    const cellValue = user[columnKey as keyof User];
-
-    switch (columnKey) {
-      case "name":
-        return <User name={cellValue} />;
-      case "status":
-        return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[user.status]}
-            size="sm"
-            variant="flat"
-          >
-            {statusNameMap[user.status]}
-          </Chip>
-        );
-      case "actions":
-        return (
-          <div className="relative flex items-center gap-4 justify-center">
-            <Tooltip content="Details">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EyeIcon />
-              </span>
-            </Tooltip>
-            <Tooltip content="Edit user">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EditIcon />
-              </span>
-            </Tooltip>
-            <Tooltip color="danger" content="Delete user">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <DeleteIcon />
-              </span>
-            </Tooltip>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
+  const renderCell = React.useCallback(
+    (client: ClientRender, columnKey: Key) => {
+      switch (columnKey) {
+        case "name":
+          return <User name={client.data.name} />;
+        case "status":
+          return (
+            <Chip
+              className="capitalize"
+              color={statusColorMap[client.status]}
+              size="sm"
+              variant="flat"
+            >
+              {clientStatusNameMap[client.status]}
+            </Chip>
+          );
+        case "actions":
+          return (
+            <div className="relative flex items-center gap-4 justify-center">
+              <Tooltip content="Details">
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                </span>
+              </Tooltip>
+              <Tooltip content="Edit user">
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EditIcon />
+                </span>
+              </Tooltip>
+              <Tooltip color="danger" content="Delete user">
+                <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                  <DeleteIcon />
+                </span>
+              </Tooltip>
+            </div>
+          );
+        default:
+          return client.data[columnKey as keyof ClientData];
+      }
+    },
+    []
+  );
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -221,7 +290,7 @@ export default function App() {
       setRowsPerPage(Number(e.target.value));
       setPage(1);
     },
-    [],
+    []
   );
 
   const onSearchChange = React.useCallback((value?: string) => {
@@ -252,6 +321,30 @@ export default function App() {
             onValueChange={onSearchChange}
           />
           <div className="flex gap-3">
+            <Dropdown>
+              <DropdownTrigger className="hidden sm:flex">
+                <Button
+                  endContent={<ChevronDownIcon className="text-small" />}
+                  variant="flat"
+                >
+                  مدل مشتری
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectedKeys={clientTypeFilter}
+                selectionMode="multiple"
+                onSelectionChange={setClientTypeFilter}
+              >
+                {clientOptions.map((typeOption) => (
+                  <DropdownItem key={typeOption.uid} className="capitalize">
+                    {typeOption.name}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
@@ -305,7 +398,7 @@ export default function App() {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            تعداد مشتری‌ها:‌ {users.length}
+            تعداد مشتری‌ها:‌ {clients.length}
           </span>
           <label className="flex items-center text-default-400 text-small">
             تعداد مشتری‌ها در هر صفحه:
@@ -324,10 +417,11 @@ export default function App() {
   }, [
     filterValue,
     statusFilter,
+    clientTypeFilter,
     visibleColumns,
     onSearchChange,
     onRowsPerPageChange,
-    users.length,
+    clients.length,
     hasSearchFilter,
   ]);
 
