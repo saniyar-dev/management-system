@@ -217,14 +217,73 @@ export default function App() {
     return filteredItems.slice(start, end);
   }, [page, filteredItems, rowsPerPage]);
 
-  const sortedItems = React.useMemo(() => {
-    return [...items].sort((a: ClientRender, b: ClientRender) => {
-      const first = a[sortDescriptor.column as keyof ClientRender] as number;
-      const second = b[sortDescriptor.column as keyof ClientRender] as number;
-      const cmp = first < second ? -1 : first > second ? 1 : 0;
+  function persian_alphabetic_compare(s1: string, s2: string) {
+    const persian_alphabet_fix_map: Record<string, number> = {
+      ؤ: 1608.5,
+      ئ: 1609.5,
+      پ: 1577,
+      ة: 1607.5,
+      ژ: 1586.5,
+      ک: 1603,
+      چ: 1580.5,
+      گ: 1603.5,
+      ی: 1610,
+    };
 
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
-    });
+    function compare_char_at_index(a: string, b: string, i: number) {
+      if (i >= a.length && i >= b.length) return 0;
+      if (i >= a.length) return -1;
+      if (i >= b.length) return 1;
+
+      const cmp_value =
+        (persian_alphabet_fix_map[a[i]] || a.charCodeAt(i)) -
+        (persian_alphabet_fix_map[b[i]] || b.charCodeAt(i));
+
+      if (!cmp_value) return compare_char_at_index(a, b, i + 1);
+
+      return cmp_value;
+    }
+
+    return compare_char_at_index(s1, s2, 0);
+  }
+
+  const sortedItems = React.useMemo(() => {
+    switch (sortDescriptor.column) {
+      case "status":
+        return [...items].sort((a: ClientRender, b: ClientRender) => {
+          const first = a[
+            sortDescriptor.column as keyof ClientRender
+          ] as string;
+          const second = b[
+            sortDescriptor.column as keyof ClientRender
+          ] as string;
+
+          let cmp = 0;
+
+          if (first !== undefined && second !== undefined) {
+            cmp = persian_alphabetic_compare(first, second);
+          }
+
+          return sortDescriptor.direction === "descending" ? -cmp : cmp;
+        });
+      default:
+        return [...items].sort((a: ClientRender, b: ClientRender) => {
+          const first = a.data[
+            sortDescriptor.column as keyof ClientData
+          ] as string;
+          const second = b.data[
+            sortDescriptor.column as keyof ClientData
+          ] as string;
+
+          let cmp = 0;
+
+          if (first !== undefined && second !== undefined) {
+            cmp = persian_alphabetic_compare(first, second);
+          }
+
+          return sortDescriptor.direction === "descending" ? -cmp : cmp;
+        });
+    }
   }, [sortDescriptor, items]);
 
   const renderCell = React.useCallback(
