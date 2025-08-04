@@ -26,6 +26,13 @@ export function AddClientComponent() {
     isDisabled: !isOpen,
   });
 
+  const submit = (formData: FormData) => {
+    const phone = formData.get("phone");
+    const name = formData.get("name");
+
+    console.log(phone, name);
+  };
+
   return (
     <>
       <Button color="primary" endContent={<PlusIcon />} onPress={onOpen}>
@@ -38,45 +45,50 @@ export function AddClientComponent() {
               <ModalHeader {...moveProps} className="flex flex-col gap-1">
                 ایجاد مشتری جدید
               </ModalHeader>
-              <ModalBody>
-                <Input
-                  endContent={
-                    <MailIcon className="text-2xl text-default-400 pointer-events-none shrink-0" />
-                  }
-                  label="Email"
-                  placeholder="Enter your email"
-                  variant="bordered"
-                />
-                <Input
-                  endContent={
-                    <LockIcon className="text-2xl text-default-400 pointer-events-none shrink-0" />
-                  }
-                  label="Password"
-                  placeholder="Enter your password"
-                  type="password"
-                  variant="bordered"
-                />
-                <div className="flex py-2 px-1 justify-between">
-                  <Checkbox
-                    classNames={{
-                      label: "text-small",
-                    }}
-                  >
-                    Remember me
-                  </Checkbox>
-                  <Link color="primary" href="#" size="sm">
-                    Forgot password?
-                  </Link>
-                </div>
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="flat" onPress={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={onClose}>
-                  Sign in
-                </Button>
-              </ModalFooter>
+              <form action={submit}>
+                <ModalBody>
+                  <Input
+                    endContent={
+                      <MailIcon className="text-2xl text-default-400 pointer-events-none shrink-0" />
+                    }
+                    label="نام و نام خاوادگی"
+                    id="name"
+                    name="name"
+                    placeholder="نام مشتری"
+                    variant="bordered"
+                  />
+                  <Input
+                    endContent={
+                      <LockIcon className="text-2xl text-default-400 pointer-events-none shrink-0" />
+                    }
+                    label="شماره موبایل"
+                    id="phone"
+                    name="phone"
+                    placeholder="09900790244"
+                    variant="bordered"
+                  />
+                  <div className="flex py-2 px-1 justify-between">
+                    <Checkbox
+                      classNames={{
+                        label: "text-small",
+                      }}
+                    >
+                      Remember me
+                    </Checkbox>
+                    <Link color="primary" href="#" size="sm">
+                      Forgot password?
+                    </Link>
+                  </div>
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="flat" onPress={onClose}>
+                    Close
+                  </Button>
+                  <Button color="primary" type="submit">
+                    Sign in
+                  </Button>
+                </ModalFooter>
+              </form>
             </>
           )}
         </ModalContent>
