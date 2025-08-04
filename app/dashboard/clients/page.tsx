@@ -23,13 +23,13 @@ import {
 } from "@heroui/react";
 import {
   ChevronDownIcon,
-  PlusIcon,
   SearchIcon,
   EyeIcon,
   EditIcon,
   DeleteIcon,
 } from "@/components/icons";
 import { AddClientComponent } from "./addClient";
+import { Client, statusNameMap } from "./types";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -54,13 +54,27 @@ export const statusOptions = [
   { name: "انجام نشده", uid: "not_started" },
 ];
 
-export const users = [
+export const users: Array<Client> = [
   {
     id: 1,
     name: "اکبر مبرز",
     phone: "09900790244",
     org_name: "سیمان‌بان",
+    status: "paused",
+  },
+  {
+    id: 2,
+    name: "سانیار کرمی",
+    phone: "09900790244",
+    org_name: "سیمان‌بان",
     status: "done",
+  },
+  {
+    id: 3,
+    name: "محمد قاآنی",
+    phone: "09900790244",
+    org_name: "سیمان‌بان",
+    status: "not_started",
   },
 ];
 
@@ -160,7 +174,7 @@ export default function App() {
             size="sm"
             variant="flat"
           >
-            {cellValue}
+            {statusNameMap[user.status]}
           </Chip>
         );
       case "actions":

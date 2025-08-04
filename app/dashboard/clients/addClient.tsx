@@ -36,7 +36,7 @@ export function AddClientComponent() {
           {(onClose) => (
             <>
               <ModalHeader {...moveProps} className="flex flex-col gap-1">
-                Modal Title
+                ایجاد مشتری جدید
               </ModalHeader>
               <ModalBody>
                 <Input
