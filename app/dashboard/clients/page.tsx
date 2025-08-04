@@ -21,6 +21,10 @@ import {
   User,
   Pagination,
 } from "@heroui/react";
+
+import { AddClientComponent } from "./addClient";
+import { Client, statusNameMap } from "./types";
+
 import {
   ChevronDownIcon,
   SearchIcon,
@@ -28,8 +32,6 @@ import {
   EditIcon,
   DeleteIcon,
 } from "@/components/icons";
-import { AddClientComponent } from "./addClient";
-import { Client, statusNameMap } from "./types";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -97,10 +99,10 @@ type User = (typeof users)[0];
 export default function App() {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
-    new Set([])
+    new Set([]),
   );
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
-    new Set(INITIAL_VISIBLE_COLUMNS)
+    new Set(INITIAL_VISIBLE_COLUMNS),
   );
   const [statusFilter, setStatusFilter] = React.useState<Selection>("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -117,7 +119,7 @@ export default function App() {
     if (visibleColumns === "all") return columns;
 
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid)
+      Array.from(visibleColumns).includes(column.uid),
     );
   }, [visibleColumns]);
 
@@ -126,7 +128,7 @@ export default function App() {
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase())
+        user.name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
     if (
@@ -134,7 +136,7 @@ export default function App() {
       Array.from(statusFilter).length !== statusOptions.length
     ) {
       filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status)
+        Array.from(statusFilter).includes(user.status),
       );
     }
 
@@ -219,7 +221,7 @@ export default function App() {
       setRowsPerPage(Number(e.target.value));
       setPage(1);
     },
-    []
+    [],
   );
 
   const onSearchChange = React.useCallback((value?: string) => {

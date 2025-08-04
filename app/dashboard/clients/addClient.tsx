@@ -1,20 +1,20 @@
 "use client";
 
 import React from "react";
-import { Card, CardFooter, Image, Tab, Tabs } from "@heroui/react";
+import { Tab, Tabs } from "@heroui/react";
 import {
   Modal,
   ModalContent,
   ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
   useDisclosure,
   useDraggable,
   Input,
 } from "@heroui/react";
-import { PlusIcon, MailIcon, LockIcon } from "@/components/icons";
+
 import JobsComponent from "./jobs";
+
+import { PlusIcon } from "@/components/icons";
 
 export function AddClientComponent() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -29,8 +29,6 @@ export function AddClientComponent() {
   const submit = (formData: FormData) => {
     const phone = formData.get("phone");
     const name = formData.get("name");
-
-    console.log(phone, name);
   };
 
   return (
@@ -54,48 +52,48 @@ export function AddClientComponent() {
                 <Tabs
                   fullWidth
                   aria-label="Tabs Form"
-                  size="md"
                   placement="top"
+                  size="md"
                 >
                   <Tab key="personal" title="حقیقی">
                     <form action={submit} className="w-xl flex flex-col gap-6">
                       <div className="flex flex-col items-center justify-center gap-4">
                         <Input
                           isRequired
-                          label="نام و نام خاوادگی"
                           id="name"
+                          label="نام و نام خاوادگی"
                           name="name"
                           placeholder="نام مشتری"
                           variant="bordered"
                         />
                         <Input
                           isRequired
-                          label="شماره موبایل"
                           id="phone"
+                          label="شماره موبایل"
                           name="phone"
                           placeholder="09900790244"
                           variant="bordered"
                         />
                         <Input
                           isRequired
-                          label="کد ملی"
                           id="ssn"
+                          label="کد ملی"
                           name="ssn"
                           placeholder="0312829804"
                           variant="bordered"
                         />
                         <Input
                           isRequired
-                          label="آدرس"
                           id="address"
+                          label="آدرس"
                           name="address"
                           placeholder="هرمزگان، بندر عباس، خیابان مریم، پلاک ۱۰۲"
                           variant="bordered"
                         />
                         <Input
                           isRequired
-                          label="کد پستی"
                           id="postal_code"
+                          label="کد پستی"
                           name="postal_code"
                           placeholder="448891102"
                           variant="bordered"
@@ -116,56 +114,56 @@ export function AddClientComponent() {
                       <div className="flex flex-col items-center justify-center gap-4">
                         <Input
                           isRequired
-                          label="نام و نام خاوادگی مدیر عامل/نماینده"
                           id="name"
+                          label="نام و نام خاوادگی مدیر عامل/نماینده"
                           name="name"
                           placeholder="نام مشتری"
                           variant="bordered"
                         />
                         <Input
                           isRequired
-                          label="شماره موبایل مدیر عامل/نماینده"
                           id="phone"
+                          label="شماره موبایل مدیر عامل/نماینده"
                           name="phone"
                           placeholder="09900790244"
                           variant="bordered"
                         />
                         <Input
                           isRequired
-                          label="کد ملی مدیر عامل/نماینده"
                           id="ssn"
+                          label="کد ملی مدیر عامل/نماینده"
                           name="ssn"
                           placeholder="0312829804"
                           variant="bordered"
                         />
                         <Input
                           isRequired
-                          label="نام کارخانه/کارگاه/شرکت"
                           id="company_name"
+                          label="نام کارخانه/کارگاه/شرکت"
                           name="company_name"
                           placeholder="بتن ریزی سیرجان"
                           variant="bordered"
                         />
                         <Input
                           isRequired
-                          label="شناسه ملی کارخانه/کارگاه/شرکت"
                           id="company_name"
+                          label="شناسه ملی کارخانه/کارگاه/شرکت"
                           name="company_name"
                           placeholder="شناسه ملی بتن ریزی سیرجان"
                           variant="bordered"
                         />
                         <Input
                           isRequired
-                          label="آدرس کارخانه/کارگاه/شرکت"
                           id="address"
+                          label="آدرس کارخانه/کارگاه/شرکت"
                           name="address"
                           placeholder="هرمزگان، بندر عباس،جاده قدیم، قطعه ۱۰۵"
                           variant="bordered"
                         />
                         <Input
                           isRequired
-                          label="کد پستی کارخانه/کارگاه/شرکت"
                           id="postal_code"
+                          label="کد پستی کارخانه/کارگاه/شرکت"
                           name="postal_code"
                           placeholder="448891102"
                           variant="bordered"
