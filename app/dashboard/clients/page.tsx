@@ -154,7 +154,7 @@ const INITIAL_VISIBLE_COLUMNS: Array<ColumnUID> = [
 export default function App() {
   const [filterValue, setFilterValue] = React.useState("");
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
-    new Set(INITIAL_VISIBLE_COLUMNS)
+    new Set(INITIAL_VISIBLE_COLUMNS),
   );
   const [statusFilter, setStatusFilter] = React.useState<Selection>("all");
   const [clientTypeFilter, setClientTypeFilter] =
@@ -173,7 +173,7 @@ export default function App() {
     if (visibleColumns === "all") return columns;
 
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid)
+      Array.from(visibleColumns).includes(column.uid),
     );
   }, [visibleColumns]);
 
@@ -183,7 +183,7 @@ export default function App() {
     if (hasSearchFilter) {
       filteredClients = filteredClients.filter(
         (client) =>
-          client.data.name.toLowerCase().includes(filterValue.toLowerCase())
+          client.data.name.toLowerCase().includes(filterValue.toLowerCase()),
         // find the specific company name or personal name
       );
     }
@@ -192,7 +192,7 @@ export default function App() {
       Array.from(statusFilter).length !== statusOptions.length
     ) {
       filteredClients = filteredClients.filter((client) =>
-        Array.from(statusFilter).includes(client.status)
+        Array.from(statusFilter).includes(client.status),
       );
     }
 
@@ -201,7 +201,7 @@ export default function App() {
       Array.from(clientTypeFilter).length !== clientOptions.length
     ) {
       filteredClients = filteredClients.filter((client) =>
-        Array.from(clientTypeFilter).includes(client.type)
+        Array.from(clientTypeFilter).includes(client.type),
       );
     }
 
@@ -267,7 +267,7 @@ export default function App() {
           return client.data[columnKey as keyof ClientData];
       }
     },
-    []
+    [],
   );
 
   const onNextPage = React.useCallback(() => {
@@ -287,7 +287,7 @@ export default function App() {
       setRowsPerPage(Number(e.target.value));
       setPage(1);
     },
-    []
+    [],
   );
 
   const onSearchChange = React.useCallback((value?: string) => {
