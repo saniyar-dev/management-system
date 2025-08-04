@@ -29,7 +29,7 @@ import {
   EditIcon,
   DeleteIcon,
 } from "@/components/icons";
-import { AddNewModalButton } from "./addNew";
+import { AddClientComponent } from "./addClient";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -284,7 +284,7 @@ export default function App() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <AddNewModalButton />
+            <AddClientComponent />
           </div>
         </div>
         <div className="flex justify-between items-center">

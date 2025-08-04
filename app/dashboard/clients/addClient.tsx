@@ -16,7 +16,7 @@ import {
 } from "@heroui/react";
 import { PlusIcon, MailIcon, LockIcon } from "@/components/icons";
 
-export function AddNewModalButton() {
+export function AddClientComponent() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const targetRef = React.useRef(null);
