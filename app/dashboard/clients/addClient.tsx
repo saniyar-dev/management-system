@@ -61,6 +61,7 @@ export function AddClientComponent() {
                     <form action={submit} className="w-xl flex flex-col gap-6">
                       <div className="flex flex-col items-center justify-center gap-4">
                         <Input
+                          isRequired
                           label="نام و نام خاوادگی"
                           id="name"
                           name="name"
@@ -68,10 +69,35 @@ export function AddClientComponent() {
                           variant="bordered"
                         />
                         <Input
+                          isRequired
                           label="شماره موبایل"
                           id="phone"
                           name="phone"
                           placeholder="09900790244"
+                          variant="bordered"
+                        />
+                        <Input
+                          isRequired
+                          label="کد ملی"
+                          id="ssn"
+                          name="ssn"
+                          placeholder="0312829804"
+                          variant="bordered"
+                        />
+                        <Input
+                          isRequired
+                          label="آدرس"
+                          id="address"
+                          name="address"
+                          placeholder="هرمزگان، بندر عباس، خیابان مریم، پلاک ۱۰۲"
+                          variant="bordered"
+                        />
+                        <Input
+                          isRequired
+                          label="کد پستی"
+                          id="postal_code"
+                          name="postal_code"
+                          placeholder="448891102"
                           variant="bordered"
                         />
                       </div>
@@ -89,6 +115,7 @@ export function AddClientComponent() {
                     <form action={submit} className="w-xl flex flex-col gap-6">
                       <div className="flex flex-col items-center justify-center gap-4">
                         <Input
+                          isRequired
                           label="نام و نام خاوادگی مدیر عامل/نماینده"
                           id="name"
                           name="name"
@@ -96,10 +123,51 @@ export function AddClientComponent() {
                           variant="bordered"
                         />
                         <Input
+                          isRequired
                           label="شماره موبایل مدیر عامل/نماینده"
                           id="phone"
                           name="phone"
                           placeholder="09900790244"
+                          variant="bordered"
+                        />
+                        <Input
+                          isRequired
+                          label="کد ملی مدیر عامل/نماینده"
+                          id="ssn"
+                          name="ssn"
+                          placeholder="0312829804"
+                          variant="bordered"
+                        />
+                        <Input
+                          isRequired
+                          label="نام کارخانه/کارگاه/شرکت"
+                          id="company_name"
+                          name="company_name"
+                          placeholder="بتن ریزی سیرجان"
+                          variant="bordered"
+                        />
+                        <Input
+                          isRequired
+                          label="شناسه ملی کارخانه/کارگاه/شرکت"
+                          id="company_name"
+                          name="company_name"
+                          placeholder="شناسه ملی بتن ریزی سیرجان"
+                          variant="bordered"
+                        />
+                        <Input
+                          isRequired
+                          label="آدرس کارخانه/کارگاه/شرکت"
+                          id="address"
+                          name="address"
+                          placeholder="هرمزگان، بندر عباس،جاده قدیم، قطعه ۱۰۵"
+                          variant="bordered"
+                        />
+                        <Input
+                          isRequired
+                          label="کد پستی کارخانه/کارگاه/شرکت"
+                          id="postal_code"
+                          name="postal_code"
+                          placeholder="448891102"
                           variant="bordered"
                         />
                       </div>
