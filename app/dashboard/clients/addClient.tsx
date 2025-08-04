@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Card, CardFooter, Image } from "@heroui/react";
+import { Card, CardFooter, Image, Tab, Tabs } from "@heroui/react";
 import {
   Modal,
   ModalContent,
@@ -50,36 +50,71 @@ export function AddClientComponent() {
               <ModalHeader {...moveProps} className="flex flex-col gap-1">
                 ایجاد مشتری جدید
               </ModalHeader>
-              <section className="flex justify-between py-6">
-                <form action={submit} className="w-xl">
-                  <ModalBody>
-                    <Input
-                      label="نام و نام خاوادگی"
-                      id="name"
-                      name="name"
-                      placeholder="نام مشتری"
-                      variant="bordered"
-                    />
-                    <Input
-                      label="شماره موبایل"
-                      id="phone"
-                      name="phone"
-                      placeholder="09900790244"
-                      variant="bordered"
-                    />
-                  </ModalBody>
-                  <ModalFooter>
-                    <Button color="danger" variant="flat" onPress={onClose}>
-                      بستن
-                    </Button>
-                    <Button color="primary" type="submit">
-                      ثبت
-                    </Button>
-                  </ModalFooter>
-                </form>
-                <section className="flex flex-col px-6">
-                  <JobsComponent />
-                </section>
+              <section className="flex justify-between p-6">
+                <Tabs
+                  fullWidth
+                  aria-label="Tabs Form"
+                  size="md"
+                  placement="top"
+                >
+                  <Tab key="personal" title="حقیقی">
+                    <form action={submit} className="w-xl flex flex-col gap-6">
+                      <div className="flex flex-col items-center justify-center gap-4">
+                        <Input
+                          label="نام و نام خاوادگی"
+                          id="name"
+                          name="name"
+                          placeholder="نام مشتری"
+                          variant="bordered"
+                        />
+                        <Input
+                          label="شماره موبایل"
+                          id="phone"
+                          name="phone"
+                          placeholder="09900790244"
+                          variant="bordered"
+                        />
+                      </div>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button color="danger" variant="flat" onPress={onClose}>
+                          بستن
+                        </Button>
+                        <Button color="primary" type="submit">
+                          ثبت
+                        </Button>
+                      </div>
+                    </form>
+                  </Tab>
+                  <Tab key="company" title="حقوقی">
+                    <form action={submit} className="w-xl flex flex-col gap-6">
+                      <div className="flex flex-col items-center justify-center gap-4">
+                        <Input
+                          label="نام و نام خاوادگی مدیر عامل/نماینده"
+                          id="name"
+                          name="name"
+                          placeholder="نام مشتری"
+                          variant="bordered"
+                        />
+                        <Input
+                          label="شماره موبایل مدیر عامل/نماینده"
+                          id="phone"
+                          name="phone"
+                          placeholder="09900790244"
+                          variant="bordered"
+                        />
+                      </div>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button color="danger" variant="flat" onPress={onClose}>
+                          بستن
+                        </Button>
+                        <Button color="primary" type="submit">
+                          ثبت
+                        </Button>
+                      </div>
+                    </form>
+                  </Tab>
+                </Tabs>
+                <JobsComponent />
               </section>
             </>
           )}
