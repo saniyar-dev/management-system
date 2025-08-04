@@ -4,13 +4,7 @@ import type { Selection, ChipProps, SortDescriptor } from "@heroui/react";
 
 import React from "react";
 import {
-  Table,
   Tooltip,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
   Input,
   Button,
   DropdownTrigger,
@@ -20,9 +14,14 @@ import {
   Chip,
   User,
   Pagination,
+  TableColumn,
+  TableHeader,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
 } from "@heroui/react";
 
-import { AddClientComponent } from "./addClient";
 import {
   ClientData,
   ClientRender,
@@ -32,6 +31,7 @@ import {
   Company,
   Person,
 } from "./types";
+import { AddClientComponent } from "./addClient";
 
 import {
   ChevronDownIcon,
@@ -153,9 +153,6 @@ const INITIAL_VISIBLE_COLUMNS: Array<ColumnUID> = [
 
 export default function App() {
   const [filterValue, setFilterValue] = React.useState("");
-  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
-    new Set([])
-  );
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
@@ -203,9 +200,9 @@ export default function App() {
       clientTypeFilter !== "all" &&
       Array.from(clientTypeFilter).length !== clientOptions.length
     ) {
-      filteredClients = filteredClients.filter((client) => {
-        Array.from(clientTypeFilter).includes(client.type);
-      });
+      filteredClients = filteredClients.filter((client) =>
+        Array.from(clientTypeFilter).includes(client.type)
+      );
     }
 
     return filteredClients;
@@ -428,11 +425,6 @@ export default function App() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? "All items selected"
-            : `${selectedKeys.size} از ${filteredItems.length} مشتری انتخاب شده`}
-        </span>
         <Pagination
           isCompact
           showControls
@@ -462,7 +454,7 @@ export default function App() {
         </div>
       </div>
     );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+  }, [items.length, page, pages, hasSearchFilter]);
 
   return (
     <Table
@@ -473,12 +465,9 @@ export default function App() {
       classNames={{
         wrapper: "max-h-[382px]",
       }}
-      selectedKeys={selectedKeys}
-      selectionMode="multiple"
       sortDescriptor={sortDescriptor}
       topContent={topContent}
       topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
       onSortChange={setSortDescriptor}
     >
       <TableHeader columns={headerColumns}>
