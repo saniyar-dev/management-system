@@ -9,7 +9,7 @@ export default function DashboardsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex justify-start gap-2 h-full">
+    <section className="flex justify-start gap-4 h-full">
       <div className="w-[180px] h-full border-l-1 pl-2">
         <Listbox aria-label="sidebar menu" variant="flat">
           <ListboxSection showDivider>
