@@ -116,7 +116,7 @@ export async function GetClients(
           id: client.id,
           data: person as ClientData,
           status: "done",
-          type: "company",
+          type: "personal",
         };
       }
 
