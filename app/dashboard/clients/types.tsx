@@ -6,24 +6,6 @@ export const clientStatusNameMap: Record<ClientStatus, string> = {
   todo: "انجام نشده",
 };
 
-export type Person = {
-  id: number;
-  name: string;
-  ssn: string;
-  phone: string;
-  address: string;
-  postal_code: string;
-};
-
-export type Company = {
-  id: number;
-  name: string;
-  ssn: string;
-  phone: string;
-  address: string;
-  postal_code: string;
-};
-
 export type ClientData = {
   id: number;
   name: string;
@@ -41,18 +23,6 @@ export type ClientRender = {
   data: ClientData;
   status: ClientStatus;
 };
-
-export type Client =
-  | {
-      id: number;
-      person_id: number | null;
-      company_id: number;
-    }
-  | {
-      id: number;
-      person_id: number;
-      company_id: number | null;
-    };
 
 export type JobStatus = "done" | "waiting" | "todo";
 
