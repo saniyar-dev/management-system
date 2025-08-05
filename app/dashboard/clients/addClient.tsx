@@ -13,10 +13,21 @@ import {
 } from "@heroui/react";
 
 import JobsComponent from "./jobs";
+import { ClientJob } from "./types";
 
 import { PlusIcon } from "@/components/icons";
 import { AddClient, GetClientJobs, ServerActionState } from "@/lib/action";
 import Loading from "@/components/loading";
+
+const jobs: ClientJob[] = [
+  // {
+  //   id: 1,
+  //   name: "ارسال به کارتابل ",
+  //   client_id: 11,
+  //   status: "waiting",
+  //   url: "https://google.com",
+  // },
+];
 
 export function AddClientComponent() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -66,7 +77,7 @@ export function AddClientComponent() {
       <Modal
         ref={targetRef}
         isOpen={isOpen}
-        size="5xl"
+        size={`${jobs.length > 0 ? "5xl" : "2xl"}`}
         onOpenChange={onOpenChange}
       >
         <ModalContent>
@@ -75,7 +86,9 @@ export function AddClientComponent() {
               <ModalHeader {...moveProps} className="flex flex-col gap-1">
                 ایجاد مشتری جدید
               </ModalHeader>
-              <section className="flex justify-between p-6">
+              <section
+                className={`flex justify-${jobs.length > 0 ? "between" : "center"} p-6`}
+              >
                 <div>
                   <Tabs
                     fullWidth
@@ -222,7 +235,6 @@ export function AddClientComponent() {
                       </form>
                     </Tab>
                   </Tabs>
-                  <p />
                   {actionMsg && (
                     <div
                       className={
@@ -234,7 +246,7 @@ export function AddClientComponent() {
                     </div>
                   )}
                 </div>
-                <JobsComponent />
+                {jobs.length > 0 && <JobsComponent clientJobs={jobs} />}
               </section>
             </>
           )}

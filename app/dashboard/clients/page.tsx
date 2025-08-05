@@ -1,6 +1,6 @@
 "use client";
 import type { Key, SVGProps } from "react";
-import type { Selection, ChipProps, SortDescriptor } from "@heroui/react";
+import type { Selection, SortDescriptor } from "@heroui/react";
 
 import React, { useEffect, useTransition } from "react";
 import {
@@ -26,7 +26,8 @@ import {
 import {
   ClientData,
   ClientRender,
-  ClientStatus,
+  Status,
+  statusColorMap,
   clientStatusNameMap,
   ClientType,
 } from "./types";
@@ -66,7 +67,7 @@ export const columns: Array<{
   { name: "ACTIONS", uid: "actions" },
 ];
 
-export const statusOptions: Array<{ name: string; uid: ClientStatus }> = [
+export const statusOptions: Array<{ name: string; uid: Status }> = [
   { name: "اتمام یافته", uid: "done" },
   { name: "نیاز به پیگیری", uid: "waiting" },
   { name: "انجام نشده", uid: "todo" },
@@ -76,12 +77,6 @@ const clientOptions: Array<{ name: string; uid: ClientType }> = [
   { name: "حقیقی", uid: "personal" },
   { name: "حقوقی", uid: "company" },
 ];
-
-const statusColorMap: Record<ClientStatus, ChipProps["color"]> = {
-  done: "success",
-  waiting: "warning",
-  todo: "danger",
-};
 
 const INITIAL_VISIBLE_COLUMNS: Array<ColumnUID> = [
   "name",
@@ -98,7 +93,7 @@ export default function App() {
 
   const [filterValue, setFilterValue] = React.useState("");
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
-    new Set(INITIAL_VISIBLE_COLUMNS),
+    new Set(INITIAL_VISIBLE_COLUMNS)
   );
   const [statusFilter, setStatusFilter] = React.useState<Selection>("all");
   const [clientTypeFilter, setClientTypeFilter] =
@@ -117,7 +112,7 @@ export default function App() {
     if (visibleColumns === "all") return columns;
 
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid),
+      Array.from(visibleColumns).includes(column.uid)
     );
   }, [visibleColumns]);
 
@@ -127,7 +122,7 @@ export default function App() {
     if (hasSearchFilter) {
       filteredClients = filteredClients.filter(
         (client) =>
-          client.data.name.toLowerCase().includes(filterValue.toLowerCase()),
+          client.data.name.toLowerCase().includes(filterValue.toLowerCase())
         // find the specific company name or personal name
       );
     }
@@ -136,7 +131,7 @@ export default function App() {
       Array.from(statusFilter).length !== statusOptions.length
     ) {
       filteredClients = filteredClients.filter((client) =>
-        Array.from(statusFilter).includes(client.status),
+        Array.from(statusFilter).includes(client.status)
       );
     }
 
@@ -145,7 +140,7 @@ export default function App() {
       Array.from(clientTypeFilter).length !== clientOptions.length
     ) {
       filteredClients = filteredClients.filter((client) =>
-        Array.from(clientTypeFilter).includes(client.type),
+        Array.from(clientTypeFilter).includes(client.type)
       );
     }
 
@@ -270,7 +265,7 @@ export default function App() {
           return client.data[columnKey as keyof ClientData];
       }
     },
-    [],
+    []
   );
 
   const onNextPage = React.useCallback(() => {
@@ -290,7 +285,7 @@ export default function App() {
       setRowsPerPage(Number(e.target.value));
       setPage(1);
     },
-    [],
+    []
   );
 
   const onSearchChange = React.useCallback((value?: string) => {
@@ -463,7 +458,7 @@ export default function App() {
     startTransition(async () => {
       const actionMsg = await GetClients(
         (page - 1) * rowsPerPage,
-        page * rowsPerPage,
+        page * rowsPerPage
       );
 
       if (actionMsg.success && actionMsg.data) {
