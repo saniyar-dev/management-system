@@ -132,3 +132,106 @@ export async function GetClients(
     data: clients,
   };
 }
+
+export async function GetClientJobs(
+  client_id: number,
+): Promise<ServerActionState<any>> {
+  return {
+    message: "اطلاعات با موفقیت دریافت شدند.",
+    success: true,
+    data: "good",
+  };
+}
+
+export async function AddClient(formData: FormData) {
+  const createCompany = async (formData: FormData): Promise<number | null> => {
+    const name = formData.get("company_name") as string;
+    const phone = formData.get("phone") as string;
+    const address = formData.get("company_address") as string;
+    const ssn = formData.get("company_ssn") as string;
+    const postalCode = formData.get("company_postal_code") as string;
+
+    // return if the formData doesn't container company_name
+    if (name === "" || !name) return null;
+
+    const { data, error } = await supabase
+      .from("company")
+      .insert({
+        name,
+        ssn,
+        phone,
+        address,
+        postal_code: postalCode,
+      })
+      .select();
+
+    if (!error && data) {
+      return data[0].id;
+    }
+
+    return null;
+  };
+
+  const createPersonal = async (formData: FormData): Promise<number | null> => {
+    const name = formData.get("name") as string;
+    const phone = formData.get("phone") as string;
+    const address = formData.get("address") as string;
+    const ssn = formData.get("ssn") as string;
+    const postalCode = formData.get("postal_code") as string;
+
+    const { data, error } = await supabase
+      .from("person")
+      .insert({
+        name,
+        ssn,
+        phone,
+        address,
+        postal_code: postalCode,
+      })
+      .select();
+
+    if (!error && data) {
+      return data[0].id;
+    }
+
+    return null;
+  };
+
+  const createClient = async (
+    personal_id: number | null,
+    company_id: number | null,
+  ): Promise<number | null> => {
+    const { data, error } = await supabase
+      .from("client")
+      .insert({
+        personal_id,
+        company_id,
+      })
+      .select();
+
+    if (!error && data) {
+      return data[0].id;
+    }
+
+    return null;
+  };
+
+  const personal_id = await createPersonal(formData);
+  const company_id = await createCompany(formData);
+
+  const client_id = await createClient(personal_id, company_id);
+
+  if (!client_id) {
+    return {
+      message: "ثبت مشتری موفقیت آمیز نبود دوباره تلاش کنید.",
+      success: false,
+      data: null,
+    };
+  }
+
+  return {
+    message: "با موفقیت انجام شد.",
+    success: true,
+    data: client_id,
+  };
+}
