@@ -204,7 +204,7 @@ export async function AddClient(formData: FormData) {
     const { data, error } = await supabase
       .from("client")
       .insert({
-        personal_id,
+        person_id: personal_id,
         company_id,
       })
       .select();
@@ -230,7 +230,7 @@ export async function AddClient(formData: FormData) {
   }
 
   return {
-    message: "با موفقیت انجام شد.",
+    message: "ثبت مشتری با موفقیت انجام شد.",
     success: true,
     data: client_id,
   };
