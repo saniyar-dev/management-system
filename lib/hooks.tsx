@@ -402,7 +402,7 @@ export const useTableLogic = <TD extends RowData>(
   ]);
 
   const bottomContent = useMemo(() => {
-    if (pages === 1) {
+    if (pages === 1 || pagePending) {
       return <></>;
     }
 
@@ -437,7 +437,7 @@ export const useTableLogic = <TD extends RowData>(
         </div>
       </div>
     );
-  }, [page, pages]);
+  }, [page, pages, pagePending]);
 
   useEffect(() => {
     setRows([]);
