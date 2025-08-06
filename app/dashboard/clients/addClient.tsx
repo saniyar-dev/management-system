@@ -16,7 +16,8 @@ import { ClientJob } from "./types";
 
 import JobsComponent from "@/components/jobs";
 import { PlusIcon } from "@/components/icons";
-import { AddClient, GetClientJobs, ServerActionState } from "@/lib/action";
+import { AddClient, GetClientJobs } from "@/lib/action/client";
+import { ServerActionState } from "@/lib/action/type";
 import Loading from "@/components/loading";
 
 const jobs: ClientJob[] = [

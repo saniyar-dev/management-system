@@ -32,8 +32,8 @@ import {
   statusOptions,
   rowOptions,
 } from "./types";
-import { ServerActionState } from "./action";
 
+import { ServerActionState } from "@/lib/action/type";
 import {
   ChevronDownIcon,
   DeleteIcon,
@@ -78,20 +78,20 @@ export const useTableLogic = <TD extends RowData>(
   >,
   GetRows: (
     start: number,
-    end: number,
+    end: number
   ) => Promise<ServerActionState<(Row<TD> | null)[]>>,
-  AddButtonComponent: () => JSX.Element,
+  AddButtonComponent: () => JSX.Element
 ) => {
   const [rows, setRows] = useState<Row<TD>[]>([]);
   const [pending, startTransition] = useTransition();
 
   const [filterValue, setFilterValue] = useState("");
   const [visibleColumns, setVisibleColumns] = useState<Selection>(
-    new Set(INITIAL_VISIBLE_COLUMNS),
+    new Set(INITIAL_VISIBLE_COLUMNS)
   );
   const [statusFilter, setStatusFilter] = useState<Selection>("all");
   const [rowTypeFilter, setRowTypeFilter] = useState<Selection>("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "name",
     direction: "ascending",
@@ -105,7 +105,7 @@ export const useTableLogic = <TD extends RowData>(
     if (visibleColumns === "all") return columns;
 
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid),
+      Array.from(visibleColumns).includes(column.uid)
     );
   }, [visibleColumns]);
 
@@ -114,8 +114,7 @@ export const useTableLogic = <TD extends RowData>(
 
     if (hasSearchFilter) {
       filteredRows = filteredRows.filter(
-        (row) =>
-          row.data.name.toLowerCase().includes(filterValue.toLowerCase()),
+        (row) => row.data.name.toLowerCase().includes(filterValue.toLowerCase())
         // find the specific company name or personal name
       );
     }
@@ -124,7 +123,7 @@ export const useTableLogic = <TD extends RowData>(
       Array.from(statusFilter).length !== statusOptions.length
     ) {
       filteredRows = filteredRows.filter((row) =>
-        Array.from(statusFilter).includes(row.status),
+        Array.from(statusFilter).includes(row.status)
       );
     }
 
@@ -133,7 +132,7 @@ export const useTableLogic = <TD extends RowData>(
       Array.from(rowTypeFilter).length !== rowOptions.length
     ) {
       filteredRows = filteredRows.filter((row) =>
-        Array.from(rowTypeFilter).includes(row.type),
+        Array.from(rowTypeFilter).includes(row.type)
       );
     }
 
@@ -267,7 +266,7 @@ export const useTableLogic = <TD extends RowData>(
       setRowsPerPage(Number(e.target.value));
       setPage(1);
     },
-    [],
+    []
   );
 
   const onSearchChange = useCallback((value?: string) => {
@@ -440,7 +439,7 @@ export const useTableLogic = <TD extends RowData>(
     startTransition(async () => {
       const actionMsg = await GetRows(
         (page - 1) * rowsPerPage,
-        page * rowsPerPage,
+        page * rowsPerPage
       );
 
       if (actionMsg.success && actionMsg.data) {

@@ -17,7 +17,8 @@ import Loading from "./loading";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { Logout, ServerActionState } from "@/lib/action";
+import { Logout } from "@/lib/action/auth";
+import { ServerActionState } from "@/lib/action/type";
 import { useSession } from "@/lib/hooks";
 
 // const searchInput = (
@@ -42,7 +43,7 @@ import { useSession } from "@/lib/hooks";
 // );
 
 export const Navbar = () => {
-  const [message, setMessage] = useState<ServerActionState>({
+  const [message, setMessage] = useState<ServerActionState<null>>({
     message: "",
     success: false,
   });
@@ -97,7 +98,7 @@ export const Navbar = () => {
                     </Link>
                   </NavbarMenuItem>
                 )
-              ),
+              )
             )}
           </ul>
         </NavbarContent>
@@ -144,7 +145,7 @@ export const Navbar = () => {
                     </Link>
                   </NavbarMenuItem>
                 )
-              ),
+              )
             )}
           </div>
         </NavbarMenu>

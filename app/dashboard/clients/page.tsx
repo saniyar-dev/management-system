@@ -14,7 +14,7 @@ import {
 import { ClientData } from "./types";
 import { AddClientComponent } from "./addClient";
 
-import { GetClients } from "@/lib/action";
+import { GetClients } from "@/lib/action/client";
 import { useTableLogic } from "@/lib/hooks";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
@@ -65,7 +65,7 @@ export default function App() {
     columns,
     INITIAL_VISIBLE_COLUMNS,
     GetClients,
-    AddClientComponent,
+    AddClientComponent
   );
 
   return (
