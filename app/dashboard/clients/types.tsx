@@ -1,5 +1,7 @@
 import { ChipProps } from "@heroui/react";
 
+import { ClientType } from "@/lib/types";
+
 export type Status = "done" | "waiting" | "todo";
 
 export const clientStatusNameMap: Record<Status, string> = {
@@ -16,8 +18,6 @@ export type ClientData = {
   address: string;
   postal_code: string;
 };
-
-export type ClientType = "company" | "personal";
 
 export type ClientRender = {
   id: number;

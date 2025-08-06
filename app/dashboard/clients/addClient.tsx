@@ -33,7 +33,7 @@ export function AddClientComponent() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [pending, startTransition] = useTransition();
   const [actionMsg, setActionMsg] = useState<ServerActionState<any> | null>(
-    null
+    null,
   );
   const [clientID, setClientID] = useState<number | null>(null);
 
