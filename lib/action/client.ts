@@ -1,6 +1,6 @@
 import { supabase } from "../utils";
 
-import { ServerActionState } from "./type";
+import { GetRowsFn, ServerActionState } from "./type";
 
 import { ClientData, ClientRender } from "@/app/dashboard/clients/types";
 
@@ -23,13 +23,18 @@ export async function GetTotalClients(): Promise<
   };
 }
 
-export async function GetClients(
-  start: number,
-  end: number,
-): Promise<ServerActionState<(ClientRender | null)[]>> {
+export const GetClients: GetRowsFn<ClientData> = async (
+  start,
+  end,
+  clientType,
+  status,
+  searchTerm,
+) => {
   const { data, error } = await supabase
     .from("client")
     .select("*")
+    .eq("type", clientType)
+    .eq("status", status)
     .range(start, end);
 
   if (error) {
@@ -46,6 +51,7 @@ export async function GetClients(
           .from("company")
           .select("*")
           .eq("id", client.company_id)
+          .textSearch("name", searchTerm)
           .single();
 
         if (CompanyError) {
@@ -64,6 +70,7 @@ export async function GetClients(
           .from("person")
           .select("*")
           .eq("id", client.person_id)
+          .textSearch("name", searchTerm)
           .single();
 
         if (PersonError) {
@@ -89,7 +96,7 @@ export async function GetClients(
     success: true,
     data: clients,
   };
-}
+};
 
 export async function GetClientJobs(
   client_id: number,
