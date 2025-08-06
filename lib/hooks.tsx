@@ -25,12 +25,12 @@ import {
 
 import { supabase } from "./utils";
 import {
-  clientStatusNameMap,
-  ClientType,
+  rowStatusNameMap,
   Row,
   RowData,
-  Status,
   statusColorMap,
+  statusOptions,
+  rowOptions,
 } from "./types";
 import { ServerActionState } from "./action";
 
@@ -67,17 +67,6 @@ export const useSession = (): { session: Session | null; pending: boolean } => {
   return { session, pending };
 };
 
-export const statusOptions: Array<{ name: string; uid: Status }> = [
-  { name: "اتمام یافته", uid: "done" },
-  { name: "نیاز به پیگیری", uid: "waiting" },
-  { name: "انجام نشده", uid: "todo" },
-];
-
-export const clientOptions: Array<{ name: string; uid: ClientType }> = [
-  { name: "حقیقی", uid: "personal" },
-  { name: "حقوقی", uid: "company" },
-];
-
 export const useTableLogic = <TD extends RowData>(
   columns: Array<{
     name: string;
@@ -89,19 +78,19 @@ export const useTableLogic = <TD extends RowData>(
   >,
   GetRows: (
     start: number,
-    end: number,
-  ) => Promise<ServerActionState<(Row | null)[]>>,
-  AddButtonComponent: () => JSX.Element,
+    end: number
+  ) => Promise<ServerActionState<(Row<TD> | null)[]>>,
+  AddButtonComponent: () => JSX.Element
 ) => {
-  const [rows, setrows] = useState<Row[]>([]);
+  const [rows, setRows] = useState<Row<TD>[]>([]);
   const [pending, startTransition] = useTransition();
 
   const [filterValue, setFilterValue] = useState("");
   const [visibleColumns, setVisibleColumns] = useState<Selection>(
-    new Set(INITIAL_VISIBLE_COLUMNS),
+    new Set(INITIAL_VISIBLE_COLUMNS)
   );
   const [statusFilter, setStatusFilter] = useState<Selection>("all");
-  const [clientTypeFilter, setClientTypeFilter] = useState<Selection>("all");
+  const [rowTypeFilter, setRowTypeFilter] = useState<Selection>("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "name",
@@ -116,17 +105,16 @@ export const useTableLogic = <TD extends RowData>(
     if (visibleColumns === "all") return columns;
 
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid),
+      Array.from(visibleColumns).includes(column.uid)
     );
   }, [visibleColumns]);
 
   const filteredItems = useMemo(() => {
-    let filteredrows = [...rows];
+    let filteredRows = [...rows];
 
     if (hasSearchFilter) {
-      filteredrows = filteredrows.filter(
-        (client) =>
-          client.data.name.toLowerCase().includes(filterValue.toLowerCase()),
+      filteredRows = filteredRows.filter(
+        (row) => row.data.name.toLowerCase().includes(filterValue.toLowerCase())
         // find the specific company name or personal name
       );
     }
@@ -134,22 +122,22 @@ export const useTableLogic = <TD extends RowData>(
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredrows = filteredrows.filter((client) =>
-        Array.from(statusFilter).includes(client.status),
+      filteredRows = filteredRows.filter((row) =>
+        Array.from(statusFilter).includes(row.status)
       );
     }
 
     if (
-      clientTypeFilter !== "all" &&
-      Array.from(clientTypeFilter).length !== clientOptions.length
+      rowTypeFilter !== "all" &&
+      Array.from(rowTypeFilter).length !== rowOptions.length
     ) {
-      filteredrows = filteredrows.filter((client) =>
-        Array.from(clientTypeFilter).includes(client.type),
+      filteredRows = filteredRows.filter((row) =>
+        Array.from(rowTypeFilter).includes(row.type)
       );
     }
 
-    return filteredrows;
-  }, [rows, filterValue, statusFilter, clientTypeFilter]);
+    return filteredRows;
+  }, [rows, filterValue, statusFilter, rowTypeFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage) || 1;
 
@@ -193,9 +181,9 @@ export const useTableLogic = <TD extends RowData>(
   const sortedItems = useMemo(() => {
     switch (sortDescriptor.column) {
       case "status":
-        return [...items].sort((a: Row, b: Row) => {
-          const first = a[sortDescriptor.column as keyof Row] as string;
-          const second = b[sortDescriptor.column as keyof Row] as string;
+        return [...items].sort((a: Row<TD>, b: Row<TD>) => {
+          const first = a[sortDescriptor.column as keyof Row<TD>] as string;
+          const second = b[sortDescriptor.column as keyof Row<TD>] as string;
 
           let cmp = 0;
 
@@ -206,7 +194,7 @@ export const useTableLogic = <TD extends RowData>(
           return sortDescriptor.direction === "descending" ? -cmp : cmp;
         });
       default:
-        return [...items].sort((a: Row, b: Row) => {
+        return [...items].sort((a: Row<TD>, b: Row<TD>) => {
           const first = a.data[sortDescriptor.column as keyof TD] as string;
           const second = b.data[sortDescriptor.column as keyof TD] as string;
 
@@ -221,19 +209,19 @@ export const useTableLogic = <TD extends RowData>(
     }
   }, [sortDescriptor, items]);
 
-  const renderCell = useCallback((client: Row, columnKey: Key) => {
+  const renderCell = useCallback((row: Row<TD>, columnKey: Key) => {
     switch (columnKey) {
       case "name":
-        return <User name={client.data.name} />;
+        return <User name={row.data.name} />;
       case "status":
         return (
           <Chip
             className="capitalize"
-            color={statusColorMap[client.status]}
+            color={statusColorMap[row.status]}
             size="sm"
             variant="flat"
           >
-            {clientStatusNameMap[client.status]}
+            {rowStatusNameMap[row.status]}
           </Chip>
         );
       case "actions":
@@ -257,7 +245,7 @@ export const useTableLogic = <TD extends RowData>(
           </div>
         );
       default:
-        return client.data[columnKey as keyof TD];
+        return row.data[columnKey as keyof TD];
     }
   }, []);
 
@@ -278,7 +266,7 @@ export const useTableLogic = <TD extends RowData>(
       setRowsPerPage(Number(e.target.value));
       setPage(1);
     },
-    [],
+    []
   );
 
   const onSearchChange = useCallback((value?: string) => {
@@ -322,11 +310,11 @@ export const useTableLogic = <TD extends RowData>(
                 disallowEmptySelection
                 aria-label="Table Columns"
                 closeOnSelect={false}
-                selectedKeys={clientTypeFilter}
+                selectedKeys={rowTypeFilter}
                 selectionMode="multiple"
-                onSelectionChange={setClientTypeFilter}
+                onSelectionChange={setRowTypeFilter}
               >
-                {clientOptions.map((typeOption) => (
+                {rowOptions.map((typeOption) => (
                   <DropdownItem key={typeOption.uid} className="capitalize">
                     {typeOption.name}
                   </DropdownItem>
@@ -405,7 +393,7 @@ export const useTableLogic = <TD extends RowData>(
   }, [
     filterValue,
     statusFilter,
-    clientTypeFilter,
+    rowTypeFilter,
     visibleColumns,
     onSearchChange,
     onRowsPerPageChange,
@@ -451,17 +439,17 @@ export const useTableLogic = <TD extends RowData>(
     startTransition(async () => {
       const actionMsg = await GetRows(
         (page - 1) * rowsPerPage,
-        page * rowsPerPage,
+        page * rowsPerPage
       );
 
       if (actionMsg.success && actionMsg.data) {
-        const rows = actionMsg.data.filter((client) => client !== null);
+        const rows = actionMsg.data.filter((row) => row !== null);
 
-        setrows(rows);
+        setRows(rows);
 
         return;
       }
-      setrows([]);
+      setRows([]);
     });
   }, [page]);
 
