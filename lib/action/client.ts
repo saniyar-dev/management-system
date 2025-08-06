@@ -4,6 +4,25 @@ import { ServerActionState } from "./type";
 
 import { ClientData, ClientRender } from "@/app/dashboard/clients/types";
 
+export async function GetTotalClients(): Promise<
+  ServerActionState<number | null>
+> {
+  const { data, error } = await supabase.from("client").select("id");
+
+  if (error) {
+    return {
+      message: "اینترنت خود را چک کنید و دوباره تلاش کنید.",
+      success: false,
+    };
+  }
+
+  return {
+    message: "تعداد مشتری‌ها با موفقیت دریافت شد.",
+    success: true,
+    data: data.length,
+  };
+}
+
 export async function GetClients(
   start: number,
   end: number,

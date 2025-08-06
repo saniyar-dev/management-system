@@ -78,16 +78,18 @@ export const useTableLogic = <TD extends RowData>(
   >,
   GetRows: (
     start: number,
-    end: number,
+    end: number
   ) => Promise<ServerActionState<(Row<TD> | null)[]>>,
-  AddButtonComponent: () => JSX.Element,
+  GetTotalRows: () => Promise<ServerActionState<number | null>>,
+  AddButtonComponent: () => JSX.Element
 ) => {
   const [rows, setRows] = useState<Row<TD>[]>([]);
   const [pending, startTransition] = useTransition();
+  const [pagePending, startPageTransition] = useTransition();
 
   const [filterValue, setFilterValue] = useState("");
   const [visibleColumns, setVisibleColumns] = useState<Selection>(
-    new Set(INITIAL_VISIBLE_COLUMNS),
+    new Set(INITIAL_VISIBLE_COLUMNS)
   );
   const [statusFilter, setStatusFilter] = useState<Selection>("all");
   const [rowTypeFilter, setRowTypeFilter] = useState<Selection>("all");
@@ -105,7 +107,7 @@ export const useTableLogic = <TD extends RowData>(
     if (visibleColumns === "all") return columns;
 
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid),
+      Array.from(visibleColumns).includes(column.uid)
     );
   }, [visibleColumns]);
 
@@ -114,8 +116,7 @@ export const useTableLogic = <TD extends RowData>(
 
     if (hasSearchFilter) {
       filteredRows = filteredRows.filter(
-        (row) =>
-          row.data.name.toLowerCase().includes(filterValue.toLowerCase()),
+        (row) => row.data.name.toLowerCase().includes(filterValue.toLowerCase())
         // find the specific company name or personal name
       );
     }
@@ -124,7 +125,7 @@ export const useTableLogic = <TD extends RowData>(
       Array.from(statusFilter).length !== statusOptions.length
     ) {
       filteredRows = filteredRows.filter((row) =>
-        Array.from(statusFilter).includes(row.status),
+        Array.from(statusFilter).includes(row.status)
       );
     }
 
@@ -133,7 +134,7 @@ export const useTableLogic = <TD extends RowData>(
       Array.from(rowTypeFilter).length !== rowOptions.length
     ) {
       filteredRows = filteredRows.filter((row) =>
-        Array.from(rowTypeFilter).includes(row.type),
+        Array.from(rowTypeFilter).includes(row.type)
       );
     }
 
@@ -141,7 +142,7 @@ export const useTableLogic = <TD extends RowData>(
   }, [rows, filterValue, statusFilter, rowTypeFilter]);
 
   // const pages = Math.ceil(filteredItems.length / rowsPerPage) || 1;
-  const pages = 2;
+  const [pages, setPages] = useState<number>(1);
 
   const items = useMemo(() => {
     return filteredItems;
@@ -265,7 +266,7 @@ export const useTableLogic = <TD extends RowData>(
       setRowsPerPage(Number(e.target.value));
       setPage(1);
     },
-    [],
+    []
   );
 
   const onSearchChange = useCallback((value?: string) => {
@@ -401,6 +402,10 @@ export const useTableLogic = <TD extends RowData>(
   ]);
 
   const bottomContent = useMemo(() => {
+    if (pages === 1) {
+      return <></>;
+    }
+
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <Pagination
@@ -414,7 +419,7 @@ export const useTableLogic = <TD extends RowData>(
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
-            // isDisabled={pages === 1}
+            isDisabled={pages === 1}
             size="sm"
             variant="flat"
             onPress={onPreviousPage}
@@ -422,7 +427,7 @@ export const useTableLogic = <TD extends RowData>(
             صفحه قبل
           </Button>
           <Button
-            // isDisabled={pages === 1}
+            isDisabled={pages === 1}
             size="sm"
             variant="flat"
             onPress={onNextPage}
@@ -432,14 +437,23 @@ export const useTableLogic = <TD extends RowData>(
         </div>
       </div>
     );
-  }, [items.length, page, pages, hasSearchFilter]);
+  }, [page, pages]);
 
   useEffect(() => {
     setRows([]);
+
+    startPageTransition(async () => {
+      const actionMsg = await GetTotalRows();
+
+      if (actionMsg.success && actionMsg.data) {
+        setPages(Math.ceil(actionMsg.data / rowsPerPage));
+      }
+    });
+
     startTransition(async () => {
       const actionMsg = await GetRows(
         (page - 1) * rowsPerPage,
-        page * rowsPerPage - 1,
+        page * rowsPerPage - 1
       );
 
       if (actionMsg.success && actionMsg.data) {
