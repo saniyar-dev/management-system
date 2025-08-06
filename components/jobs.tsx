@@ -1,6 +1,6 @@
 import { Card, CardBody, Spinner } from "@heroui/react";
 
-import { ClientJob, statusColorMap } from "./types";
+import { ClientJob, statusColorMap } from "../app/dashboard/clients/types";
 
 export default function JobsComponent({
   clientJobs,

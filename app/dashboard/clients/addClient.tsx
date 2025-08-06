@@ -12,9 +12,9 @@ import {
   Input,
 } from "@heroui/react";
 
-import JobsComponent from "./jobs";
 import { ClientJob } from "./types";
 
+import JobsComponent from "@/components/jobs";
 import { PlusIcon } from "@/components/icons";
 import { AddClient, GetClientJobs, ServerActionState } from "@/lib/action";
 import Loading from "@/components/loading";
@@ -33,7 +33,7 @@ export function AddClientComponent() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [pending, startTransition] = useTransition();
   const [actionMsg, setActionMsg] = useState<ServerActionState<any> | null>(
-    null,
+    null
   );
   const [clientID, setClientID] = useState<number | null>(null);
 
