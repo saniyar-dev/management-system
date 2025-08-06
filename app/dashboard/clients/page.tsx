@@ -65,7 +65,7 @@ export default function App() {
     columns,
     INITIAL_VISIBLE_COLUMNS,
     GetClients,
-    AddClientComponent
+    AddClientComponent,
   );
 
   return (
@@ -75,7 +75,7 @@ export default function App() {
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       classNames={{
-        wrapper: "max-h-[382px]",
+        wrapper: "max-h-[520px]",
       }}
       sortDescriptor={sortDescriptor}
       topContent={topContent}
