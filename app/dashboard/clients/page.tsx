@@ -1,5 +1,6 @@
 "use client";
-import type { SVGProps } from "react";
+import type { Key, SVGProps } from "react";
+import { useCallback } from "react";
 
 import {
   TableColumn,
@@ -8,10 +9,20 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Tooltip,
+  Chip,
+  User,
   Spinner,
 } from "@heroui/react";
 
-import { ClientData } from "./types";
+import {
+  EyeIcon,
+  EditIcon,
+  DeleteIcon
+} from "@/components/icons"
+
+import { ClientData, Status, clientStatusNameMap, statusColorMap } from "./types";
+import {Row} from "@/lib/types"
 import { AddClientComponent } from "./addClient";
 
 import { GetClients, GetTotalClients } from "@/lib/action/client";
@@ -58,7 +69,6 @@ export default function App() {
     sortDescriptor,
     setSortDescriptor,
     headerColumns,
-    renderCell,
     pending,
     sortedItems,
   } = useTableLogic(
@@ -68,6 +78,46 @@ export default function App() {
     GetTotalClients,
     AddClientComponent
   );
+
+  const renderCell = useCallback((row: Row<ClientData, Status>, columnKey: Key) => {
+    switch (columnKey) {
+      case "name":
+        return <User name={row.data.name} />;
+      case "status":
+        return (
+          <Chip
+            className="capitalize"
+            color={statusColorMap[row.status]}
+            size="sm"
+            variant="flat"
+          >
+            {clientStatusNameMap[row.status]}
+          </Chip>
+        );
+      case "actions":
+        return (
+          <div className="relative flex items-center gap-4 justify-center">
+            <Tooltip content="Details">
+              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                <EyeIcon />
+              </span>
+            </Tooltip>
+            <Tooltip content="Edit user">
+              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                <EditIcon />
+              </span>
+            </Tooltip>
+            <Tooltip color="danger" content="Delete user">
+              <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                <DeleteIcon />
+              </span>
+            </Tooltip>
+          </div>
+        );
+      default:
+        return row.data[columnKey as keyof ClientData];
+    }
+  }, []);
 
   return (
     <Table

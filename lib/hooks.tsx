@@ -67,7 +67,7 @@ export const useSession = (): { session: Session | null; pending: boolean } => {
   return { session, pending };
 };
 
-export const useTableLogic = <TD extends RowData>(
+export const useTableLogic = <TD extends RowData, S = import("./types").Status>(
   columns: Array<{
     name: string;
     uid: Exclude<keyof TD, symbol> | "status" | "actions";
@@ -76,11 +76,11 @@ export const useTableLogic = <TD extends RowData>(
   INITIAL_VISIBLE_COLUMNS: Array<
     Exclude<keyof TD, symbol> | "status" | "actions"
   >,
-  GetRows: GetRowsFn<TD>,
+  GetRows: GetRowsFn<TD, S>,
   GetTotalRows: GetTotalRowsFn,
   AddButtonComponent: () => JSX.Element
 ) => {
-  const [rows, setRows] = useState<Row<TD>[]>([]);
+  const [rows, setRows] = useState<Row<TD, S>[]>([]);
   const [pending, startTransition] = useTransition();
   const [pagePending, startPageTransition] = useTransition();
 
@@ -143,9 +143,9 @@ export const useTableLogic = <TD extends RowData>(
   const sortedItems = useMemo(() => {
     switch (sortDescriptor.column) {
       case "status":
-        return [...rows].sort((a: Row<TD>, b: Row<TD>) => {
-          const first = a[sortDescriptor.column as keyof Row<TD>] as string;
-          const second = b[sortDescriptor.column as keyof Row<TD>] as string;
+        return [...rows].sort((a: Row<TD, S>, b: Row<TD, S>) => {
+          const first = a[sortDescriptor.column as keyof Row<TD, S>] as string;
+          const second = b[sortDescriptor.column as keyof Row<TD, S>] as string;
 
           let cmp = 0;
 
@@ -156,7 +156,7 @@ export const useTableLogic = <TD extends RowData>(
           return sortDescriptor.direction === "descending" ? -cmp : cmp;
         });
       default:
-        return [...rows].sort((a: Row<TD>, b: Row<TD>) => {
+        return [...rows].sort((a: Row<TD, S>, b: Row<TD, S>) => {
           const first = a.data[sortDescriptor.column as keyof TD] as string;
           const second = b.data[sortDescriptor.column as keyof TD] as string;
 
@@ -171,45 +171,7 @@ export const useTableLogic = <TD extends RowData>(
     }
   }, [sortDescriptor, rows]);
 
-  const renderCell = useCallback((row: Row<TD>, columnKey: Key) => {
-    switch (columnKey) {
-      case "name":
-        return <User name={row.data.name} />;
-      case "status":
-        return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[row.status]}
-            size="sm"
-            variant="flat"
-          >
-            {rowStatusNameMap[row.status]}
-          </Chip>
-        );
-      case "actions":
-        return (
-          <div className="relative flex items-center gap-4 justify-center">
-            <Tooltip content="Details">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EyeIcon />
-              </span>
-            </Tooltip>
-            <Tooltip content="Edit user">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EditIcon />
-              </span>
-            </Tooltip>
-            <Tooltip color="danger" content="Delete user">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <DeleteIcon />
-              </span>
-            </Tooltip>
-          </div>
-        );
-      default:
-        return row.data[columnKey as keyof TD];
-    }
-  }, []);
+
 
   const onNextPage = useCallback(() => {
     if (page < pages) {
@@ -444,7 +406,6 @@ export const useTableLogic = <TD extends RowData>(
     sortDescriptor,
     setSortDescriptor,
     headerColumns,
-    renderCell,
     pending,
     sortedItems,
   };

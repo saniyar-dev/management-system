@@ -6,7 +6,7 @@ export type ServerActionState<T> = {
   data?: T;
 };
 
-export type GetRowsFn<T extends RowData> = (
+export type GetRowsFn<T extends RowData, S = import("../types").Status> = (
   start: number,
   end: number,
   // we should narrow types later:
@@ -17,7 +17,7 @@ export type GetRowsFn<T extends RowData> = (
   searchTerm: string,
   limit: number,
   page: number,
-) => Promise<ServerActionState<(Row<T> | null)[]>>;
+) => Promise<ServerActionState<(Row<T, S> | null)[]>>;
 
 export type GetTotalRowsFn = (
   clientType: string[],

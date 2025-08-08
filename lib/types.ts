@@ -27,11 +27,11 @@ export const rowOptions: Array<{ name: string; uid: ClientType }> = [
 
 export type ClientType = "company" | "personal";
 
-export type Row<T extends RowData> = {
+export type Row<T extends RowData, S = Status> = {
   id: number;
   type: ClientType;
   data: T;
-  status: Status;
+  status: S;
 };
 
 export type RowData = {
