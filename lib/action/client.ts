@@ -1,13 +1,30 @@
+import { ClientType, Status } from "../types";
 import { supabase } from "../utils";
 
-import { GetRowsFn, ServerActionState } from "./type";
+import { GetRowsFn, GetTotalRowsFn, ServerActionState } from "./type";
 
 import { ClientData, ClientRender } from "@/app/dashboard/clients/types";
 
-export async function GetTotalClients(): Promise<
-  ServerActionState<number | null>
-> {
-  const { data, error } = await supabase.from("client").select("id");
+export const GetTotalClients: GetTotalRowsFn = async (
+  clientType,
+  status,
+  searchTerm,
+) => {
+  // TODO: change this later to actually works with searchTerm too
+  if (searchTerm !== "") {
+    return {
+      message: "تعداد مشتری‌ها با موفقیت دریافت شدند.",
+      success: true,
+      data: 1,
+    };
+  }
+
+  const { data, error } = await supabase.rpc("filtered_client_total", {
+    _statuses: status,
+    _types: clientType,
+  });
+
+  console.log(data);
 
   if (error) {
     return {
@@ -19,9 +36,9 @@ export async function GetTotalClients(): Promise<
   return {
     message: "تعداد مشتری‌ها با موفقیت دریافت شد.",
     success: true,
-    data: data.length,
+    data: data,
   };
-}
+};
 
 export const GetClients: GetRowsFn<ClientData> = async (
   start,
@@ -29,13 +46,15 @@ export const GetClients: GetRowsFn<ClientData> = async (
   clientType,
   status,
   searchTerm,
+  limit,
+  page,
 ) => {
-  const { data, error } = await supabase
-    .from("client")
-    .select("*")
-    .eq("type", clientType)
-    .eq("status", status)
-    .range(start, end);
+  const { data, error } = await supabase.rpc("filter_client_paginated", {
+    _statuses: status,
+    _types: clientType,
+    _limit: searchTerm === "" ? limit : 1000,
+    _offset: searchTerm === "" ? (page - 1) * limit : 0,
+  });
 
   if (error) {
     return {
@@ -48,11 +67,12 @@ export const GetClients: GetRowsFn<ClientData> = async (
     async (client): Promise<ClientRender | null> => {
       if (client.company_id !== null) {
         const { data: company, error: CompanyError } = await supabase
-          .from("company")
-          .select("*")
+          .rpc("search_company_by_name", { search_term: searchTerm })
           .eq("id", client.company_id)
-          .textSearch("name", searchTerm)
           .single();
+
+        console.log("from company fetch");
+        console.log(client, searchTerm, company, CompanyError);
 
         if (CompanyError) {
           return null;
@@ -61,17 +81,18 @@ export const GetClients: GetRowsFn<ClientData> = async (
         return {
           id: client.id,
           data: company as ClientData,
-          status: "done",
-          type: "company",
+          status: client.status as Status,
+          type: client.type as ClientType,
         };
       }
       if (client.person_id !== null) {
         const { data: person, error: PersonError } = await supabase
-          .from("person")
-          .select("*")
+          .rpc("search_person_by_name", { search_term: searchTerm })
           .eq("id", client.person_id)
-          .textSearch("name", searchTerm)
           .single();
+
+        console.log("from person fetch");
+        console.log(client, searchTerm, person, PersonError);
 
         if (PersonError) {
           return null;
@@ -80,8 +101,8 @@ export const GetClients: GetRowsFn<ClientData> = async (
         return {
           id: client.id,
           data: person as ClientData,
-          status: "done",
-          type: "personal",
+          status: client.status as Status,
+          type: client.type as ClientType,
         };
       }
 

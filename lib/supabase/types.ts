@@ -164,7 +164,71 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      filter_client: {
+        Args: {
+          _types: string[]
+          _statuses: string[]
+        }
+        Returns: {
+          company_id: number | null
+          created_at: string
+          id: number
+          person_id: number | null
+          status: string
+          type: string
+        }[]
+      }
+      filter_client_paginated: {
+        Args: {
+          _types: string[]
+          _statuses: string[]
+          _limit: number
+          _offset: number
+        }
+        Returns: {
+          company_id: number | null
+          created_at: string
+          id: number
+          person_id: number | null
+          status: string
+          type: string
+        }[]
+      }
+      filtered_client_total: {
+        Args: {
+          _types: string[]
+          _statuses: string[]
+        }
+        Returns: number
+      }
+      search_company_by_name: {
+        Args: {
+          search_term: string
+        }
+        Returns: {
+          address: string | null
+          created_at: string
+          id: number
+          name: string
+          phone: string | null
+          postal_code: string | null
+          ssn: string
+        }[]
+      }
+      search_person_by_name: {
+        Args: {
+          search_term: string
+        }
+        Returns: {
+          address: string | null
+          created_at: string
+          id: number
+          name: string
+          phone: string | null
+          postal_code: string | null
+          ssn: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

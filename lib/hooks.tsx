@@ -23,7 +23,7 @@ import {
   User,
 } from "@heroui/react";
 
-import { supabase } from "./utils";
+import { formatFilterParam, supabase } from "./utils";
 import {
   rowStatusNameMap,
   Row,
@@ -33,7 +33,7 @@ import {
   rowOptions,
 } from "./types";
 
-import { ServerActionState } from "@/lib/action/type";
+import { GetRowsFn, GetTotalRowsFn } from "@/lib/action/type";
 import {
   ChevronDownIcon,
   DeleteIcon,
@@ -76,11 +76,8 @@ export const useTableLogic = <TD extends RowData>(
   INITIAL_VISIBLE_COLUMNS: Array<
     Exclude<keyof TD, symbol> | "status" | "actions"
   >,
-  GetRows: (
-    start: number,
-    end: number
-  ) => Promise<ServerActionState<(Row<TD> | null)[]>>,
-  GetTotalRows: () => Promise<ServerActionState<number | null>>,
+  GetRows: GetRowsFn<TD>,
+  GetTotalRows: GetTotalRowsFn,
   AddButtonComponent: () => JSX.Element
 ) => {
   const [rows, setRows] = useState<Row<TD>[]>([]);
@@ -111,42 +108,7 @@ export const useTableLogic = <TD extends RowData>(
     );
   }, [visibleColumns]);
 
-  const filteredItems = useMemo(() => {
-    let filteredRows = [...rows];
-
-    if (hasSearchFilter) {
-      filteredRows = filteredRows.filter(
-        (row) => row.data.name.toLowerCase().includes(filterValue.toLowerCase())
-        // find the specific company name or personal name
-      );
-    }
-    if (
-      statusFilter !== "all" &&
-      Array.from(statusFilter).length !== statusOptions.length
-    ) {
-      filteredRows = filteredRows.filter((row) =>
-        Array.from(statusFilter).includes(row.status)
-      );
-    }
-
-    if (
-      rowTypeFilter !== "all" &&
-      Array.from(rowTypeFilter).length !== rowOptions.length
-    ) {
-      filteredRows = filteredRows.filter((row) =>
-        Array.from(rowTypeFilter).includes(row.type)
-      );
-    }
-
-    return filteredRows;
-  }, [rows, filterValue, statusFilter, rowTypeFilter]);
-
-  // const pages = Math.ceil(filteredItems.length / rowsPerPage) || 1;
   const [pages, setPages] = useState<number>(1);
-
-  const items = useMemo(() => {
-    return filteredItems;
-  }, [page, filteredItems, rowsPerPage]);
 
   function persian_alphabetic_compare(s1: string, s2: string) {
     const persian_alphabet_fix_map: Record<string, number> = {
@@ -181,7 +143,7 @@ export const useTableLogic = <TD extends RowData>(
   const sortedItems = useMemo(() => {
     switch (sortDescriptor.column) {
       case "status":
-        return [...items].sort((a: Row<TD>, b: Row<TD>) => {
+        return [...rows].sort((a: Row<TD>, b: Row<TD>) => {
           const first = a[sortDescriptor.column as keyof Row<TD>] as string;
           const second = b[sortDescriptor.column as keyof Row<TD>] as string;
 
@@ -194,7 +156,7 @@ export const useTableLogic = <TD extends RowData>(
           return sortDescriptor.direction === "descending" ? -cmp : cmp;
         });
       default:
-        return [...items].sort((a: Row<TD>, b: Row<TD>) => {
+        return [...rows].sort((a: Row<TD>, b: Row<TD>) => {
           const first = a.data[sortDescriptor.column as keyof TD] as string;
           const second = b.data[sortDescriptor.column as keyof TD] as string;
 
@@ -207,7 +169,7 @@ export const useTableLogic = <TD extends RowData>(
           return sortDescriptor.direction === "descending" ? -cmp : cmp;
         });
     }
-  }, [sortDescriptor, items]);
+  }, [sortDescriptor, rows]);
 
   const renderCell = useCallback((row: Row<TD>, columnKey: Key) => {
     switch (columnKey) {
@@ -443,7 +405,11 @@ export const useTableLogic = <TD extends RowData>(
     setRows([]);
 
     startPageTransition(async () => {
-      const actionMsg = await GetTotalRows();
+      const actionMsg = await GetTotalRows(
+        formatFilterParam(rowTypeFilter),
+        formatFilterParam(statusFilter),
+        filterValue
+      );
 
       if (actionMsg.success && actionMsg.data) {
         setPages(Math.ceil(actionMsg.data / rowsPerPage));
@@ -453,7 +419,12 @@ export const useTableLogic = <TD extends RowData>(
     startTransition(async () => {
       const actionMsg = await GetRows(
         (page - 1) * rowsPerPage,
-        page * rowsPerPage - 1
+        page * rowsPerPage - 1,
+        formatFilterParam(rowTypeFilter),
+        formatFilterParam(statusFilter),
+        filterValue,
+        rowsPerPage,
+        page
       );
 
       if (actionMsg.success && actionMsg.data) {
@@ -465,7 +436,7 @@ export const useTableLogic = <TD extends RowData>(
       }
       setRows([]);
     });
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, filterValue, statusFilter, rowTypeFilter]);
 
   return {
     bottomContent,

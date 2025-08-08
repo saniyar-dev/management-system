@@ -1,4 +1,4 @@
-import { ClientType, Row, RowData, Status } from "../types";
+import { Row, RowData } from "../types";
 
 export type ServerActionState<T> = {
   message: string;
@@ -9,7 +9,18 @@ export type ServerActionState<T> = {
 export type GetRowsFn<T extends RowData> = (
   start: number,
   end: number,
-  clientType: ClientType,
-  status: Status,
+  // we should narrow types later:
+  // clientType: ["all"] | ClientType[],
+  // status: ["all"] | Status[],
+  clientType: string[],
+  status: string[],
   searchTerm: string,
+  limit: number,
+  page: number,
 ) => Promise<ServerActionState<(Row<T> | null)[]>>;
+
+export type GetTotalRowsFn = (
+  clientType: string[],
+  status: string[],
+  searchTerm: string,
+) => Promise<ServerActionState<number | null>>;
