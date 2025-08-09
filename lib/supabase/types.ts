@@ -136,10 +136,10 @@ export type Database = {
           created_at: string
           description: string
           id: number
-          name: string
-          order_number: number
           pre_order_id: number
+          status: string
           total_amount: number
+          type: string
         }
         Insert: {
           client_id: number
@@ -147,10 +147,10 @@ export type Database = {
           created_at?: string
           description?: string
           id?: number
-          name: string
-          order_number: number
           pre_order_id: number
+          status: string
           total_amount: number
+          type: string
         }
         Update: {
           client_id?: number
@@ -158,10 +158,10 @@ export type Database = {
           created_at?: string
           description?: string
           id?: number
-          name?: string
-          order_number?: number
           pre_order_id?: number
+          status?: string
           total_amount?: number
+          type?: string
         }
         Relationships: [
           {
@@ -173,7 +173,7 @@ export type Database = {
           {
             foreignKeyName: "public_order_pre_order_id_fkey"
             columns: ["pre_order_id"]
-            referencedRelation: "pre_orders"
+            referencedRelation: "pre_order"
             referencedColumns: ["id"]
           },
         ]
@@ -208,7 +208,7 @@ export type Database = {
         }
         Relationships: []
       }
-      pre_orders: {
+      pre_order: {
         Row: {
           client_id: number
           client_name: string
@@ -253,20 +253,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      filter_client: {
-        Args: {
-          _types: string[]
-          _statuses: string[]
-        }
-        Returns: {
-          company_id: number | null
-          created_at: string
-          id: number
-          person_id: number | null
-          status: string
-          type: string
-        }[]
-      }
       filter_client_paginated: {
         Args: {
           _types: string[]
@@ -283,7 +269,26 @@ export type Database = {
           type: string
         }[]
       }
-      filter_pre_orders_paginated: {
+      filter_order_paginated: {
+        Args: {
+          _types: string[]
+          _statuses: string[]
+          _limit: number
+          _offset: number
+        }
+        Returns: {
+          client_id: number
+          client_name: string
+          created_at: string
+          description: string
+          id: number
+          pre_order_id: number
+          status: string
+          total_amount: number
+          type: string
+        }[]
+      }
+      filter_pre_order_paginated: {
         Args: {
           _types: string[]
           _statuses: string[]
@@ -308,12 +313,32 @@ export type Database = {
         }
         Returns: number
       }
-      filtered_pre_orders_total: {
+      filtered_order_total: {
         Args: {
           _types: string[]
           _statuses: string[]
         }
         Returns: number
+      }
+      filtered_pre_order_total: {
+        Args: {
+          _types: string[]
+          _statuses: string[]
+        }
+        Returns: number
+      }
+      get_all_client_names: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          client_id: number
+          client_name: string
+        }[]
+      }
+      get_client_name: {
+        Args: {
+          _client_id: number
+        }
+        Returns: string
       }
       search_company_by_name: {
         Args: {
