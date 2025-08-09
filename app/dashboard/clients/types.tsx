@@ -1,6 +1,6 @@
 import { ChipProps } from "@heroui/react";
 
-import { ClientType } from "@/lib/types";
+import { ClientType, RowData } from "@/lib/types";
 
 export type Status = "done" | "waiting" | "todo";
 
@@ -10,20 +10,12 @@ export const clientStatusNameMap: Record<Status, string> = {
   todo: "انجام نشده",
 };
 
-export type ClientData = {
-  id: number;
+export type ClientData = RowData & {
   name: string;
   ssn: string;
   phone: string;
   address: string;
   postal_code: string;
-};
-
-export type ClientRender = {
-  id: number;
-  type: ClientType;
-  data: ClientData;
-  status: Status;
 };
 
 export type ClientJob = {
@@ -39,3 +31,9 @@ export const statusColorMap: Record<Status, ChipProps["color"]> = {
   waiting: "warning",
   todo: "danger",
 };
+
+export const statusOptions: Array<{ name: string; uid: Status }> = [
+  { name: "انجام نشده", uid: "todo" },
+  { name: "نیاز به پیگیری", uid: "waiting" },
+  { name: "اتمام یافته", uid: "done" },
+];

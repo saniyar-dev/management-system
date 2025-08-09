@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from "@heroui/react";
 
-import { PreOrderData, statusColorMap, preOrderStatusNameMap } from "./types";
+import { PreOrderData, statusColorMap, preOrderStatusNameMap, statusOptions } from "./types";
 import {Row} from "@/lib/types"
 import type { Status } from "./types";
 import { AddPreOrderComponent } from "./addPreOrder";
@@ -65,6 +65,7 @@ export default function PreOrdersPage() {
     pending,
     sortedItems,
   } = useTableLogic<PreOrderData, Status>(
+    statusOptions,
     columns,
     INITIAL_VISIBLE_COLUMNS,
     GetPreOrders,

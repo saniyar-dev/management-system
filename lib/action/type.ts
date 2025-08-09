@@ -6,7 +6,7 @@ export type ServerActionState<T> = {
   data?: T;
 };
 
-export type GetRowsFn<T extends RowData, S = import("../types").Status> = (
+export type GetRowsFn<T extends RowData, S> = (
   start: number,
   end: number,
   // we should narrow types later:

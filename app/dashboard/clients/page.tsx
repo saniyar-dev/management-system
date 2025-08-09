@@ -21,7 +21,7 @@ import {
   DeleteIcon
 } from "@/components/icons"
 
-import { ClientData, Status, clientStatusNameMap, statusColorMap } from "./types";
+import { ClientData, Status, clientStatusNameMap, statusColorMap, statusOptions } from "./types";
 import {Row} from "@/lib/types"
 import { AddClientComponent } from "./addClient";
 
@@ -72,6 +72,7 @@ export default function App() {
     pending,
     sortedItems,
   } = useTableLogic(
+    statusOptions,
     columns,
     INITIAL_VISIBLE_COLUMNS,
     GetClients,

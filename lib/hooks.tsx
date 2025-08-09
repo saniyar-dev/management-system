@@ -25,11 +25,8 @@ import {
 
 import { formatFilterParam, supabase } from "./utils";
 import {
-  rowStatusNameMap,
   Row,
   RowData,
-  statusColorMap,
-  statusOptions,
   rowOptions,
 } from "./types";
 
@@ -67,7 +64,8 @@ export const useSession = (): { session: Session | null; pending: boolean } => {
   return { session, pending };
 };
 
-export const useTableLogic = <TD extends RowData, S = import("./types").Status>(
+export const useTableLogic = <TD extends RowData, S extends string>(
+  statusOptions: Array<{name: string, uid: S}>,
   columns: Array<{
     name: string;
     uid: Exclude<keyof TD, symbol> | "status" | "actions";

@@ -1,9 +1,10 @@
-import { ClientType, Status } from "../types";
+import { ClientType, Row } from "../types";
+import { Status } from "@/app/dashboard/clients/types";
 import { supabase } from "../utils";
 
 import { GetRowsFn, GetTotalRowsFn, ServerActionState } from "./type";
 
-import { ClientData, ClientRender } from "@/app/dashboard/clients/types";
+import { ClientData } from "@/app/dashboard/clients/types";
 
 export const GetTotalClients: GetTotalRowsFn = async (
   clientType,
@@ -40,7 +41,7 @@ export const GetTotalClients: GetTotalRowsFn = async (
   };
 };
 
-export const GetClients: GetRowsFn<ClientData> = async (
+export const GetClients: GetRowsFn<ClientData, Status> = async (
   start,
   end,
   clientType,
@@ -64,7 +65,7 @@ export const GetClients: GetRowsFn<ClientData> = async (
   }
 
   const clientPromises = data.map(
-    async (client): Promise<ClientRender | null> => {
+    async (client): Promise<Row<ClientData, Status> | null> => {
       if (client.company_id !== null) {
         const { data: company, error: CompanyError } = await supabase
           .rpc("search_company_by_name", { search_term: searchTerm })

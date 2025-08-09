@@ -18,16 +18,16 @@ export type PreOrderData = RowData & {
   client_id: number;
 };
 
-// export type PreOrderRender = {
-//   id: number;
-//   data: PreOrderData;
-//   type: ClientType;
-//   status: Status;
-// };
-
 export const statusColorMap: Record<Status, ChipProps["color"]> = {
   pending: "warning",
   approved: "success",
   rejected: "danger",
   converted: "primary",
 };
+
+export const statusOptions: Array<{ name: string; uid: Status }> = [
+  { name: "در انتظار بررسی", uid: "pending" },
+  { name: "تایید شده", uid: "approved" },
+  { name: "رد شده", uid: "rejected" },
+  { name: "تبدیل به سفارش", uid: "converted" },
+];
