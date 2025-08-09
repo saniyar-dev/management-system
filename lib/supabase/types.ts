@@ -332,6 +332,7 @@ export type Database = {
         Returns: {
           client_id: number
           client_name: string
+          client_type: string
         }[]
       }
       get_client_name: {

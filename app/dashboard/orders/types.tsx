@@ -19,7 +19,6 @@ export type OrderData = RowData & {
   created_at: string;
   client_id: number;
   pre_order_id?: number;
-  order_number: string;
 };
 
 export const statusColorMap: Record<Status, ChipProps["color"]> = {

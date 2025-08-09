@@ -4,6 +4,7 @@ import { ServerActionState } from "./type";
 export type ClientOption = {
   id: number;
   name: string;
+  type: string;
 };
 
 export async function GetAllClientNames(): Promise<ServerActionState<ClientOption[]>> {
@@ -23,6 +24,7 @@ export async function GetAllClientNames(): Promise<ServerActionState<ClientOptio
     const clientOptions: ClientOption[] = data.map((client) => ({
       id: client.client_id,
       name: client.client_name,
+      type: client.client_type,
     }));
 
     return {

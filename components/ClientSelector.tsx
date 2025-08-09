@@ -8,7 +8,7 @@ interface ClientSelectorProps {
     label?: string;
     placeholder?: string;
     isRequired?: boolean;
-    onSelectionChange?: (clientId: number | null, clientName: string | null) => void;
+    onSelectionChange?: (clientId: number | null, clientName: string | null, clientType: string | null) => void;
 }
 
 export function ClientSelector({
@@ -38,11 +38,11 @@ export function ClientSelector({
             const client = clients.find(c => c.id.toString() === key.toString());
             if (client) {
                 setSelectedClient(client);
-                onSelectionChange?.(client.id, client.name);
+                onSelectionChange?.(client.id, client.name, client.type);
             }
         } else {
             setSelectedClient(null);
-            onSelectionChange?.(null, null);
+            onSelectionChange?.(null, null, null);
         }
     };
 
@@ -74,6 +74,11 @@ export function ClientSelector({
                 type="hidden"
                 name="client_name"
                 value={selectedClient?.name || ""}
+            />
+            <input
+                type="hidden"
+                name="client_type"
+                value={selectedClient?.type || ""}
             />
         </>
     );

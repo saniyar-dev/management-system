@@ -11,7 +11,7 @@ export const GetTotalPreOrders: GetTotalRowsFn = async (
   searchTerm,
 ) => {
   try {
-    const {data, error} = await supabase.rpc("filtered_pre_order_total", {
+    const { data, error } = await supabase.rpc("filtered_pre_order_total", {
       _statuses: status,
       _types: clientType,
     });
@@ -23,10 +23,10 @@ export const GetTotalPreOrders: GetTotalRowsFn = async (
       };
     }
     return {
-        message: "اطلاعات با موفقیت دریافت شدند.",
-        success: true,
-        data: data,
-      };
+      message: "اطلاعات با موفقیت دریافت شدند.",
+      success: true,
+      data: data,
+    };
 
   } catch (error) {
     console.error("Error in GetTotalPreOrders:", error);
@@ -76,7 +76,7 @@ export const GetPreOrders: GetRowsFn<PreOrderData, Status> = async (
         status: preOrder.status as Status,
         type: preOrder.type as ClientType,
       };
-    }); 
+    });
 
     return {
       message: "اطلاعات با موفقیت دریافت شدند.",
@@ -94,6 +94,8 @@ export const GetPreOrders: GetRowsFn<PreOrderData, Status> = async (
 
 export async function AddPreOrder(formData: FormData): Promise<ServerActionState<number | null>> {
   const client_id = formData.get("client_id") as string;
+  const client_name = formData.get("client_name") as string;
+  const client_type = formData.get("client_type") as string;
   const description = formData.get("description") as string;
   const estimated_amount = formData.get("estimated_amount") as string;
 
@@ -101,6 +103,8 @@ export async function AddPreOrder(formData: FormData): Promise<ServerActionState
     .from("pre_order")
     .insert({
       client_id: parseInt(client_id),
+      client_name,
+      type: client_type,
       description,
       estimated_amount: parseFloat(estimated_amount),
       status: "pending",
@@ -108,6 +112,7 @@ export async function AddPreOrder(formData: FormData): Promise<ServerActionState
     .select();
 
   if (error || !data) {
+    console.log(error)
     return {
       message: "ثبت پیش سفارش موفقیت آمیز نبود دوباره تلاش کنید.",
       success: false,

@@ -16,7 +16,6 @@ import {
 
 import { OrderData, statusColorMap, orderStatusNameMap, statusOptions, Status } from "./types";
 import { Row } from "@/lib/types";
-import { AddOrderComponent } from "./addOrder";
 
 import { GetOrders, GetTotalOrders } from "@/lib/action/order";
 import { useTableLogic } from "@/lib/hooks";
@@ -29,7 +28,6 @@ export const columns: Array<{
   uid: ColumnUID;
   sortable?: boolean;
 }> = [
-  { name: "شماره سفارش", uid: "order_number", sortable: true },
   { name: "نام مشتری", uid: "client_name", sortable: true },
   { name: "شرح سفارش", uid: "description", sortable: true },
   { name: "مبلغ کل", uid: "total_amount", sortable: true },
@@ -39,7 +37,6 @@ export const columns: Array<{
 ];
 
 const INITIAL_VISIBLE_COLUMNS: Array<ColumnUID> = [
-  "order_number",
   "client_name",
   "description",
   "total_amount",
@@ -63,18 +60,12 @@ export default function OrdersPage() {
     INITIAL_VISIBLE_COLUMNS,
     GetOrders,
     GetTotalOrders,
-    AddOrderComponent
+    () => <></>
   );
 
   // Custom renderCell function for orders
   const renderCell = useCallback((item: Row<OrderData, Status>, columnKey: Key) => {
     switch (columnKey) {
-      case "order_number":
-        return (
-          <span className="font-mono font-medium text-primary">
-            {item.data.order_number}
-          </span>
-        );
       case "client_name":
         return <span className="font-medium">{item.data.client_name}</span>;
       case "description":
