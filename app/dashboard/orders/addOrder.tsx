@@ -15,6 +15,7 @@ import {
 
 import { AddOrder } from "@/lib/action/order";
 import { PlusIcon } from "@/components/icons";
+import { ClientSelector } from "@/components/ClientSelector";
 
 // Main component that renders the button and modal
 export function AddOrderComponent() {
@@ -78,12 +79,10 @@ function AddOrderModal({
             </ModalHeader>
             <ModalBody>
               <div className="grid grid-cols-1 gap-4">
-                <Input
+                <ClientSelector
+                  label="انتخاب مشتری"
+                  placeholder="نام مشتری را تایپ کنید یا انتخاب کنید..."
                   isRequired
-                  label="شناسه مشتری"
-                  name="client_id"
-                  placeholder="شناسه مشتری را وارد کنید"
-                  type="number"
                 />
                 <Input
                   label="شناسه پیش سفارش (اختیاری)"

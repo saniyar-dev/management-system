@@ -11,35 +11,23 @@ export const GetTotalPreOrders: GetTotalRowsFn = async (
   searchTerm,
 ) => {
   try {
-    let query = supabase
-      .from("pre_orders")
-      .select("*", { count: "exact", head: true });
-
-    // Apply status filter if not "all"
-    if (status.length > 0 && !status.includes("all")) {
-      query = query.in("status", status);
-    }
-
-    // Apply search filter if provided
-    if (searchTerm && searchTerm.trim() !== "") {
-      query = query.ilike("description", `%${searchTerm}%`);
-    }
-
-    const { count, error } = await query;
+    const {data, error} = await supabase.rpc("filtered_pre_order_total", {
+      _statuses: status,
+      _types: clientType,
+    });
 
     if (error) {
-      console.error("Error getting pre-orders count:", error);
       return {
         message: "اینترنت خود را چک کنید و دوباره تلاش کنید.",
         success: false,
       };
     }
-
     return {
-      message: "تعداد پیش سفارش‌ها با موفقیت دریافت شد.",
-      success: true,
-      data: count || 0,
-    };
+        message: "اطلاعات با موفقیت دریافت شدند.",
+        success: true,
+        data: data,
+      };
+
   } catch (error) {
     console.error("Error in GetTotalPreOrders:", error);
     return {
@@ -59,7 +47,7 @@ export const GetPreOrders: GetRowsFn<PreOrderData, Status> = async (
   page,
 ) => {
   try {
-    const { data, error } = await supabase.rpc("filter_pre_orders_paginated", {
+    const { data, error } = await supabase.rpc("filter_pre_order_paginated", {
       _statuses: status,
       _types: clientType,
       _limit: searchTerm === "" ? limit : 1000,
@@ -110,7 +98,7 @@ export async function AddPreOrder(formData: FormData): Promise<ServerActionState
   const estimated_amount = formData.get("estimated_amount") as string;
 
   const { data, error } = await supabase
-    .from("pre_orders")
+    .from("pre_order")
     .insert({
       client_id: parseInt(client_id),
       description,
