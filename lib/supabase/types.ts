@@ -129,6 +129,55 @@ export type Database = {
         }
         Relationships: []
       }
+      order: {
+        Row: {
+          client_id: number
+          client_name: string
+          created_at: string
+          description: string
+          id: number
+          name: string
+          order_number: number
+          pre_order_id: number
+          total_amount: number
+        }
+        Insert: {
+          client_id: number
+          client_name?: string
+          created_at?: string
+          description?: string
+          id?: number
+          name: string
+          order_number: number
+          pre_order_id: number
+          total_amount: number
+        }
+        Update: {
+          client_id?: number
+          client_name?: string
+          created_at?: string
+          description?: string
+          id?: number
+          name?: string
+          order_number?: number
+          pre_order_id?: number
+          total_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_order_client_id_fkey"
+            columns: ["client_id"]
+            referencedRelation: "client"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_order_pre_order_id_fkey"
+            columns: ["pre_order_id"]
+            referencedRelation: "pre_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       person: {
         Row: {
           address: string | null

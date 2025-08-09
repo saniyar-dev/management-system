@@ -296,10 +296,10 @@ export const useTableLogic = <TD extends RowData, S extends string>(
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            تعداد مشتری‌ها:‌ {rows.length}
+            تعداد سطر‌ها:‌ {rows.length}
           </span>
           <label className="flex items-center text-default-400 text-small">
-            تعداد مشتری‌ها در هر صفحه:
+            تعداد سطر‌ها در هر صفحه:
             <select
               className="bg-transparent outline-solid outline-transparent text-default-400 text-small"
               onChange={onRowsPerPageChange}
