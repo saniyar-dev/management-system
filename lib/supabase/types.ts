@@ -159,6 +159,46 @@ export type Database = {
         }
         Relationships: []
       }
+      pre_orders: {
+        Row: {
+          client_id: number
+          client_name: string
+          created_at: string
+          description: string
+          estimated_amount: number | null
+          id: number
+          status: string
+          type: string
+        }
+        Insert: {
+          client_id: number
+          client_name?: string
+          created_at?: string
+          description?: string
+          estimated_amount?: number | null
+          id?: number
+          status?: string
+          type?: string
+        }
+        Update: {
+          client_id?: number
+          client_name?: string
+          created_at?: string
+          description?: string
+          estimated_amount?: number | null
+          id?: number
+          status?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_pre-orders_client_id_fkey"
+            columns: ["client_id"]
+            referencedRelation: "client"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -194,7 +234,32 @@ export type Database = {
           type: string
         }[]
       }
+      filter_pre_orders_paginated: {
+        Args: {
+          _types: string[]
+          _statuses: string[]
+          _limit: number
+          _offset: number
+        }
+        Returns: {
+          client_id: number
+          client_name: string
+          created_at: string
+          description: string
+          estimated_amount: number | null
+          id: number
+          status: string
+          type: string
+        }[]
+      }
       filtered_client_total: {
+        Args: {
+          _types: string[]
+          _statuses: string[]
+        }
+        Returns: number
+      }
+      filtered_pre_orders_total: {
         Args: {
           _types: string[]
           _statuses: string[]

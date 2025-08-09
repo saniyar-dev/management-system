@@ -36,5 +36,5 @@ export type Row<T extends RowData, S = Status> = {
 
 export type RowData = {
   id: number;
-  name: string;
+  // name: string;
 };
