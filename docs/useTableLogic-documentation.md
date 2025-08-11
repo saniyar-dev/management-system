@@ -1,8 +1,12 @@
-# useTableLogic Hook - Technical Documentation
+# useTableLogic Hook - مستندات فنی
 
-## Purpose and Architecture
+## هدف و معماری
 
-The `useTableLogic` hook is the core table management system for the Siman Ban dashboard. It encapsulates all table-related functionality including data fetching, pagination, filtering, sorting, and UI state management in a reusable, type-safe manner.
+هوک `useTableLogic` سیستم اصلی مدیریت جداول در داشبورد سیمان بان است. این هوک تمام عملکردهای مرتبط با جدول شامل دریافت داده، صفحه‌بندی، فیلتر، مرتب‌سازی و مدیریت وضعیت UI را در یک ساختار قابل استفاده مجدد و type-safe کپسوله می‌کند.
+
+## نسخه فعلی و تغییرات
+
+**آخرین به‌روزرسانی**: این مستندات بر اساس پیاده‌سازی فعلی در `lib/hooks.tsx` به‌روزرسانی شده است.
 
 ## Core Responsibilities
 
@@ -192,4 +196,30 @@ const renderCell = useCallback((row: Row<YourDataType, YourStatusType>, columnKe
 - Ensure keyboard navigation works correctly
 - Provide screen reader support for Persian content
 
-This hook represents a complete, production-ready table solution specifically designed for Persian business applications with modern React patterns and optimal performance characteristics.
+## وضعیت فعلی پیاده‌سازی
+
+### کامپوننت‌های پیاده‌سازی شده
+- ✅ **مشتریان (Clients)**: پیاده‌سازی کامل با تمام قابلیت‌ها
+- ✅ **پیش سفارش‌ها (Pre-Orders)**: پیاده‌سازی کامل با تمام قابلیت‌ها
+- 🔄 **سفارش‌ها (Orders)**: در حال توسعه
+- 🔄 **پیش فاکتورها (Pre-Invoices)**: در حال توسعه
+- 🔄 **فاکتورها (Invoices)**: در حال توسعه
+
+### ویژگی‌های پیاده‌سازی شده
+- ✅ مرتب‌سازی فارسی کامل
+- ✅ فیلتر چندسطحی (وضعیت، نوع مشتری، جستجو)
+- ✅ صفحه‌بندی سمت سرور
+- ✅ مدیریت ستون‌های قابل مشاهده
+- ✅ Loading states با React Transitions
+- ✅ پشتیبانی کامل RTL
+- ✅ نمایش اعداد و تاریخ فارسی
+
+### مثال‌های عملی
+
+برای مشاهده پیاده‌سازی کامل، فایل‌های زیر را بررسی کنید:
+- `app/dashboard/clients/page.tsx` - پیاده‌سازی کامل جدول مشتریان
+- `app/dashboard/pre-orders/page.tsx` - پیاده‌سازی کامل جدول پیش سفارش‌ها
+- `lib/action/client.ts` - Server Actions مشتریان
+- `lib/action/pre-order.ts` - Server Actions پیش سفارش‌ها
+
+این هوک یک راه‌حل کامل و آماده تولید برای جداول است که به‌طور خاص برای اپلیکیشن‌های تجاری فارسی با الگوهای مدرن React و ویژگی‌های عملکرد بهینه طراحی شده است.
