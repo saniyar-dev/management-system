@@ -99,6 +99,40 @@ export type Database = {
           },
         ]
       }
+      client_job: {
+        Row: {
+          created_at: string
+          entity_id: number
+          id: number
+          name: string
+          status: string
+          URL: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: number
+          id?: number
+          name?: string
+          status?: string
+          URL?: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: number
+          id?: number
+          name?: string
+          status?: string
+          URL?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_client_job_entity_id_fkey"
+            columns: ["entity_id"]
+            referencedRelation: "client"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company: {
         Row: {
           address: string | null
@@ -136,7 +170,7 @@ export type Database = {
           created_at: string
           description: string
           id: number
-          pre_order_id: number
+          pre_order_id: number | null
           status: string
           total_amount: number
           type: string
@@ -147,7 +181,7 @@ export type Database = {
           created_at?: string
           description?: string
           id?: number
-          pre_order_id: number
+          pre_order_id?: number | null
           status: string
           total_amount: number
           type: string
@@ -158,7 +192,7 @@ export type Database = {
           created_at?: string
           description?: string
           id?: number
-          pre_order_id?: number
+          pre_order_id?: number | null
           status?: string
           total_amount?: number
           type?: string
@@ -174,6 +208,40 @@ export type Database = {
             foreignKeyName: "public_order_pre_order_id_fkey"
             columns: ["pre_order_id"]
             referencedRelation: "pre_order"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_job: {
+        Row: {
+          created_at: string
+          entity_id: number
+          id: number
+          name: string
+          status: string
+          URL: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: number
+          id?: number
+          name?: string
+          status?: string
+          URL?: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: number
+          id?: number
+          name?: string
+          status?: string
+          URL?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_order_job_entity_id_fkey"
+            columns: ["entity_id"]
+            referencedRelation: "order"
             referencedColumns: ["id"]
           },
         ]
@@ -248,6 +316,40 @@ export type Database = {
           },
         ]
       }
+      pre_order_job: {
+        Row: {
+          created_at: string
+          entity_id: number
+          id: number
+          name: string
+          status: string
+          URL: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: number
+          id?: number
+          name?: string
+          status?: string
+          URL?: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: number
+          id?: number
+          name?: string
+          status?: string
+          URL?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_pre_order_job_entity_id_fkey"
+            columns: ["entity_id"]
+            referencedRelation: "pre_order"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -282,7 +384,7 @@ export type Database = {
           created_at: string
           description: string
           id: number
-          pre_order_id: number
+          pre_order_id: number | null
           status: string
           total_amount: number
           type: string

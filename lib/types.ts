@@ -1,6 +1,3 @@
-import type { ChipProps } from "@heroui/react";
-
-
 export const rowOptions: Array<{ name: string; uid: ClientType }> = [
   { name: "حقیقی", uid: "personal" },
   { name: "حقوقی", uid: "company" },
@@ -19,3 +16,10 @@ export type RowData = {
   id: number;
   // name: string;
 };
+
+export type Job = {
+  id: number;
+  name: string;
+  url: string;
+  status: "pending" | "done" | "error";
+}
