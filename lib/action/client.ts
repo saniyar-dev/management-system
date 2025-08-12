@@ -25,7 +25,6 @@ export const GetTotalClients: GetTotalRowsFn = async (
     _types: clientType,
   });
 
-  console.log(data);
 
   if (error) {
     return {
@@ -72,8 +71,6 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           .eq("id", client.company_id)
           .single();
 
-        console.log("from company fetch");
-        console.log(client, searchTerm, company, CompanyError);
 
         if (CompanyError) {
           return null;
@@ -92,8 +89,6 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           .eq("id", client.person_id)
           .single();
 
-        console.log("from person fetch");
-        console.log(client, searchTerm, person, PersonError);
 
         if (PersonError) {
           return null;
@@ -193,6 +188,8 @@ export async function AddClient(formData: FormData) {
       .insert({
         person_id: personal_id,
         company_id,
+        type: company_id ? "company" : "personal",
+        status: "todo"
       })
       .select();
 

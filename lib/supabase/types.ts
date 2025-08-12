@@ -73,8 +73,8 @@ export type Database = {
           created_at?: string
           id?: number
           person_id?: number | null
-          status?: string
-          type?: string
+          status: string
+          type: string
         }
         Update: {
           company_id?: number | null
@@ -113,10 +113,10 @@ export type Database = {
           address?: string | null
           created_at?: string
           id?: number
-          name?: string
+          name: string
           phone?: string | null
           postal_code?: string | null
-          ssn?: string
+          ssn: string
         }
         Update: {
           address?: string | null
@@ -144,9 +144,9 @@ export type Database = {
           entity: string
           entity_id: number
           id?: number
-          name?: string
-          status?: string
-          URL?: string
+          name: string
+          status: string
+          URL: string
         }
         Update: {
           created_at?: string
@@ -173,9 +173,9 @@ export type Database = {
         }
         Insert: {
           client_id: number
-          client_name?: string
+          client_name: string
           created_at?: string
-          description?: string
+          description: string
           id?: number
           pre_order_id?: number | null
           status: string
@@ -222,10 +222,10 @@ export type Database = {
           address?: string | null
           created_at?: string
           id?: number
-          name?: string
+          name: string
           phone?: string | null
           postal_code?: string | null
-          ssn?: string
+          ssn: string
         }
         Update: {
           address?: string | null
@@ -251,13 +251,13 @@ export type Database = {
         }
         Insert: {
           client_id: number
-          client_name?: string
+          client_name: string
           created_at?: string
-          description?: string
+          description: string
           estimated_amount?: number | null
           id?: number
-          status?: string
-          type?: string
+          status: string
+          type: string
         }
         Update: {
           client_id?: number

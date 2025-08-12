@@ -436,6 +436,7 @@ export const useJobs = (entity: string, jobsToProceed: {url: string, name: strin
         table: 'n8n_job',
         filter: `entity=eq.${entity} AND entity_id=eq.${entity_id}`
       }, (payload) => {
+        console.log(payload)
         // Update jobs state when a job is updated
         setJobs(prevJobs =>
           prevJobs.map(job =>
