@@ -433,7 +433,7 @@ export const useJobs = (entity: string, jobsToProceed: {url: string, name: strin
       .on('postgres_changes', {
         event: 'UPDATE',
         schema: 'public',
-        table: 'n8n_jobs',
+        table: 'n8n_job',
         filter: `entity=eq.${entity} AND entity_id=eq.${entity_id}`
       }, (payload) => {
         // Update jobs state when a job is updated
@@ -443,7 +443,7 @@ export const useJobs = (entity: string, jobsToProceed: {url: string, name: strin
           )
         )
       })
-      .subscribe()
+      .subscribe(status => console.log("status from subscribe", status))
 
     // Step 3: Cleanup subscription on useEffect return
     return () => {
