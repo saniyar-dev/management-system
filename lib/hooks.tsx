@@ -5,41 +5,26 @@ import {
   useEffect,
   useMemo,
   useCallback,
-  Key,
   ChangeEvent,
   useTransition,
 } from "react";
 import { Session } from "@supabase/supabase-js";
 import {
   Button,
-  Chip,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
   Input,
   Pagination,
-  Tooltip,
-  User,
 } from "@heroui/react";
 
 import { formatFilterParam, supabase } from "./utils";
-import {
-  Job,
-  Row,
-  RowData,
-  rowOptions,
-} from "./types";
+import { Job, Row, RowData, rowOptions } from "./types";
+import { SubmitJobs } from "./action/jobs";
 
 import { GetRowsFn, GetTotalRowsFn } from "@/lib/action/type";
-import {
-  ChevronDownIcon,
-  DeleteIcon,
-  EditIcon,
-  EyeIcon,
-  SearchIcon,
-} from "@/components/icons";
-import { SubmitJobs } from "./action/jobs";
+import { ChevronDownIcon, SearchIcon } from "@/components/icons";
 
 export const useSession = (): { session: Session | null; pending: boolean } => {
   const [session, setSession] = useState<Session | null>(null);
@@ -67,7 +52,7 @@ export const useSession = (): { session: Session | null; pending: boolean } => {
 };
 
 export const useTableLogic = <TD extends RowData, S extends string>(
-  statusOptions: Array<{ name: string, uid: S }>,
+  statusOptions: Array<{ name: string; uid: S }>,
   columns: Array<{
     name: string;
     uid: Exclude<keyof TD, symbol> | "status" | "actions";
@@ -78,7 +63,7 @@ export const useTableLogic = <TD extends RowData, S extends string>(
   >,
   GetRows: GetRowsFn<TD, S>,
   GetTotalRows: GetTotalRowsFn,
-  AddButtonComponent: () => JSX.Element
+  AddButtonComponent: () => JSX.Element,
 ) => {
   const [rows, setRows] = useState<Row<TD, S>[]>([]);
   const [pending, startTransition] = useTransition();
@@ -86,7 +71,7 @@ export const useTableLogic = <TD extends RowData, S extends string>(
 
   const [filterValue, setFilterValue] = useState("");
   const [visibleColumns, setVisibleColumns] = useState<Selection>(
-    new Set(INITIAL_VISIBLE_COLUMNS)
+    new Set(INITIAL_VISIBLE_COLUMNS),
   );
   const [statusFilter, setStatusFilter] = useState<Selection>("all");
   const [rowTypeFilter, setRowTypeFilter] = useState<Selection>("all");
@@ -104,7 +89,7 @@ export const useTableLogic = <TD extends RowData, S extends string>(
     if (visibleColumns === "all") return columns;
 
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid)
+      Array.from(visibleColumns).includes(column.uid),
     );
   }, [visibleColumns]);
 
@@ -171,8 +156,6 @@ export const useTableLogic = <TD extends RowData, S extends string>(
     }
   }, [sortDescriptor, rows]);
 
-
-
   const onNextPage = useCallback(() => {
     if (page < pages) {
       setPage(page + 1);
@@ -190,7 +173,7 @@ export const useTableLogic = <TD extends RowData, S extends string>(
       setRowsPerPage(Number(e.target.value));
       setPage(1);
     },
-    []
+    [],
   );
 
   const onSearchChange = useCallback((value?: string) => {
@@ -370,7 +353,7 @@ export const useTableLogic = <TD extends RowData, S extends string>(
       const actionMsg = await GetTotalRows(
         formatFilterParam(rowTypeFilter),
         formatFilterParam(statusFilter),
-        filterValue
+        filterValue,
       );
 
       if (actionMsg.success && actionMsg.data) {
@@ -386,7 +369,7 @@ export const useTableLogic = <TD extends RowData, S extends string>(
         formatFilterParam(statusFilter),
         filterValue,
         rowsPerPage,
-        page
+        page,
       );
 
       if (actionMsg.success && actionMsg.data) {
@@ -411,46 +394,60 @@ export const useTableLogic = <TD extends RowData, S extends string>(
   };
 };
 
+export const useJobs = (
+  entity: string,
+  jobsToProceed: { url: string; name: string }[],
+): [Job[], pending: boolean, start: (entity_id: string) => void] => {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [pending, startTransition] = useTransition();
 
-export const useJobs = (entity: string, jobsToProceed: {url: string, name: string}[]): [Job[], pending: boolean, start: (entity_id: string) => void] => {
-  const [jobs, setJobs] = useState<Job[]>([])
-  const [pending, startTransition] = useTransition()
-
-  const start = useCallback((entity_id: string) => {
-    if (!entity_id) {
-      return
-    }
-    // Step 1: Submit jobs for execution (already implemented)
-    startTransition(async () => {
-      const { success, data: submitedJobs } = await SubmitJobs(entity, entity_id, jobsToProceed)
-      if (success && submitedJobs) {
-        setJobs(submitedJobs)
+  const start = useCallback(
+    (entity_id: string) => {
+      if (!entity_id) {
+        return;
       }
-    })
+      // Step 1: Submit jobs for execution (already implemented)
+      startTransition(async () => {
+        const { success, data: submitedJobs } = await SubmitJobs(
+          entity,
+          entity_id,
+          jobsToProceed,
+        );
 
-    // Step 2: Subscribe to n8n_jobs table with entity and entity_id filters
-    const channel = supabase.channel(`jobs_${entity}_${entity_id}`)
-      .on('postgres_changes', {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'n8n_job',
-        filter: `entity_id=eq.${entity_id}`
-      }, (payload) => {
-        console.log(payload)
-        // Update jobs state when a job is updated
-        setJobs(prevJobs =>
-          prevJobs.map(job =>
-            job.id === payload.new.id ? { ...job, ...payload.new } : job
-          )
+        if (success && submitedJobs) {
+          setJobs(submitedJobs);
+        }
+      });
+
+      // Step 2: Subscribe to n8n_jobs table with entity and entity_id filters
+      const channel = supabase
+        .channel(`jobs_${entity}_${entity_id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "n8n_job",
+            filter: `entity_id=eq.${entity_id}`,
+          },
+          (payload) => {
+            // Update jobs state when a job is updated
+            setJobs((prevJobs) =>
+              prevJobs.map((job) =>
+                job.id === payload.new.id ? { ...job, ...payload.new } : job,
+              ),
+            );
+          },
         )
-      })
-      .subscribe(status => console.log("status from subscribe", status))
+        .subscribe();
 
-    // Step 3: Cleanup subscription on useEffect return
-    return () => {
-      channel.unsubscribe()
-    }
-  }, [entity, jobsToProceed])
+      // Step 3: Cleanup subscription on useEffect return
+      return () => {
+        channel.unsubscribe();
+      };
+    },
+    [entity, jobsToProceed],
+  );
 
-  return [jobs, pending, start]
-}
+  return [jobs, pending, start];
+};

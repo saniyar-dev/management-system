@@ -1,7 +1,13 @@
 import { ChipProps } from "@heroui/react";
+
 import { RowData } from "@/lib/types";
 
-export type Status = "pending" | "confirmed" | "in_progress" | "completed" | "cancelled";
+export type Status =
+  | "pending"
+  | "confirmed"
+  | "in_progress"
+  | "completed"
+  | "cancelled";
 
 export const orderStatusNameMap: Record<Status, string> = {
   pending: "در انتظار تایید",

@@ -1,7 +1,7 @@
 "use client";
 import type { Key } from "react";
-import { useCallback } from "react";
 
+import { useCallback } from "react";
 import {
   TableColumn,
   TableHeader,
@@ -14,9 +14,15 @@ import {
   Tooltip,
 } from "@heroui/react";
 
-import { OrderData, statusColorMap, orderStatusNameMap, statusOptions, Status } from "./types";
-import { Row } from "@/lib/types";
+import {
+  OrderData,
+  statusColorMap,
+  orderStatusNameMap,
+  statusOptions,
+  Status,
+} from "./types";
 
+import { Row } from "@/lib/types";
 import { GetOrders, GetTotalOrders } from "@/lib/action/order";
 import { useTableLogic } from "@/lib/hooks";
 import { DeleteIcon, EditIcon, EyeIcon } from "@/components/icons";
@@ -60,63 +66,67 @@ export default function OrdersPage() {
     INITIAL_VISIBLE_COLUMNS,
     GetOrders,
     GetTotalOrders,
-    () => <></>
+    () => <></>,
   );
 
   // Custom renderCell function for orders
-  const renderCell = useCallback((item: Row<OrderData, Status>, columnKey: Key) => {
-    switch (columnKey) {
-      case "client_name":
-        return <span className="font-medium">{item.data.client_name}</span>;
-      case "description":
-        return (
-          <div className="max-w-xs truncate" title={item.data.description}>
-            {item.data.description}
-          </div>
-        );
-      case "total_amount":
-        return (
-          <span className="font-mono">
-            {new Intl.NumberFormat('fa-IR').format(item.data.total_amount)} ریال
-          </span>
-        );
-      case "created_at":
-        return new Date(item.data.created_at).toLocaleDateString('fa-IR');
-      case "status":
-        return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[item.status]}
-            size="sm"
-            variant="flat"
-          >
-            {orderStatusNameMap[item.status]}
-          </Chip>
-        );
-      case "actions":
-        return (
-          <div className="relative flex items-center gap-4 justify-center">
-            <Tooltip content="مشاهده جزئیات">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EyeIcon />
-              </span>
-            </Tooltip>
-            <Tooltip content="ویرایش">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EditIcon />
-              </span>
-            </Tooltip>
-            <Tooltip color="danger" content="حذف">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <DeleteIcon />
-              </span>
-            </Tooltip>
-          </div>
-        );
-      default:
-        return item.data[columnKey as keyof OrderData];
-    }
-  }, []);
+  const renderCell = useCallback(
+    (item: Row<OrderData, Status>, columnKey: Key) => {
+      switch (columnKey) {
+        case "client_name":
+          return <span className="font-medium">{item.data.client_name}</span>;
+        case "description":
+          return (
+            <div className="max-w-xs truncate" title={item.data.description}>
+              {item.data.description}
+            </div>
+          );
+        case "total_amount":
+          return (
+            <span className="font-mono">
+              {new Intl.NumberFormat("fa-IR").format(item.data.total_amount)}{" "}
+              ریال
+            </span>
+          );
+        case "created_at":
+          return new Date(item.data.created_at).toLocaleDateString("fa-IR");
+        case "status":
+          return (
+            <Chip
+              className="capitalize"
+              color={statusColorMap[item.status]}
+              size="sm"
+              variant="flat"
+            >
+              {orderStatusNameMap[item.status]}
+            </Chip>
+          );
+        case "actions":
+          return (
+            <div className="relative flex items-center gap-4 justify-center">
+              <Tooltip content="مشاهده جزئیات">
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                </span>
+              </Tooltip>
+              <Tooltip content="ویرایش">
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EditIcon />
+                </span>
+              </Tooltip>
+              <Tooltip color="danger" content="حذف">
+                <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                  <DeleteIcon />
+                </span>
+              </Tooltip>
+            </div>
+          );
+        default:
+          return item.data[columnKey as keyof OrderData];
+      }
+    },
+    [],
+  );
 
   return (
     <Table

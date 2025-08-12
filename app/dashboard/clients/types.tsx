@@ -1,6 +1,6 @@
 import { ChipProps } from "@heroui/react";
 
-import { ClientType, RowData } from "@/lib/types";
+import { RowData } from "@/lib/types";
 
 export type Status = "done" | "waiting" | "todo";
 
@@ -17,7 +17,6 @@ export type ClientData = RowData & {
   address: string;
   postal_code: string;
 };
-
 
 export const statusColorMap: Record<Status, ChipProps["color"]> = {
   done: "success",

@@ -1,5 +1,6 @@
 "use client";
 import type { Key, SVGProps } from "react";
+import type { Status } from "./types";
 
 import {
   TableColumn,
@@ -13,11 +14,15 @@ import {
   Tooltip,
 } from "@heroui/react";
 
-import { PreOrderData, statusColorMap, preOrderStatusNameMap, statusOptions } from "./types";
-import {Row} from "@/lib/types"
-import type { Status } from "./types";
+import {
+  PreOrderData,
+  statusColorMap,
+  preOrderStatusNameMap,
+  statusOptions,
+} from "./types";
 import { AddPreOrderComponent } from "./addPreOrder";
 
+import { Row } from "@/lib/types";
 import { GetPreOrders, GetTotalPreOrders } from "@/lib/action/pre-order";
 import { useTableLogic } from "@/lib/hooks";
 import { DeleteIcon, EditIcon, EyeIcon } from "@/components/icons";
@@ -70,7 +75,7 @@ export default function PreOrdersPage() {
     INITIAL_VISIBLE_COLUMNS,
     GetPreOrders,
     GetTotalPreOrders,
-    AddPreOrderComponent
+    AddPreOrderComponent,
   );
 
   // Custom renderCell function for pre-orders
@@ -87,11 +92,12 @@ export default function PreOrdersPage() {
       case "estimated_amount":
         return (
           <span className="font-mono">
-            {new Intl.NumberFormat('fa-IR').format(item.data.estimated_amount)} ریال
+            {new Intl.NumberFormat("fa-IR").format(item.data.estimated_amount)}{" "}
+            ریال
           </span>
         );
       case "created_at":
-        return new Date(item.data.created_at).toLocaleDateString('fa-IR');
+        return new Date(item.data.created_at).toLocaleDateString("fa-IR");
       case "status":
         return (
           <Chip

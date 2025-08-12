@@ -33,8 +33,5 @@ export function formatFilterParam(param: Selection): string[] {
     return param; // It's already in the correct format.
   }
 
-  // As a safe fallback, return ['all'] to prevent accidental filtering.
-  console.warn("Unexpected filter param type. Defaulting to 'all'.", param);
-
   return ["all"];
 }

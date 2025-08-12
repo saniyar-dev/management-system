@@ -1,7 +1,7 @@
 "use client";
 import type { Key, SVGProps } from "react";
-import { useCallback } from "react";
 
+import { useCallback } from "react";
 import {
   TableColumn,
   TableHeader,
@@ -16,15 +16,16 @@ import {
 } from "@heroui/react";
 
 import {
-  EyeIcon,
-  EditIcon,
-  DeleteIcon
-} from "@/components/icons"
-
-import { ClientData, Status, clientStatusNameMap, statusColorMap, statusOptions } from "./types";
-import {Row} from "@/lib/types"
+  ClientData,
+  Status,
+  clientStatusNameMap,
+  statusColorMap,
+  statusOptions,
+} from "./types";
 import { AddClientComponent } from "./addClient";
 
+import { EyeIcon, EditIcon, DeleteIcon } from "@/components/icons";
+import { Row } from "@/lib/types";
 import { GetClients, GetTotalClients } from "@/lib/action/client";
 import { useTableLogic } from "@/lib/hooks";
 
@@ -77,48 +78,51 @@ export default function App() {
     INITIAL_VISIBLE_COLUMNS,
     GetClients,
     GetTotalClients,
-    AddClientComponent
+    AddClientComponent,
   );
 
-  const renderCell = useCallback((row: Row<ClientData, Status>, columnKey: Key) => {
-    switch (columnKey) {
-      case "name":
-        return <User name={row.data.name} />;
-      case "status":
-        return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[row.status]}
-            size="sm"
-            variant="flat"
-          >
-            {clientStatusNameMap[row.status]}
-          </Chip>
-        );
-      case "actions":
-        return (
-          <div className="relative flex items-center gap-4 justify-center">
-            <Tooltip content="Details">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EyeIcon />
-              </span>
-            </Tooltip>
-            <Tooltip content="Edit user">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EditIcon />
-              </span>
-            </Tooltip>
-            <Tooltip color="danger" content="Delete user">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <DeleteIcon />
-              </span>
-            </Tooltip>
-          </div>
-        );
-      default:
-        return row.data[columnKey as keyof ClientData];
-    }
-  }, []);
+  const renderCell = useCallback(
+    (row: Row<ClientData, Status>, columnKey: Key) => {
+      switch (columnKey) {
+        case "name":
+          return <User name={row.data.name} />;
+        case "status":
+          return (
+            <Chip
+              className="capitalize"
+              color={statusColorMap[row.status]}
+              size="sm"
+              variant="flat"
+            >
+              {clientStatusNameMap[row.status]}
+            </Chip>
+          );
+        case "actions":
+          return (
+            <div className="relative flex items-center gap-4 justify-center">
+              <Tooltip content="Details">
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                </span>
+              </Tooltip>
+              <Tooltip content="Edit user">
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EditIcon />
+                </span>
+              </Tooltip>
+              <Tooltip color="danger" content="Delete user">
+                <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                  <DeleteIcon />
+                </span>
+              </Tooltip>
+            </div>
+          );
+        default:
+          return row.data[columnKey as keyof ClientData];
+      }
+    },
+    [],
+  );
 
   return (
     <Table

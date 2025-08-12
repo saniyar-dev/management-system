@@ -26,15 +26,16 @@ export function AddPreOrderComponent() {
     setIsLoading(true);
     try {
       const result = await AddPreOrder(formData);
+
       if (result.success) {
         onOpenChange();
         // Refresh the page to show new data
         window.location.reload();
       } else {
-        console.error(result.message);
+        // console.error(result.message);
       }
-    } catch (error) {
-      console.error("خطا در ثبت پیش سفارش:", error);
+    } catch {
+      // console.error("خطا در ثبت پیش سفارش:", error);
     } finally {
       setIsLoading(false);
     }
@@ -46,8 +47,8 @@ export function AddPreOrderComponent() {
         افزودن پیش سفارش
       </Button>
       <AddPreOrderModal
-        isOpen={isOpen}
         isLoading={isLoading}
+        isOpen={isOpen}
         onOpenChange={onOpenChange}
         onSubmit={handleSubmit}
       />
@@ -80,9 +81,9 @@ function AddPreOrderModal({
             <ModalBody>
               <div className="grid grid-cols-1 gap-4">
                 <ClientSelector
+                  isRequired
                   label="انتخاب مشتری"
                   placeholder="نام مشتری را تایپ کنید یا انتخاب کنید..."
-                  isRequired
                 />
                 <Textarea
                   isRequired
@@ -103,11 +104,7 @@ function AddPreOrderModal({
               <Button color="danger" variant="light" onPress={onClose}>
                 لغو
               </Button>
-              <Button
-                color="primary"
-                isLoading={isLoading}
-                type="submit"
-              >
+              <Button color="primary" isLoading={isLoading} type="submit">
                 ثبت پیش سفارش
               </Button>
             </ModalFooter>

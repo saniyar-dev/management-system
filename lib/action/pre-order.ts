@@ -5,11 +5,7 @@ import { GetRowsFn, GetTotalRowsFn, ServerActionState } from "./type";
 
 import { PreOrderData, Status } from "@/app/dashboard/pre-orders/types";
 
-export const GetTotalPreOrders: GetTotalRowsFn = async (
-  clientType,
-  status,
-  searchTerm,
-) => {
+export const GetTotalPreOrders: GetTotalRowsFn = async (clientType, status) => {
   try {
     const { data, error } = await supabase.rpc("filtered_pre_order_total", {
       _statuses: status,
@@ -22,14 +18,14 @@ export const GetTotalPreOrders: GetTotalRowsFn = async (
         success: false,
       };
     }
+
     return {
       message: "اطلاعات با موفقیت دریافت شدند.",
       success: true,
       data: data,
     };
-
-  } catch (error) {
-    console.error("Error in GetTotalPreOrders:", error);
+    // should add error to data type for further and better error handling
+  } catch {
     return {
       message: "خطا در دریافت تعداد پیش سفارش‌ها.",
       success: false,
@@ -55,7 +51,6 @@ export const GetPreOrders: GetRowsFn<PreOrderData, Status> = async (
     });
 
     if (error) {
-      console.error("Error getting pre-orders:", error);
       return {
         message: "ایراد سمت سرور لطفا اینترنت خود را بررسی کنید.",
         success: false,
@@ -69,7 +64,9 @@ export const GetPreOrders: GetRowsFn<PreOrderData, Status> = async (
           id: preOrder.id,
           client_name: preOrder.client_name,
           description: preOrder.description,
-          estimated_amount: preOrder.estimated_amount ? preOrder.estimated_amount : -1,
+          estimated_amount: preOrder.estimated_amount
+            ? preOrder.estimated_amount
+            : -1,
           created_at: preOrder.created_at,
           client_id: preOrder.client_id,
         },
@@ -83,8 +80,7 @@ export const GetPreOrders: GetRowsFn<PreOrderData, Status> = async (
       success: true,
       data: preOrders,
     };
-  } catch (error) {
-    console.error("Error in GetPreOrders:", error);
+  } catch {
     return {
       message: "خطا در دریافت پیش سفارش‌ها.",
       success: false,
@@ -92,7 +88,9 @@ export const GetPreOrders: GetRowsFn<PreOrderData, Status> = async (
   }
 };
 
-export async function AddPreOrder(formData: FormData): Promise<ServerActionState<string | null>> {
+export async function AddPreOrder(
+  formData: FormData,
+): Promise<ServerActionState<string | null>> {
   const client_id = formData.get("client_id") as string;
   const client_name = formData.get("client_name") as string;
   const client_type = formData.get("client_type") as string;
@@ -112,7 +110,6 @@ export async function AddPreOrder(formData: FormData): Promise<ServerActionState
     .select();
 
   if (error || !data) {
-    console.log(error)
     return {
       message: "ثبت پیش سفارش موفقیت آمیز نبود دوباره تلاش کنید.",
       success: false,

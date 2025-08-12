@@ -1,9 +1,9 @@
 import { ClientType, Row } from "../types";
-import { Status } from "@/app/dashboard/clients/types";
 import { supabase } from "../utils";
 
 import { GetRowsFn, GetTotalRowsFn, ServerActionState } from "./type";
 
+import { Status } from "@/app/dashboard/clients/types";
 import { ClientData } from "@/app/dashboard/clients/types";
 
 export const GetTotalClients: GetTotalRowsFn = async (
@@ -24,7 +24,6 @@ export const GetTotalClients: GetTotalRowsFn = async (
     _statuses: status,
     _types: clientType,
   });
-
 
   if (error) {
     return {
@@ -71,7 +70,6 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           .eq("id", client.company_id)
           .single();
 
-
         if (CompanyError) {
           return null;
         }
@@ -88,7 +86,6 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           .rpc("search_person_by_name", { search_term: searchTerm })
           .eq("id", client.person_id)
           .single();
-
 
         if (PersonError) {
           return null;
@@ -115,9 +112,8 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
   };
 };
 
-export async function GetClientJobs(
-  client_id: number,
-): Promise<ServerActionState<any>> {
+export async function GetClientJobs(): Promise<ServerActionState<any>> {
+  // client_id: number,
   return {
     message: "اطلاعات با موفقیت دریافت شدند.",
     success: true,
@@ -189,7 +185,7 @@ export async function AddClient(formData: FormData) {
         person_id: personal_id,
         company_id,
         type: company_id ? "company" : "personal",
-        status: "todo"
+        status: "todo",
       })
       .select();
 

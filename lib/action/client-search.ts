@@ -1,4 +1,5 @@
 import { supabase } from "../utils";
+
 import { ServerActionState } from "./type";
 
 export type ClientOption = {
@@ -7,19 +8,19 @@ export type ClientOption = {
   type: string;
 };
 
-export async function GetAllClientNames(): Promise<ServerActionState<ClientOption[]>> {
+export async function GetAllClientNames(): Promise<
+  ServerActionState<ClientOption[]>
+> {
   try {
     const { data, error } = await supabase.rpc("get_all_client_names");
 
     if (error) {
-      console.error("Error getting client names:", error);
       return {
         message: "خطا در دریافت لیست مشتری‌ها.",
         success: false,
         data: [],
       };
     }
-    console.log("here: ", data)
 
     const clientOptions: ClientOption[] = data.map((client) => ({
       id: client.client_id,
@@ -32,8 +33,7 @@ export async function GetAllClientNames(): Promise<ServerActionState<ClientOptio
       success: true,
       data: clientOptions,
     };
-  } catch (error) {
-    console.error("Error in GetAllClientNames:", error);
+  } catch {
     return {
       message: "خطا در دریافت لیست مشتری‌ها.",
       success: false,

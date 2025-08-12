@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useTransition } from "react";
+import React, { useState, useTransition } from "react";
 import { Tab, Tabs } from "@heroui/react";
 import {
   Modal,
@@ -14,20 +14,20 @@ import {
 
 import JobComponent from "@/components/jobs";
 import { PlusIcon } from "@/components/icons";
-import { AddClient, GetClientJobs } from "@/lib/action/client";
+import { AddClient } from "@/lib/action/client";
 import { ServerActionState } from "@/lib/action/type";
 import Loading from "@/components/loading";
 import { useJobs } from "@/lib/hooks";
 
-const jobsToProceed: {url: string, name: string}[] = [
+const jobsToProceed: { url: string; name: string }[] = [
   {
     name: "ارسال به کارتابل ",
     url: "https://google.com",
   },
   {
     name: "ارسال پیام به مشتری",
-    url: "https://google.com"
-  }
+    url: "https://google.com",
+  },
 ];
 
 export function AddClientComponent() {
@@ -36,7 +36,10 @@ export function AddClientComponent() {
   const [actionMsg, setActionMsg] = useState<ServerActionState<any> | null>(
     null,
   );
-  const [jobs, pendingJobs, startJobsTransition] = useJobs("client", jobsToProceed)
+  const [jobs, pendingJobs, startJobsTransition] = useJobs(
+    "client",
+    jobsToProceed,
+  );
 
   const targetRef = React.useRef(null);
   const { moveProps } = useDraggable({
@@ -52,13 +55,10 @@ export function AddClientComponent() {
       setActionMsg(msg);
 
       if (msg.success && msg.data) {
-        startJobsTransition(msg.data)
+        startJobsTransition(msg.data);
       }
-
     });
   };
-
-
 
   return (
     <>
@@ -239,9 +239,17 @@ export function AddClientComponent() {
                   )}
                 </div>
                 <section className="flex flex-col gap-4">
-                  {jobs.length > 0 && jobs.map((job, index) => {
-                    return <JobComponent key={index} job={job} pending={pendingJobs} initData={jobsToProceed[index]} />
-                  })}
+                  {jobs.length > 0 &&
+                    jobs.map((job, index) => {
+                      return (
+                        <JobComponent
+                          key={index}
+                          initData={jobsToProceed[index]}
+                          job={job}
+                          pending={pendingJobs}
+                        />
+                      );
+                    })}
                 </section>
               </section>
             </>

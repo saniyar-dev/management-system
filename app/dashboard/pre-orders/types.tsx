@@ -1,5 +1,6 @@
 import { ChipProps } from "@heroui/react";
-import { ClientType, RowData } from "@/lib/types";
+
+import { RowData } from "@/lib/types";
 
 export type Status = "pending" | "approved" | "rejected" | "converted";
 

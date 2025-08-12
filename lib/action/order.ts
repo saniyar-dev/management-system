@@ -1,61 +1,62 @@
 import { supabase } from "../utils";
-import { GetRowsFn, GetTotalRowsFn, ServerActionState } from "./type";
+
+import { GetRowsFn, GetTotalRowsFn } from "./type";
+
 import { OrderData, Status } from "@/app/dashboard/orders/types";
-import { Row, ClientType } from "@/lib/types";
 
 export const GetTotalOrders: GetTotalRowsFn = async (
-    clientType,
-    status,
-    searchTerm,
+  clientType,
+  status,
+  searchTerm,
 ) => {
-    try {
-        let query = supabase
-            .from("order")
-            .select("*", { count: "exact", head: true });
+  try {
+    let query = supabase
+      .from("order")
+      .select("*", { count: "exact", head: true });
 
-        // Apply status filter if not "all"
-        if (status.length > 0 && !status.includes("all")) {
-            query = query.in("status", status);
-        }
-
-        // Apply search filter if provided
-        if (searchTerm && searchTerm.trim() !== "") {
-            query = query.or(`description.ilike.%${searchTerm}%,order_number.ilike.%${searchTerm}%`);
-        }
-
-        const { count, error } = await query;
-
-        if (error) {
-            console.error("Error getting orders count:", error);
-            return {
-                message: "اینترنت خود را چک کنید و دوباره تلاش کنید.",
-                success: false,
-            };
-        }
-
-        return {
-            message: "تعداد سفارش‌ها با موفقیت دریافت شد.",
-            success: true,
-            data: count || 0,
-        };
-    } catch (error) {
-        console.error("Error in GetTotalOrders:", error);
-        return {
-            message: "خطا در دریافت تعداد سفارش‌ها.",
-            success: false,
-        };
+    // Apply status filter if not "all"
+    if (status.length > 0 && !status.includes("all")) {
+      query = query.in("status", status);
     }
+
+    // Apply search filter if provided
+    if (searchTerm && searchTerm.trim() !== "") {
+      query = query.or(
+        `description.ilike.%${searchTerm}%,order_number.ilike.%${searchTerm}%`,
+      );
+    }
+
+    const { count, error } = await query;
+
+    if (error) {
+      return {
+        message: "اینترنت خود را چک کنید و دوباره تلاش کنید.",
+        success: false,
+      };
+    }
+
+    return {
+      message: "تعداد سفارش‌ها با موفقیت دریافت شد.",
+      success: true,
+      data: count || 0,
+    };
+  } catch {
+    return {
+      message: "خطا در دریافت تعداد سفارش‌ها.",
+      success: false,
+    };
+  }
 };
 
-export const GetOrders: GetRowsFn<OrderData, Status> = async (
-    start,
-    end,
-    clientType,
-    status,
-    searchTerm,
-    limit,
-    page,
-) => {
+export const GetOrders: GetRowsFn<OrderData, Status> = async () =>
+  // start,
+  // end,
+  // clientType,
+  // status,
+  // searchTerm,
+  // limit,
+  // page,
+  {
     //   try {
     //     let query = supabase
     //       .from("order")
@@ -128,8 +129,8 @@ export const GetOrders: GetRowsFn<OrderData, Status> = async (
     //   } catch (error) {
     //     console.error("Error in GetOrders:", error);
     return {
-        message: "خطا در دریافت سفارش‌ها.",
-        success: false,
+      message: "خطا در دریافت سفارش‌ها.",
+      success: false,
     };
     //   }
-};
+  };
