@@ -1,0 +1,25 @@
+# Basic app config
+replicaCount: 2
+image:
+  repository: registry.home-lab.ir/simanban/admin-front
+  tag: "490c1f3b"
+
+# Simple service
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+# Gateway API
+gateway:
+  enabled: true
+  className: "traefik"
+  hostname: "panel-staging.simanban.ir"
+  certManager:
+    enabled: true
+    clusterIssuer: "letsencrypt-cloudflare-prod"
+  tlsSecretName: "panel-staging-tls"
+
+httpRoute:
+  enabled: true
+  hostname: "panel-staging.simanban.ir"

@@ -1,0 +1,23 @@
+{{- if .Values.gateway.enabled }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ include "simanban-dashboard.fullname" . }}-gateway
+  labels:
+    {{- include "simanban-dashboard.labels" . | nindent 4 }}
+  {{- if .Values.gateway.certManager.enabled }}
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.gateway.certManager.clusterIssuer }}
+  {{- end }}
+spec:
+  gatewayClassName: {{ .Values.gateway.className }}
+  listeners:
+  - name: websecure
+    port: 8443
+    protocol: HTTPS
+    hostname: {{ .Values.gateway.hostname | quote }}
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: {{ .Values.gateway.tlsSecretName }}
+{{- end }}
