@@ -15,7 +15,7 @@ export type PreOrderData = RowData & {
   description: string;
   estimated_amount: number;
   created_at: string;
-  client_id: number;
+  client_id: string;
 };
 
 export const statusColorMap: Record<Status, ChipProps["color"]> = {

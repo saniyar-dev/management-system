@@ -92,7 +92,7 @@ export const GetPreOrders: GetRowsFn<PreOrderData, Status> = async (
   }
 };
 
-export async function AddPreOrder(formData: FormData): Promise<ServerActionState<number | null>> {
+export async function AddPreOrder(formData: FormData): Promise<ServerActionState<string | null>> {
   const client_id = formData.get("client_id") as string;
   const client_name = formData.get("client_name") as string;
   const client_type = formData.get("client_type") as string;
@@ -102,7 +102,7 @@ export async function AddPreOrder(formData: FormData): Promise<ServerActionState
   const { data, error } = await supabase
     .from("pre_order")
     .insert({
-      client_id: parseInt(client_id),
+      client_id: client_id,
       client_name,
       type: client_type,
       description,

@@ -18,13 +18,6 @@ export type ClientData = RowData & {
   postal_code: string;
 };
 
-export type ClientJob = {
-  id: number;
-  name: string;
-  url: string;
-  status: Status;
-  client_id: number;
-};
 
 export const statusColorMap: Record<Status, ChipProps["color"]> = {
   done: "success",

@@ -2,7 +2,7 @@ import { supabase } from "../utils";
 import { ServerActionState } from "./type";
 
 export type ClientOption = {
-  id: number;
+  id: string;
   name: string;
   type: string;
 };

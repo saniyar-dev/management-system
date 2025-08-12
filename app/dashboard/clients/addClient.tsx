@@ -12,8 +12,6 @@ import {
   Input,
 } from "@heroui/react";
 
-import { ClientJob } from "./types";
-
 import JobComponent from "@/components/jobs";
 import { PlusIcon } from "@/components/icons";
 import { AddClient, GetClientJobs } from "@/lib/action/client";
@@ -38,7 +36,6 @@ export function AddClientComponent() {
   const [actionMsg, setActionMsg] = useState<ServerActionState<any> | null>(
     null,
   );
-  const [clientID, setClientID] = useState<number | null>(null);
   const [jobs, pendingJobs, startJobsTransition] = useJobs("client", jobsToProceed)
 
   const targetRef = React.useRef(null);
@@ -55,7 +52,6 @@ export function AddClientComponent() {
       setActionMsg(msg);
 
       if (msg.success && msg.data) {
-        setClientID(msg.data);
         startJobsTransition(msg.data)
       }
 

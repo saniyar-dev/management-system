@@ -412,11 +412,11 @@ export const useTableLogic = <TD extends RowData, S extends string>(
 };
 
 
-export const useJobs = (entity: string, jobsToProceed: {url: string, name: string}[]): [Job[], pending: boolean, start: (entity_id: number) => void] => {
+export const useJobs = (entity: string, jobsToProceed: {url: string, name: string}[]): [Job[], pending: boolean, start: (entity_id: string) => void] => {
   const [jobs, setJobs] = useState<Job[]>([])
   const [pending, startTransition] = useTransition()
 
-  const start = useCallback((entity_id: number) => {
+  const start = useCallback((entity_id: string) => {
     if (!entity_id) {
       return
     }
@@ -434,7 +434,7 @@ export const useJobs = (entity: string, jobsToProceed: {url: string, name: strin
         event: 'UPDATE',
         schema: 'public',
         table: 'n8n_job',
-        filter: `entity=eq.${entity} AND entity_id=eq.${entity_id}`
+        filter: `entity_id=eq.${entity_id}`
       }, (payload) => {
         console.log(payload)
         // Update jobs state when a job is updated

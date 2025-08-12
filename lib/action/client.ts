@@ -126,7 +126,7 @@ export async function GetClientJobs(
 }
 
 export async function AddClient(formData: FormData) {
-  const createCompany = async (formData: FormData): Promise<number | null> => {
+  const createCompany = async (formData: FormData): Promise<string | null> => {
     const name = formData.get("company_name") as string;
     const phone = formData.get("phone") as string;
     const address = formData.get("company_address") as string;
@@ -154,7 +154,7 @@ export async function AddClient(formData: FormData) {
     return null;
   };
 
-  const createPersonal = async (formData: FormData): Promise<number | null> => {
+  const createPersonal = async (formData: FormData): Promise<string | null> => {
     const name = formData.get("name") as string;
     const phone = formData.get("phone") as string;
     const address = formData.get("address") as string;
@@ -180,9 +180,9 @@ export async function AddClient(formData: FormData) {
   };
 
   const createClient = async (
-    personal_id: number | null,
-    company_id: number | null,
-  ): Promise<number | null> => {
+    personal_id: string | null,
+    company_id: string | null,
+  ): Promise<string | null> => {
     const { data, error } = await supabase
       .from("client")
       .insert({

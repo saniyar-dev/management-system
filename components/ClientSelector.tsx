@@ -8,7 +8,7 @@ interface ClientSelectorProps {
     label?: string;
     placeholder?: string;
     isRequired?: boolean;
-    onSelectionChange?: (clientId: number | null, clientName: string | null, clientType: string | null) => void;
+    onSelectionChange?: (clientId: string | null, clientName: string | null, clientType: string | null) => void;
 }
 
 export function ClientSelector({

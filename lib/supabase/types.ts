@@ -61,26 +61,26 @@ export type Database = {
     Tables: {
       client: {
         Row: {
-          company_id: number | null
+          company_id: string | null
           created_at: string
-          id: number
-          person_id: number | null
+          id: string
+          person_id: string | null
           status: string
           type: string
         }
         Insert: {
-          company_id?: number | null
+          company_id?: string | null
           created_at?: string
-          id?: number
-          person_id?: number | null
+          id?: string
+          person_id?: string | null
           status: string
           type: string
         }
         Update: {
-          company_id?: number | null
+          company_id?: string | null
           created_at?: string
-          id?: number
-          person_id?: number | null
+          id?: string
+          person_id?: string | null
           status?: string
           type?: string
         }
@@ -103,7 +103,7 @@ export type Database = {
         Row: {
           address: string | null
           created_at: string
-          id: number
+          id: string
           name: string
           phone: string | null
           postal_code: string | null
@@ -112,7 +112,7 @@ export type Database = {
         Insert: {
           address?: string | null
           created_at?: string
-          id?: number
+          id?: string
           name: string
           phone?: string | null
           postal_code?: string | null
@@ -121,7 +121,7 @@ export type Database = {
         Update: {
           address?: string | null
           created_at?: string
-          id?: number
+          id?: string
           name?: string
           phone?: string | null
           postal_code?: string | null
@@ -133,8 +133,8 @@ export type Database = {
         Row: {
           created_at: string
           entity: string
-          entity_id: number
-          id: number
+          entity_id: string
+          id: string
           name: string
           status: string
           URL: string
@@ -142,8 +142,8 @@ export type Database = {
         Insert: {
           created_at?: string
           entity: string
-          entity_id: number
-          id?: number
+          entity_id: string
+          id?: string
           name: string
           status: string
           URL: string
@@ -151,8 +151,8 @@ export type Database = {
         Update: {
           created_at?: string
           entity?: string
-          entity_id?: number
-          id?: number
+          entity_id?: string
+          id?: string
           name?: string
           status?: string
           URL?: string
@@ -161,34 +161,34 @@ export type Database = {
       }
       order: {
         Row: {
-          client_id: number
+          client_id: string
           client_name: string
           created_at: string
           description: string
-          id: number
-          pre_order_id: number | null
+          id: string
+          pre_order_id: string | null
           status: string
           total_amount: number
           type: string
         }
         Insert: {
-          client_id: number
+          client_id: string
           client_name: string
           created_at?: string
           description: string
-          id?: number
-          pre_order_id?: number | null
+          id?: string
+          pre_order_id?: string | null
           status: string
           total_amount: number
           type: string
         }
         Update: {
-          client_id?: number
+          client_id?: string
           client_name?: string
           created_at?: string
           description?: string
-          id?: number
-          pre_order_id?: number | null
+          id?: string
+          pre_order_id?: string | null
           status?: string
           total_amount?: number
           type?: string
@@ -212,7 +212,7 @@ export type Database = {
         Row: {
           address: string | null
           created_at: string
-          id: number
+          id: string
           name: string
           phone: string | null
           postal_code: string | null
@@ -221,7 +221,7 @@ export type Database = {
         Insert: {
           address?: string | null
           created_at?: string
-          id?: number
+          id?: string
           name: string
           phone?: string | null
           postal_code?: string | null
@@ -230,7 +230,7 @@ export type Database = {
         Update: {
           address?: string | null
           created_at?: string
-          id?: number
+          id?: string
           name?: string
           phone?: string | null
           postal_code?: string | null
@@ -240,32 +240,32 @@ export type Database = {
       }
       pre_order: {
         Row: {
-          client_id: number
+          client_id: string
           client_name: string
           created_at: string
           description: string
           estimated_amount: number | null
-          id: number
+          id: string
           status: string
           type: string
         }
         Insert: {
-          client_id: number
+          client_id: string
           client_name: string
           created_at?: string
           description: string
           estimated_amount?: number | null
-          id?: number
+          id?: string
           status: string
           type: string
         }
         Update: {
-          client_id?: number
+          client_id?: string
           client_name?: string
           created_at?: string
           description?: string
           estimated_amount?: number | null
-          id?: number
+          id?: string
           status?: string
           type?: string
         }
@@ -291,10 +291,10 @@ export type Database = {
           _offset: number
         }
         Returns: {
-          company_id: number | null
+          company_id: string | null
           created_at: string
-          id: number
-          person_id: number | null
+          id: string
+          person_id: string | null
           status: string
           type: string
         }[]
@@ -307,12 +307,12 @@ export type Database = {
           _offset: number
         }
         Returns: {
-          client_id: number
+          client_id: string
           client_name: string
           created_at: string
           description: string
-          id: number
-          pre_order_id: number | null
+          id: string
+          pre_order_id: string | null
           status: string
           total_amount: number
           type: string
@@ -326,12 +326,12 @@ export type Database = {
           _offset: number
         }
         Returns: {
-          client_id: number
+          client_id: string
           client_name: string
           created_at: string
           description: string
           estimated_amount: number | null
-          id: number
+          id: string
           status: string
           type: string
         }[]
@@ -360,14 +360,14 @@ export type Database = {
       get_all_client_names: {
         Args: Record<PropertyKey, never>
         Returns: {
-          client_id: number
+          client_id: string
           client_name: string
           client_type: string
         }[]
       }
       get_client_name: {
         Args: {
-          _client_id: number
+          _client_id: string
         }
         Returns: string
       }
@@ -378,7 +378,7 @@ export type Database = {
         Returns: {
           address: string | null
           created_at: string
-          id: number
+          id: string
           name: string
           phone: string | null
           postal_code: string | null
@@ -392,7 +392,7 @@ export type Database = {
         Returns: {
           address: string | null
           created_at: string
-          id: number
+          id: string
           name: string
           phone: string | null
           postal_code: string | null

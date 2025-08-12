@@ -6,19 +6,19 @@ export const rowOptions: Array<{ name: string; uid: ClientType }> = [
 export type ClientType = "company" | "personal";
 
 export type Row<T extends RowData, S> = {
-  id: number;
+  id: string;
   type: ClientType;
   data: T;
   status: S;
 };
 
 export type RowData = {
-  id: number;
+  id: string;
   // name: string;
 };
 
 export type Job = {
-  id: number;
+  id: string;
   name: string;
   url: string;
   status: "pending" | "done" | "error";
