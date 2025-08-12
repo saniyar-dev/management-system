@@ -113,7 +113,8 @@ npm run dev
 - **Server Components**: برای بهینه‌سازی عملکرد
 - **Client Components**: برای تعامل کاربر
 - **Custom Hooks**: برای منطق تجاری
-- **Type Safety**: استفاده کامل از TypeScript
+- **Type Safety**: استفاده کامل از TypeScript با تعریف دقیق انواع
+- **Jobs System**: سیستم مدیریت و نمایش وضعیت کارها
 
 ## دستورات مفید
 

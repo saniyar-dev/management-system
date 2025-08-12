@@ -221,7 +221,66 @@ export const statusNameMap: Record<Status, string> = {
 
 ## کامپوننت‌های مشترک
 
-### 1. Icons (`components/icons.tsx`)
+### 1. Jobs Component (`components/jobs.tsx`)
+
+کامپوننت نمایش وضعیت کارها (Jobs) که برای نمایش پیشرفت عملیات‌های مختلف استفاده می‌شود.
+
+```typescript
+export default function JobsComponent({
+  jobs
+}: {
+  jobs: Job[];
+}) {
+  return (
+    <section className="flex flex-col">
+      {jobs &&
+        jobs.map((job) => {
+          return (
+            <Card
+              key={job.id}
+              className={`border-${jobStatusColorMap[job.status]}-400 border-1 w-xs`}
+              radius="sm"
+            >
+              <CardBody>
+                <div className="flex justify-between items-center">
+                  {job.name}
+                  <Spinner
+                    color={jobStatusColorMap[job.status]}
+                    variant="spinner"
+                  />
+                </div>
+              </CardBody>
+            </Card>
+          );
+        })}
+    </section>
+  );
+}
+```
+
+**ویژگی‌ها:**
+- نمایش لیست کارها با وضعیت‌های مختلف
+- استفاده از Spinner با رنگ‌های متناسب با وضعیت
+- طراحی کارت‌های کوچک با border رنگی
+- پشتیبانی از وضعیت‌های: pending (در انتظار), done (انجام شده), error (خطا)
+
+**انواع وضعیت:**
+```typescript
+export type Job = {
+  id: number;
+  name: string;
+  url: string;
+  status: "pending" | "done" | "error";
+}
+
+export const jobStatusColorMap: Record<Job["status"], "warning" | "success" | "danger"> = {
+  pending: "warning",
+  done: "success",
+  error: "danger",
+};
+```
+
+### 2. Icons (`components/icons.tsx`)
 
 مجموعه آیکون‌های استفاده شده در سیستم:
 
