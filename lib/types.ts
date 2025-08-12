@@ -23,3 +23,9 @@ export type Job = {
   url: string;
   status: "pending" | "done" | "error";
 }
+
+export const jobStatusColorMap: Record<Job["status"], "warning" | "success" | "danger"> = {
+  pending: "warning",
+  done: "success",
+  error: "danger",
+};

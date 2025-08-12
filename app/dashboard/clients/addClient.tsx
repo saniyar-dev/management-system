@@ -19,8 +19,9 @@ import { PlusIcon } from "@/components/icons";
 import { AddClient, GetClientJobs } from "@/lib/action/client";
 import { ServerActionState } from "@/lib/action/type";
 import Loading from "@/components/loading";
+import { Job } from "@/lib/types";
 
-const jobs: ClientJob[] = [
+const jobs: Job[] = [
   // {
   //   id: 1,
   //   name: "ارسال به کارتابل ",
@@ -247,7 +248,7 @@ export function AddClientComponent() {
                     </div>
                   )}
                 </div>
-                {jobs.length > 0 && <JobsComponent clientJobs={jobs} />}
+                {jobs.length > 0 && <JobsComponent jobs={jobs} />}
               </section>
             </>
           )}
