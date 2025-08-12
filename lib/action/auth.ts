@@ -1,14 +1,11 @@
-import { supabase } from "./utils";
+import { supabase } from "../utils";
 
-export type ServerActionState = {
-  message: string;
-  success: boolean;
-};
+import { ServerActionState } from "./type";
 
 export async function Login(
-  prevState: ServerActionState,
+  prevState: ServerActionState<null>,
   formData: FormData,
-): Promise<ServerActionState> {
+): Promise<ServerActionState<null>> {
   const email = formData.get("email");
   const password = formData.get("password");
 
@@ -46,7 +43,7 @@ export async function Login(
   }
 }
 
-export async function Logout(): Promise<ServerActionState> {
+export async function Logout(): Promise<ServerActionState<null>> {
   const { error } = await supabase.auth.signOut();
 
   if (error) {

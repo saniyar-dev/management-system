@@ -1,0 +1,32 @@
+{
+  "enabled": true,
+  "name": "Documentation Sync",
+  "description": "Monitors all TypeScript source files, React components, configuration files, and other relevant project files for changes and automatically updates documentation in README.md or /docs folder to keep it synchronized with the codebase",
+  "version": "1",
+  "when": {
+    "type": "userTriggered",
+    "patterns": [
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.js",
+      "**/*.jsx",
+      "package.json",
+      "tsconfig.json",
+      "next.config.js",
+      "tailwind.config.js",
+      "eslint.config.mjs",
+      "middleware.ts",
+      "**/*.yaml",
+      "**/*.yml",
+      "lib/**/*",
+      "components/**/*",
+      "app/**/*",
+      "config/**/*",
+      "types/**/*"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Source files have been modified in this TypeScript/React project. Please analyze the changes and update the documentation accordingly. Focus on:\n\n1. Update README.md with any new features, components, or architectural changes\n2. Update or create documentation in the /docs folder for:\n   - New components and their usage\n   - API changes or new endpoints\n   - Configuration changes\n   - Business logic updates\n   - Persian/RTL specific implementations\n\n3. Ensure documentation reflects:\n   - Current project structure\n   - Updated dependencies and configurations\n   - New business entities or workflows\n   - Persian localization updates\n   - Database schema changes if applicable\n\n4. Maintain consistency with the Persian-first design approach and business context of the Siman Ban cement company management dashboard.\n\nPlease review the changed files and update documentation to match the current state of the codebase."
+  }
+}

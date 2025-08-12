@@ -5,7 +5,7 @@ import { Button } from "@heroui/button";
 import { useRouter } from "next/navigation";
 
 import { subtitle } from "@/components/primitives";
-import { Login } from "@/lib/action";
+import { Login } from "@/lib/action/auth";
 import { InputEmail, InputPassword } from "@/components/input";
 import Loading from "@/components/loading";
 
