@@ -1,0 +1,19 @@
+apiVersion: v2
+name: simanban-dashboard
+description: A Helm chart for deploying Siman Ban Management Dashboard to Kubernetes
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+maintainers:
+  - name: Siman Ban Team
+    email: admin@simanban.com
+keywords:
+  - dashboard
+  - management
+  - nextjs
+  - persian
+  - cement
+annotations:
+  category: Business Applications
+  licenses: MIT
+dependencies: []
