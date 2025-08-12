@@ -33,13 +33,9 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export function capitalize(s: string) {
-  return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
-}
-
 type ColumnUID = keyof ClientData | "status" | "actions";
 
-export const columns: Array<{
+const columns: Array<{
   name: string;
   uid: ColumnUID;
   sortable?: boolean;
@@ -63,7 +59,7 @@ const INITIAL_VISIBLE_COLUMNS: Array<ColumnUID> = [
   "actions",
 ];
 
-export default function App() {
+export default function ClientsPage() {
   const {
     bottomContent,
     topContent,

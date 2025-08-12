@@ -31,13 +31,9 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export function capitalize(s: string) {
-  return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
-}
-
 type ColumnUID = keyof PreOrderData | "status" | "actions";
 
-export const columns: Array<{
+const columns: Array<{
   name: string;
   uid: ColumnUID;
   sortable?: boolean;

@@ -29,7 +29,7 @@ import { DeleteIcon, EditIcon, EyeIcon } from "@/components/icons";
 
 type ColumnUID = keyof OrderData | "status" | "actions";
 
-export const columns: Array<{
+const columns: Array<{
   name: string;
   uid: ColumnUID;
   sortable?: boolean;
