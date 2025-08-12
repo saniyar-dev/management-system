@@ -1,8 +1,9 @@
+# ===============================================================
+# BEGIN CORRECTED values.yaml
+# ===============================================================
+
 secret:
   jwt:
-    anonKey: ""
-    serviceKey: ""
-    secret: ""
     secretRef: "supabase-jwt"
     secretRefKey:
       anonKey: anonKey
@@ -37,7 +38,10 @@ db:
         - postgres
     initialDelaySeconds: 3
   persistence:
-    enabled: false
+    # CRITICAL FIX: Persistence must be enabled for the database.
+    enabled: true
+    # IMPORTANT: You might need to specify a storageClassName depending on your K8s provider.
+    storageClassName: "local-path"
 
 studio:
   image:
@@ -45,7 +49,7 @@ studio:
   environment:
     STUDIO_DEFAULT_ORGANIZATION: "My Organization"
     STUDIO_DEFAULT_PROJECT: "My Project"
-    SUPABASE_PUBLIC_URL: https://supbase.simanban.ir/
+    SUPABASE_PUBLIC_URL: https://supabase.simanban.ir/
     NEXT_PUBLIC_ENABLE_LOGS: "true"
   livenessProbe:
     httpGet:
@@ -57,7 +61,7 @@ auth:
   image:
     tag: v2.143.0
   environment:
-    API_EXTERNAL_URL: https://supbase.simanban.ir
+    API_EXTERNAL_URL: https://supabase.simanban.ir
     GOTRUE_SITE_URL: https://supabase.simanban.ir
     GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
     GOTRUE_MAILER_AUTOCONFIRM: "true"
@@ -69,10 +73,35 @@ auth:
 rest:
   image:
     tag: v12.0.1
+  # CRITICAL FIX: Add missing environment variables.
+  environment:
+    PGRST_DB_SCHEMAS: public,storage,graphql_public
+    PGRST_DB_ANON_ROLE: anon
 
 realtime:
+  fullnameOverride: "realtime-dev"
   image:
     tag: v2.27.5
+  # CRITICAL FIX: Add environment variable to fix "tenant not found" error.
+  environment:
+    API_EXTERNAL_URL: "https://supabase.simanban.ir"
+    DB_ENC_KEY: supabaserealtime
+    FLY_ALLOC_ID: fly123
+    FLY_APP_NAME: realtime
+    ERL_AFLAGS: -proto_dist inet_tcp
+    ENABLE_TAILSCALE: "false"
+    # NEW FIX: Tells Realtime how to connect to and search the database
+    DB_USER: supabase_admin
+    DB_PORT: 5432
+    DB_SSL: disable
+    DB_AFTER_CONNECT_QUERY: "SET search_path TO _realtime" # <--- THE CRITICAL FIX
+    PORT: "4000"
+    
+    # Other defaults from the chart for stability
+    # SECRET_KEY_BASE: UpNVntn3cDxHJpq99YMc1T1AQgQpc8kfYTuRgBiYa15BLrx8etQoXz3gZv1/u2oq
+    # ERL_AFLAGS: -proto_dist inet_tcp
+    # ENABLE_TAILSCALE: "false"
+    # DNS_NODES: "''"
   livenessProbe:
     httpGet:
       path: /
@@ -86,13 +115,24 @@ meta:
 storage:
   image:
     tag: v0.46.4
+  # CRITICAL FIX: Add missing environment variables.
+  environment:
+    FILE_SIZE_LIMIT: "52428800"
+    STORAGE_BACKEND: file
+    FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+    TENANT_ID: stub # This will be overwritten by internal logic but is needed.
+    REGION: stub
+    GLOBAL_S3_BUCKET: stub
   livenessProbe:
     httpGet:
       path: /status
       port: 5000
     initialDelaySeconds: 3
   persistence:
-    enabled: false
+    # CRITICAL FIX: Persistence must be enabled for storage.
+    enabled: true
+    # IMPORTANT: You might need to specify a storageClassName depending on your K8s provider.
+    storageClassName: "local-path"
 
 imgproxy:
   image:
@@ -106,7 +146,7 @@ imgproxy:
         - health
     initialDelaySeconds: 3
   persistence:
-    enabled: false
+    enabled: false # This can be false if you don't need to cache resized images on disk.
 
 kong:
   image:
@@ -122,14 +162,6 @@ kong:
       cert-manager.io/cluster-issuer: "letsencrypt-cloudflare-prod"
   ingress:
     enabled: false
-    className: "nginx"
-    annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /
-    tls:
-      []
-      # - secretName: example-ingress-tls
-      #   hosts:
-      #     - simanban.ir
     hosts:
       - host: supabase.simanban.ir
         paths:
@@ -168,3 +200,7 @@ functions:
   enabled: false
   image:
     tag: v1.41.2
+
+# ===============================================================
+# END CORRECTED values.yaml
+# ===============================================================
