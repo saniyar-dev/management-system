@@ -14,21 +14,22 @@ import {
 
 import { ClientJob } from "./types";
 
-import JobsComponent from "@/components/jobs";
+import JobComponent from "@/components/jobs";
 import { PlusIcon } from "@/components/icons";
 import { AddClient, GetClientJobs } from "@/lib/action/client";
 import { ServerActionState } from "@/lib/action/type";
 import Loading from "@/components/loading";
-import { Job } from "@/lib/types";
+import { useJobs } from "@/lib/hooks";
 
-const jobs: Job[] = [
-  // {
-  //   id: 1,
-  //   name: "ارسال به کارتابل ",
-  //   client_id: 11,
-  //   status: "waiting",
-  //   url: "https://google.com",
-  // },
+const jobsToProceed: {url: string, name: string}[] = [
+  {
+    name: "ارسال به کارتابل ",
+    url: "https://google.com",
+  },
+  {
+    name: "ارسال پیام به مشتری",
+    url: "https://google.com"
+  }
 ];
 
 export function AddClientComponent() {
@@ -38,6 +39,7 @@ export function AddClientComponent() {
     null,
   );
   const [clientID, setClientID] = useState<number | null>(null);
+  const [jobs, pendingJobs, startJobsTransition] = useJobs("client", jobsToProceed)
 
   const targetRef = React.useRef(null);
   const { moveProps } = useDraggable({
@@ -52,23 +54,15 @@ export function AddClientComponent() {
 
       setActionMsg(msg);
 
-      if (msg.success) {
+      if (msg.success && msg.data) {
         setClientID(msg.data);
+        startJobsTransition(msg.data)
       }
+
     });
   };
 
-  useEffect(() => {
-    if (!clientID) {
-      return;
-    }
 
-    startTransition(async () => {
-      const msg = await GetClientJobs(clientID);
-
-      setActionMsg(msg);
-    });
-  }, [clientID]);
 
   return (
     <>
@@ -248,7 +242,11 @@ export function AddClientComponent() {
                     </div>
                   )}
                 </div>
-                {jobs.length > 0 && <JobsComponent jobs={jobs} />}
+                <section className="flex flex-col gap-4">
+                  {jobs.length > 0 && jobs.map((job, index) => {
+                    return <JobComponent key={index} job={job} pending={pendingJobs} initData={jobsToProceed[index]} />
+                  })}
+                </section>
               </section>
             </>
           )}

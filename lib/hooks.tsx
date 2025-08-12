@@ -25,6 +25,7 @@ import {
 
 import { formatFilterParam, supabase } from "./utils";
 import {
+  Job,
   Row,
   RowData,
   rowOptions,
@@ -38,6 +39,7 @@ import {
   EyeIcon,
   SearchIcon,
 } from "@/components/icons";
+import { SubmitJobs } from "./action/jobs";
 
 export const useSession = (): { session: Session | null; pending: boolean } => {
   const [session, setSession] = useState<Session | null>(null);
@@ -65,7 +67,7 @@ export const useSession = (): { session: Session | null; pending: boolean } => {
 };
 
 export const useTableLogic = <TD extends RowData, S extends string>(
-  statusOptions: Array<{name: string, uid: S}>,
+  statusOptions: Array<{ name: string, uid: S }>,
   columns: Array<{
     name: string;
     uid: Exclude<keyof TD, symbol> | "status" | "actions";
@@ -408,3 +410,46 @@ export const useTableLogic = <TD extends RowData, S extends string>(
     sortedItems,
   };
 };
+
+
+export const useJobs = (entity: string, jobsToProceed: {url: string, name: string}[]): [Job[], pending: boolean, start: (entity_id: number) => void] => {
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [pending, startTransition] = useTransition()
+
+  const start = useCallback((entity_id: number) => {
+    if (!entity_id) {
+      return
+    }
+    // Step 1: Submit jobs for execution (already implemented)
+    startTransition(async () => {
+      const { success, data: submitedJobs } = await SubmitJobs(entity, entity_id, jobsToProceed)
+      if (success && submitedJobs) {
+        setJobs(submitedJobs)
+      }
+    })
+
+    // Step 2: Subscribe to n8n_jobs table with entity and entity_id filters
+    const channel = supabase.channel(`jobs_${entity}_${entity_id}`)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'n8n_jobs',
+        filter: `entity=eq.${entity} AND entity_id=eq.${entity_id}`
+      }, (payload) => {
+        // Update jobs state when a job is updated
+        setJobs(prevJobs =>
+          prevJobs.map(job =>
+            job.id === payload.new.id ? { ...job, ...payload.new } : job
+          )
+        )
+      })
+      .subscribe()
+
+    // Step 3: Cleanup subscription on useEffect return
+    return () => {
+      channel.unsubscribe()
+    }
+  }, [entity, jobsToProceed])
+
+  return [jobs, pending, start]
+}
