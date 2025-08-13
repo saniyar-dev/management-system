@@ -24,3 +24,10 @@ export type GetTotalRowsFn = (
   status: string[],
   searchTerm: string,
 ) => Promise<ServerActionState<number | null>>;
+
+// Re-export CRUD types for convenience
+export type {
+  UpdateEntityFn,
+  DeleteEntityFn,
+  CheckDependenciesFn
+} from './crud-types';
