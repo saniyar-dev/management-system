@@ -1,5 +1,7 @@
 import { ClientType, Row } from "../types";
 import { supabase } from "../utils";
+import { businessRuleValidators } from "../utils/persian-validation";
+import { checkEntityDependencies } from "../utils/dependency-checker";
 
 import { GetRowsFn, GetTotalRowsFn, ServerActionState } from "./type";
 
@@ -121,6 +123,125 @@ export async function GetClientJobs(): Promise<ServerActionState<any>> {
   };
 }
 
+export async function UpdateClient(
+  id: string,
+  formData: FormData
+): Promise<ServerActionState<string>> {
+  try {
+    // Get current client data to determine type
+    const { data: clientData, error: clientError } = await supabase
+      .from("client")
+      .select("person_id, company_id, type")
+      .eq("id", id)
+      .single();
+
+    if (clientError || !clientData) {
+      return {
+        message: "مشتری یافت نشد.",
+        success: false,
+      };
+    }
+
+    // Extract form data
+    const name = formData.get("name") as string;
+    const phone = formData.get("phone") as string;
+    const address = formData.get("address") as string;
+    const ssn = formData.get("ssn") as string;
+    const postalCode = formData.get("postal_code") as string;
+    const status = formData.get("status") as Status;
+
+    // Validate required fields
+    if (!name || !phone || !address || !ssn) {
+      return {
+        message: "تمام فیلدهای الزامی را پر کنید.",
+        success: false,
+      };
+    }
+
+    // Business rule validation
+    const businessValidation = businessRuleValidators.validateClientForOrder({
+      name,
+      phone,
+      address,
+      ssn
+    });
+
+    if (businessValidation) {
+      return {
+        message: businessValidation,
+        success: false,
+      };
+    }
+
+    // Update the appropriate table (person or company)
+    if (clientData.person_id) {
+      const { error: personError } = await supabase
+        .from("person")
+        .update({
+          name,
+          ssn,
+          phone,
+          address,
+          postal_code: postalCode,
+        })
+        .eq("id", clientData.person_id);
+
+      if (personError) {
+        return {
+          message: "خطا در به‌روزرسانی اطلاعات شخصی.",
+          success: false,
+        };
+      }
+    }
+
+    if (clientData.company_id) {
+      const { error: companyError } = await supabase
+        .from("company")
+        .update({
+          name,
+          ssn,
+          phone,
+          address,
+          postal_code: postalCode,
+        })
+        .eq("id", clientData.company_id);
+
+      if (companyError) {
+        return {
+          message: "خطا در به‌روزرسانی اطلاعات شرکت.",
+          success: false,
+        };
+      }
+    }
+
+    // Update client status if provided
+    if (status) {
+      const { error: statusError } = await supabase
+        .from("client")
+        .update({ status })
+        .eq("id", id);
+
+      if (statusError) {
+        return {
+          message: "خطا در به‌روزرسانی وضعیت مشتری.",
+          success: false,
+        };
+      }
+    }
+
+    return {
+      message: "اطلاعات مشتری با موفقیت به‌روزرسانی شد.",
+      success: true,
+      data: id,
+    };
+  } catch (error) {
+    return {
+      message: "خطای سرور. لطفاً دوباره تلاش کنید.",
+      success: false,
+    };
+  }
+}
+
 export async function AddClient(formData: FormData) {
   const createCompany = async (formData: FormData): Promise<string | null> => {
     const name = formData.get("company_name") as string;
@@ -214,4 +335,85 @@ export async function AddClient(formData: FormData) {
     success: true,
     data: client_id,
   };
+}
+
+export async function DeleteClient(id: string): Promise<ServerActionState<boolean>> {
+  try {
+    // First check for dependencies
+    const dependencyCheck = await CheckClientDependencies(id);
+    if (!dependencyCheck.success || dependencyCheck.data === false) {
+      return {
+        message: dependencyCheck.message || "مشتری دارای وابستگی است و قابل حذف نیست.",
+        success: false,
+      };
+    }
+
+    // Get client data to determine what to delete
+    const { data: clientData, error: clientError } = await supabase
+      .from("client")
+      .select("person_id, company_id, type")
+      .eq("id", id)
+      .single();
+
+    if (clientError || !clientData) {
+      return {
+        message: "مشتری یافت نشد.",
+        success: false,
+      };
+    }
+
+    // Start transaction-like deletion
+    // Delete client record first
+    const { error: clientDeleteError } = await supabase
+      .from("client")
+      .delete()
+      .eq("id", id);
+
+    if (clientDeleteError) {
+      return {
+        message: "خطا در حذف مشتری.",
+        success: false,
+      };
+    }
+
+    // Delete associated person or company record
+    if (clientData.person_id) {
+      const { error: personDeleteError } = await supabase
+        .from("person")
+        .delete()
+        .eq("id", clientData.person_id);
+
+      if (personDeleteError) {
+        // Log error but don't fail the operation since client is already deleted
+        console.error("Error deleting person record:", personDeleteError);
+      }
+    }
+
+    if (clientData.company_id) {
+      const { error: companyDeleteError } = await supabase
+        .from("company")
+        .delete()
+        .eq("id", clientData.company_id);
+
+      if (companyDeleteError) {
+        // Log error but don't fail the operation since client is already deleted
+        console.error("Error deleting company record:", companyDeleteError);
+      }
+    }
+
+    return {
+      message: "مشتری با موفقیت حذف شد.",
+      success: true,
+      data: true,
+    };
+  } catch (error) {
+    return {
+      message: "خطای سرور. لطفاً دوباره تلاش کنید.",
+      success: false,
+    };
+  }
+}
+
+export async function CheckClientDependencies(id: string): Promise<ServerActionState<boolean>> {
+  return await checkEntityDependencies("client", id);
 }
