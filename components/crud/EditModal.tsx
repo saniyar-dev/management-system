@@ -8,11 +8,12 @@ import {
   ModalBody,
   Button,
   useDraggable,
-  Input,
-  Textarea,
   Select,
   SelectItem
 } from "@heroui/react";
+
+import { PersianInput } from "@/components/ui/PersianInput";
+import { PersianTextarea } from "@/components/ui/PersianTextarea";
 
 import { EditComponentProps, EditFieldConfig } from "@/lib/action/crud-types";
 import { RowData } from "@/lib/types";
@@ -20,6 +21,7 @@ import { useJobs } from "@/lib/hooks";
 import JobComponent from "@/components/jobs";
 import Loading from "@/components/loading";
 import { ServerActionState } from "@/lib/action/type";
+import { normalizeFormData, convertEnglishToPersian } from "@/lib/utils/persian-validation";
 
 interface EditModalProps<T extends RowData, S extends string> extends EditComponentProps<T, S> {
   isOpen: boolean;
@@ -86,8 +88,11 @@ export function EditModal<T extends RowData, S extends string>({
   };
 
   const onSubmit = (formData: FormData) => {
+    // Normalize Persian numbers to English before validation
+    const normalizedFormData = normalizeFormData(formData);
+    
     // Validate form
-    const formErrors = validateForm(formData);
+    const formErrors = validateForm(normalizedFormData);
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
       return;
@@ -95,7 +100,7 @@ export function EditModal<T extends RowData, S extends string>({
 
     setErrors({});
     startTransition(async () => {
-      const msg = await onUpdate(formData);
+      const msg = await onUpdate(normalizedFormData);
       setActionMsg(msg);
 
       if (msg.success && msg.data) {
@@ -118,11 +123,14 @@ export function EditModal<T extends RowData, S extends string>({
     const hasError = !!errors[fieldKey];
     const errorMessage = errors[fieldKey];
 
+    // Convert current value to Persian numbers for display
+    const displayValue = currentValue ? convertEnglishToPersian(currentValue.toString()) : '';
+
     const commonProps = {
       key: fieldKey,
       name: fieldKey,
       label: field.label,
-      defaultValue: currentValue?.toString() || '',
+      defaultValue: displayValue,
       isRequired: field.required,
       isInvalid: hasError,
       errorMessage: hasError ? errorMessage : undefined,
@@ -134,14 +142,12 @@ export function EditModal<T extends RowData, S extends string>({
     switch (field.type) {
       case 'textarea':
         return (
-          <Textarea
+          <PersianTextarea
             {...commonProps}
             placeholder={`${field.label} را وارد کنید`}
             minRows={3}
-            classNames={{
-              input: "text-right",
-              inputWrapper: "text-right"
-            }}
+            allowNumbers={true}
+            displayPersianNumbers={true}
           />
         );
 
@@ -165,40 +171,34 @@ export function EditModal<T extends RowData, S extends string>({
 
       case 'number':
         return (
-          <Input
+          <PersianInput
             {...commonProps}
-            type="number"
+            type="text"
             placeholder={`${field.label} را وارد کنید`}
-            classNames={{
-              input: "text-right",
-              inputWrapper: "text-right"
-            }}
+            allowNumbers={true}
+            displayPersianNumbers={true}
           />
         );
 
       case 'date':
         return (
-          <Input
+          <PersianInput
             {...commonProps}
             type="date"
             placeholder={`${field.label} را انتخاب کنید`}
-            classNames={{
-              input: "text-right",
-              inputWrapper: "text-right"
-            }}
+            allowNumbers={false}
+            displayPersianNumbers={false}
           />
         );
 
       default: // 'input'
         return (
-          <Input
+          <PersianInput
             {...commonProps}
             type="text"
             placeholder={`${field.label} را وارد کنید`}
-            classNames={{
-              input: "text-right",
-              inputWrapper: "text-right"
-            }}
+            allowNumbers={true}
+            displayPersianNumbers={true}
           />
         );
     }

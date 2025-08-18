@@ -8,13 +8,14 @@ import {
   ModalBody,
   Button,
   useDraggable,
-  Input,
-  Textarea,
   Select,
   SelectItem,
   Tab,
   Tabs
 } from "@heroui/react";
+
+import { PersianInput } from "@/components/ui/PersianInput";
+import { PersianTextarea } from "@/components/ui/PersianTextarea";
 
 import { AddComponentProps, AddFieldConfig } from "@/lib/action/crud-types";
 import { RowData } from "@/lib/types";
@@ -22,6 +23,7 @@ import { useJobs } from "@/lib/hooks";
 import JobComponent from "@/components/jobs";
 import Loading from "@/components/loading";
 import { ServerActionState } from "@/lib/action/type";
+import { normalizeFormData } from "@/lib/utils/persian-validation";
 
 interface AddModalProps<T extends RowData, S extends string> extends AddComponentProps<T, S> {
   isOpen: boolean;
@@ -94,8 +96,11 @@ export function AddModal<T extends RowData, S extends string>({
   };
 
   const onSubmit = (formData: FormData, fieldsToValidate: AddFieldConfig<T>[]) => {
+    // Normalize Persian numbers to English before validation
+    const normalizedFormData = normalizeFormData(formData);
+    
     // Validate form
-    const formErrors = validateForm(formData, fieldsToValidate);
+    const formErrors = validateForm(normalizedFormData, fieldsToValidate);
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
       return;
@@ -103,7 +108,7 @@ export function AddModal<T extends RowData, S extends string>({
 
     setErrors({});
     startTransition(async () => {
-      const msg = await onAdd(formData);
+      const msg = await onAdd(normalizedFormData);
       setActionMsg(msg);
 
       if (msg.success && msg.data) {
@@ -142,13 +147,11 @@ export function AddModal<T extends RowData, S extends string>({
     switch (field.type) {
       case 'textarea':
         return (
-          <Textarea
+          <PersianTextarea
             {...commonProps}
             minRows={3}
-            classNames={{
-              input: "text-right",
-              inputWrapper: "text-right"
-            }}
+            allowNumbers={true}
+            displayPersianNumbers={true}
           />
         );
 
@@ -172,38 +175,32 @@ export function AddModal<T extends RowData, S extends string>({
 
       case 'number':
         return (
-          <Input
+          <PersianInput
             {...commonProps}
-            type="number"
-            classNames={{
-              input: "text-right",
-              inputWrapper: "text-right"
-            }}
+            type="text"
+            allowNumbers={true}
+            displayPersianNumbers={true}
           />
         );
 
       case 'date':
         return (
-          <Input
+          <PersianInput
             {...commonProps}
             type="date"
             placeholder={`${field.label} را انتخاب کنید`}
-            classNames={{
-              input: "text-right",
-              inputWrapper: "text-right"
-            }}
+            allowNumbers={false}
+            displayPersianNumbers={false}
           />
         );
 
       default: // 'input'
         return (
-          <Input
+          <PersianInput
             {...commonProps}
             type="text"
-            classNames={{
-              input: "text-right",
-              inputWrapper: "text-right"
-            }}
+            allowNumbers={true}
+            displayPersianNumbers={true}
           />
         );
     }

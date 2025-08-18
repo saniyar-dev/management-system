@@ -1,11 +1,11 @@
 import { PersianValidationRules } from "../action/crud-types";
 
 // Persian character regex patterns
-const PERSIAN_TEXT_REGEX = /^[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\s\d۰-۹]+$/;
+const PERSIAN_TEXT_REGEX = /^[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\s\d۰-۹0-9]+$/;
 const PERSIAN_NAME_REGEX = /^[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\s]+$/;
-const PERSIAN_PHONE_REGEX = /^(\+98|0)?9\d{9}$/;
-const PERSIAN_SSN_REGEX = /^\d{10}$/;
-const PERSIAN_POSTAL_CODE_REGEX = /^\d{10}$/;
+const PERSIAN_PHONE_REGEX = /^(\+98|0)?9[\d۰-۹]{9}$/;
+const PERSIAN_SSN_REGEX = /^[\d۰-۹]{10}$/;
+const PERSIAN_POSTAL_CODE_REGEX = /^[\d۰-۹]{10}$/;
 
 // Persian number conversion utilities
 export const convertPersianToEnglish = (str: string): string => {
@@ -28,6 +28,35 @@ export const convertEnglishToPersian = (str: string): string => {
     result = result.replace(new RegExp(englishNumbers[i], 'g'), persianNumbers[i]);
   }
   return result;
+};
+
+// Normalize numbers in form data (convert Persian to English)
+export const normalizeFormData = (formData: FormData): FormData => {
+  const normalizedFormData = new FormData();
+  
+  // Use Array.from to handle FormData iteration
+  Array.from(formData.entries()).forEach(([key, value]) => {
+    if (typeof value === 'string') {
+      // Convert Persian numbers to English for processing
+      const normalizedValue = convertPersianToEnglish(value);
+      normalizedFormData.append(key, normalizedValue);
+    } else {
+      normalizedFormData.append(key, value);
+    }
+  });
+  
+  return normalizedFormData;
+};
+
+// Check if a string contains numbers (Persian or English)
+export const containsNumbers = (str: string): boolean => {
+  return /[\d۰-۹]/.test(str);
+};
+
+// Check if a string contains only numbers (Persian or English)
+export const isNumericString = (str: string): boolean => {
+  const normalized = convertPersianToEnglish(str.trim());
+  return /^\d+(\.\d+)?$/.test(normalized);
 };
 
 // Format Persian currency
