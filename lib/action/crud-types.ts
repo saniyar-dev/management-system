@@ -26,6 +26,15 @@ export interface DeleteComponentProps<T extends RowData, S extends string> exten
   dependencyCheck?: (id: string) => Promise<boolean>;
 }
 
+// Add component - creation form
+export interface AddComponentProps<T extends RowData, S extends string> {
+  fields: AddFieldConfig<T>[];
+  validationRules: ValidationConfig<T>;
+  jobsConfig: { url: string; name: string }[];
+  onAdd: (formData: FormData) => Promise<ServerActionState<string | null>>;
+  onSuccess?: () => void;
+}
+
 // View field configuration
 export interface ViewFieldConfig<T extends RowData> {
   key: keyof T;
@@ -42,6 +51,18 @@ export interface EditFieldConfig<T extends RowData> {
   required?: boolean;
   validation?: (value: any) => string | null;
   options?: { value: string; label: string }[];
+}
+
+// Add field configuration
+export interface AddFieldConfig<T extends RowData> {
+  key: keyof T;
+  label: string;
+  type: 'input' | 'textarea' | 'select' | 'date' | 'number';
+  required?: boolean;
+  validation?: (value: any) => string | null;
+  options?: { value: string; label: string }[];
+  placeholder?: string;
+  fieldName?: string; // Custom field name for form (if different from key)
 }
 
 // Validation configuration
@@ -80,6 +101,7 @@ export interface EntityJobConfig {
   view: { name: string; url: string }[];
   edit: { name: string; url: string }[];
   delete: { name: string; url: string }[];
+  add: { name: string; url: string }[];
 }
 
 // Persian validation utilities

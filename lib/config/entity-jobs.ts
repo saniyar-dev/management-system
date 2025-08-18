@@ -14,6 +14,10 @@ export const entityJobConfigs: Record<string, EntityJobConfig> = {
     delete: [
       { name: "بررسی وابستگی‌ها", url: "https://example.com/client/dependencies" },
       { name: "حذف از سیستم", url: "https://example.com/client/delete" }
+    ],
+    add: [
+      { name: "ارسال به کارتابل", url: "https://example.com/client/add" },
+      { name: "ارسال پیام به مشتری", url: "https://example.com/client/notify" }
     ]
   },
 
@@ -29,6 +33,10 @@ export const entityJobConfigs: Record<string, EntityJobConfig> = {
     delete: [
       { name: "بررسی امکان لغو", url: "https://example.com/preorder/check" },
       { name: "لغو پیش سفارش", url: "https://example.com/preorder/cancel" }
+    ],
+    add: [
+      { name: "ثبت پیش سفارش", url: "https://example.com/preorder/add" },
+      { name: "اطلاع‌رسانی به مشتری", url: "https://example.com/preorder/notify" }
     ]
   },
 
@@ -44,6 +52,10 @@ export const entityJobConfigs: Record<string, EntityJobConfig> = {
     delete: [
       { name: "بررسی امکان حذف", url: "https://example.com/order/check" },
       { name: "لغو سفارش", url: "https://example.com/order/cancel" }
+    ],
+    add: [
+      { name: "ثبت سفارش", url: "https://example.com/order/add" },
+      { name: "شروع فرآیند تولید", url: "https://example.com/order/production-start" }
     ]
   },
 
@@ -59,6 +71,10 @@ export const entityJobConfigs: Record<string, EntityJobConfig> = {
     delete: [
       { name: "بررسی امکان حذف", url: "https://example.com/preinvoice/check" },
       { name: "حذف پیش فاکتور", url: "https://example.com/preinvoice/delete" }
+    ],
+    add: [
+      { name: "ایجاد پیش فاکتور", url: "https://example.com/preinvoice/add" },
+      { name: "محاسبه مالیات", url: "https://example.com/preinvoice/tax-calculate" }
     ]
   },
 
@@ -74,6 +90,10 @@ export const entityJobConfigs: Record<string, EntityJobConfig> = {
     delete: [
       { name: "بررسی امکان ابطال", url: "https://example.com/invoice/check" },
       { name: "ابطال فاکتور", url: "https://example.com/invoice/void" }
+    ],
+    add: [
+      { name: "صدور فاکتور", url: "https://example.com/invoice/add" },
+      { name: "ارسال فاکتور", url: "https://example.com/invoice/send" }
     ]
   }
 };
@@ -81,7 +101,7 @@ export const entityJobConfigs: Record<string, EntityJobConfig> = {
 // Helper function to get job configuration for an entity and operation
 export const getEntityJobConfig = (
   entityType: string, 
-  operation: 'view' | 'edit' | 'delete'
+  operation: 'view' | 'edit' | 'delete' | 'add'
 ): { name: string; url: string }[] => {
   const config = entityJobConfigs[entityType];
   if (!config) {

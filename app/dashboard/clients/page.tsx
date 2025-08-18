@@ -22,7 +22,7 @@ import {
   statusColorMap,
   statusOptions,
 } from "./types";
-import { AddClientComponent } from "./addClient";
+import { AddClientButtonComponent } from "./addClient";
 import { ViewClientComponent } from "./viewClient";
 import { EditClientComponent } from "./editClient";
 import { DeleteClientComponent } from "./deleteClient";
@@ -77,7 +77,7 @@ export default function ClientsPage() {
     INITIAL_VISIBLE_COLUMNS,
     GetClients,
     GetTotalClients,
-    AddClientComponent,
+    AddClientButtonComponent,
   );
 
   const renderCell = useCallback(
