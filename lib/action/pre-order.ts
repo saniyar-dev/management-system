@@ -1,5 +1,7 @@
 import { ClientType, Row } from "../types";
 import { supabase } from "../utils";
+import { persianValidationRules, businessRuleValidators } from "../utils/persian-validation";
+import { checkEntityDependencies, checkStatusBasedDeletion, genericEntityDelete } from "../utils/dependency-checker";
 
 import { GetRowsFn, GetTotalRowsFn, ServerActionState } from "./type";
 
@@ -122,4 +124,165 @@ export async function AddPreOrder(
     success: true,
     data: data[0].id,
   };
+}
+
+export async function UpdatePreOrder(
+  id: string,
+  formData: FormData
+): Promise<ServerActionState<string>> {
+  try {
+    // Get current pre-order data
+    const { data: preOrderData, error: preOrderError } = await supabase
+      .from("pre_order")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (preOrderError || !preOrderData) {
+      return {
+        message: "پیش سفارش یافت نشد.",
+        success: false,
+      };
+    }
+
+    // Extract form data
+    const description = formData.get("description") as string;
+    const estimated_amount = formData.get("estimated_amount") as string;
+    const status = formData.get("status") as Status;
+
+    // Validate required fields
+    if (!description) {
+      return {
+        message: "شرح پیش سفارش الزامی است.",
+        success: false,
+      };
+    }
+
+    // Validate description
+    const descriptionValidation = persianValidationRules.persianText(description);
+    if (descriptionValidation) {
+      return {
+        message: descriptionValidation,
+        success: false,
+      };
+    }
+
+    // Validate estimated amount if provided
+    if (estimated_amount) {
+      const amountValidation = persianValidationRules.currency(estimated_amount);
+      if (amountValidation) {
+        return {
+          message: amountValidation,
+          success: false,
+        };
+      }
+    }
+
+    // Validate status transition if status is being changed
+    if (status && status !== preOrderData.status) {
+      const allowedTransitions: Record<Status, Status[]> = {
+        pending: ["approved", "rejected"],
+        approved: ["converted", "rejected"],
+        rejected: ["pending"],
+        converted: [], // Cannot change from converted
+      };
+
+      const transitionValidation = businessRuleValidators.validateStatusTransition(
+        preOrderData.status,
+        status,
+        allowedTransitions
+      );
+
+      if (transitionValidation) {
+        return {
+          message: transitionValidation,
+          success: false,
+        };
+      }
+
+      // Additional business rule: cannot convert if not approved
+      if (status === "converted" && preOrderData.status !== "approved") {
+        return {
+          message: "فقط پیش سفارش‌های تایید شده قابل تبدیل به سفارش هستند.",
+          success: false,
+        };
+      }
+    }
+
+    // Prepare update data
+    const updateData: any = {
+      description,
+    };
+
+    if (estimated_amount) {
+      updateData.estimated_amount = parseFloat(estimated_amount);
+    }
+
+    if (status) {
+      updateData.status = status;
+    }
+
+    // Update pre-order
+    const { error: updateError } = await supabase
+      .from("pre_order")
+      .update(updateData)
+      .eq("id", id);
+
+    if (updateError) {
+      return {
+        message: "خطا در به‌روزرسانی پیش سفارش.",
+        success: false,
+      };
+    }
+
+    return {
+      message: "پیش سفارش با موفقیت به‌روزرسانی شد.",
+      success: true,
+      data: id,
+    };
+  } catch (error) {
+    return {
+      message: "خطای سرور. لطفاً دوباره تلاش کنید.",
+      success: false,
+    };
+  }
+}
+
+export async function DeletePreOrder(id: string): Promise<ServerActionState<boolean>> {
+  try {
+    // Get current pre-order data to check status
+    const { data: preOrderData, error: preOrderError } = await supabase
+      .from("pre_order")
+      .select("status")
+      .eq("id", id)
+      .single();
+
+    if (preOrderError || !preOrderData) {
+      return {
+        message: "پیش سفارش یافت نشد.",
+        success: false,
+      };
+    }
+
+    // Check status-based deletion rules
+    const statusCheck = checkStatusBasedDeletion("pre_order", preOrderData.status);
+    if (statusCheck) {
+      return {
+        message: statusCheck,
+        success: false,
+      };
+    }
+
+    // Use generic entity delete which handles dependency checking
+    return await genericEntityDelete("pre_order", id, "pre_order");
+  } catch (error) {
+    return {
+      message: "خطای سرور. لطفاً دوباره تلاش کنید.",
+      success: false,
+    };
+  }
+}
+
+export async function CheckPreOrderDependencies(id: string): Promise<ServerActionState<boolean>> {
+  return await checkEntityDependencies("pre_order", id);
 }

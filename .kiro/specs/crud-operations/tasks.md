@@ -69,20 +69,20 @@
   - Integrate CRUD components with existing table structure
   - _Requirements: 1.1, 2.1, 3.1, 5.3_
 
-- [ ] 6. Extend CRUD operations to pre-orders entity
-  - [ ] 6.1 Create pre-order server actions for update and delete
+- [x] 6. Extend CRUD operations to pre-orders entity
+  - [x] 6.1 Create pre-order server actions for update and delete
     - Implement UpdatePreOrder and DeletePreOrder server actions
     - Add pre-order specific validation rules
     - Create unit tests for pre-order CRUD operations
     - _Requirements: 2.3, 3.3, 6.2, 6.5_
 
-  - [ ] 6.2 Implement pre-order CRUD components
+  - [x] 6.2 Implement pre-order CRUD components
     - Create ViewPreOrder, EditPreOrder, DeletePreOrder components
     - Configure pre-order specific field configurations
     - Handle status transition validation
     - _Requirements: 1.1, 2.1, 3.1, 6.5_
 
-  - [ ] 6.3 Update pre-orders page with CRUD functionality
+  - [x] 6.3 Update pre-orders page with CRUD functionality
     - Modify pre-orders/page.tsx to include CRUD action buttons
     - Integrate pre-order CRUD components
     - Test pre-order workflow with job integration

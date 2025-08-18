@@ -21,11 +21,14 @@ import {
   statusOptions,
 } from "./types";
 import { AddPreOrderComponent } from "./addPreOrder";
+import { ViewPreOrderComponent } from "./viewPreOrder";
+import { EditPreOrderComponent } from "./editPreOrder";
+import { DeletePreOrderComponent } from "./deletePreOrder";
 
 import { Row } from "@/lib/types";
 import { GetPreOrders, GetTotalPreOrders } from "@/lib/action/pre-order";
 import { useTableLogic } from "@/lib/hooks";
-import { DeleteIcon, EditIcon, EyeIcon } from "@/components/icons";
+import { fieldFormatters } from "@/lib/utils/field-config";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -74,7 +77,7 @@ export default function PreOrdersPage() {
     AddPreOrderComponent,
   );
 
-  // Custom renderCell function for pre-orders
+  // Custom renderCell function for pre-orders with CRUD functionality
   const renderCell = (item: Row<PreOrderData, Status>, columnKey: Key) => {
     switch (columnKey) {
       case "client_name":
@@ -88,12 +91,13 @@ export default function PreOrdersPage() {
       case "estimated_amount":
         return (
           <span className="font-mono">
-            {new Intl.NumberFormat("fa-IR").format(item.data.estimated_amount)}{" "}
-            ریال
+            {item.data.estimated_amount === -1 || item.data.estimated_amount === null
+              ? "تعیین نشده"
+              : fieldFormatters.currency(item.data.estimated_amount)}
           </span>
         );
       case "created_at":
-        return new Date(item.data.created_at).toLocaleDateString("fa-IR");
+        return fieldFormatters.date(item.data.created_at);
       case "status":
         return (
           <Chip
@@ -109,19 +113,13 @@ export default function PreOrdersPage() {
         return (
           <div className="relative flex items-center gap-4 justify-center">
             <Tooltip content="مشاهده جزئیات">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EyeIcon />
-              </span>
+              <ViewPreOrderComponent entity={item} />
             </Tooltip>
             <Tooltip content="ویرایش">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EditIcon />
-              </span>
+              <EditPreOrderComponent entity={item} />
             </Tooltip>
             <Tooltip color="danger" content="حذف">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <DeleteIcon />
-              </span>
+              <DeletePreOrderComponent entity={item} />
             </Tooltip>
           </div>
         );
