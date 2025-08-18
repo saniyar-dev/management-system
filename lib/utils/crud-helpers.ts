@@ -1,6 +1,6 @@
 import { ViewFieldConfig, EditFieldConfig, ValidationConfig } from "../action/crud-types";
 import { RowData } from "../types";
-import { persianValidationRules } from "./persian-validation";
+import { persianValidationRules, normalizeFormData } from "./persian-validation";
 import { commonFieldConfigs, createViewFieldConfig, createEditFieldConfig } from "./field-config";
 import { getEntityJobConfig } from "../config/entity-jobs";
 
@@ -127,24 +127,7 @@ export const createErrorMessages = {
   networkError: 'خطا در ارتباط با سرور. لطفاً اتصال اینترنت خود را بررسی کنید'
 };
 
-// Helper to format Persian numbers in form data
+// Helper to format Persian numbers in form data (deprecated - use normalizeFormData instead)
 export const formatFormDataForPersian = (formData: FormData): FormData => {
-  const newFormData = new FormData();
-  
-  // Use Array.from to handle FormData iteration
-  Array.from(formData.entries()).forEach(([key, value]) => {
-    if (typeof value === 'string') {
-      // Convert Persian numbers to English for processing
-      const convertedValue = value.replace(/[۰-۹]/g, (match) => {
-        const persianNumbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-        const englishNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-        return englishNumbers[persianNumbers.indexOf(match)] || match;
-      });
-      newFormData.append(key, convertedValue);
-    } else {
-      newFormData.append(key, value);
-    }
-  });
-  
-  return newFormData;
+  return normalizeFormData(formData);
 };
