@@ -5,7 +5,7 @@ import { useDisclosure } from "@heroui/react";
 
 import { PlusIcon } from "@/components/icons";
 import { PreOrderData, Status } from "./types";
-import { AddModal } from "@/components/crud/AddModal";
+// import { AddModal } from "@/components/crud/AddModal";
 import { AddFieldConfig, ValidationConfig } from "@/lib/action/crud-types";
 import { getEntityJobConfig } from "@/lib/config/entity-jobs";
 import { persianValidationRules } from "@/lib/utils/persian-validation";
@@ -176,7 +176,7 @@ function AddPreOrderModal({
     // Check validation rules
     const validationRule = validationRules[field.key];
     if (validationRule) {
-      const ruleError = validationRule(value as any);
+      const ruleError = validationRule(value as never);
       if (ruleError) return ruleError;
     }
 
@@ -381,46 +381,46 @@ function AddPreOrderModal({
   );
 }
 
-// Hook for using AddPreOrder component
-export function useAddPreOrder() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+// // Hook for using AddPreOrder component
+// export function useAddPreOrder() {
+//   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const AddPreOrderModal = React.useCallback(
-    ({ onSuccess }: AddPreOrderProps) => {
-      const jobsConfig = getEntityJobConfig("pre_order", "add");
+//   const AddPreOrderModal = React.useCallback(
+//     ({ onSuccess }: AddPreOrderProps) => {
+//       const jobsConfig = getEntityJobConfig("pre_order", "add");
 
-      const handleAdd = async (formData: FormData) => {
-        return await AddPreOrder(formData);
-      };
+//       const handleAdd = async (formData: FormData) => {
+//         return await AddPreOrder(formData);
+//       };
 
-      const handleSuccess = () => {
-        // Refresh the page or update the table data
-        window.location.reload();
-        if (onSuccess) {
-          onSuccess();
-        }
-      };
+//       const handleSuccess = () => {
+//         // Refresh the page or update the table data
+//         window.location.reload();
+//         if (onSuccess) {
+//           onSuccess();
+//         }
+//       };
 
-      return (
-        <AddPreOrderModal
-          fields={preOrderFields}
-          isOpen={isOpen}
-          jobsConfig={jobsConfig}
-          title="افزودن پیش سفارش جدید"
-          validationRules={preOrderValidationRules}
-          onAdd={handleAdd}
-          onClose={onClose}
-          onSuccess={handleSuccess}
-        />
-      );
-    },
-    [isOpen, onClose],
-  );
+//       return (
+//         <AddPreOrderModal
+//           fields={preOrderFields}
+//           isOpen={isOpen}
+//           jobsConfig={jobsConfig}
+//           title="افزودن پیش سفارش جدید"
+//           validationRules={preOrderValidationRules}
+//           onAdd={handleAdd}
+//           onClose={onClose}
+//           onSuccess={handleSuccess}
+//         />
+//       );
+//     },
+//     [isOpen, onClose],
+//   );
 
-  return {
-    isOpen,
-    onOpen,
-    onClose,
-    AddPreOrderModal,
-  };
-}
+//   return {
+//     isOpen,
+//     onOpen,
+//     onClose,
+//     AddPreOrderModal,
+//   };
+// }
