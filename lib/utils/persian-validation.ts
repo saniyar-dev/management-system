@@ -1,9 +1,9 @@
 import { PersianValidationRules } from "../action/crud-types";
 
 // Persian character regex patterns
-const PERSIAN_TEXT_REGEX = /^[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\s\d۰-۹0-9]+$/;
+const PERSIAN_TEXT_REGEX = /^[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\s\d۰-۹0-9_-]+$/;
 const PERSIAN_NAME_REGEX = /^[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\s]+$/;
-const PERSIAN_PHONE_REGEX = /^(\+98|0)?9[\d۰-۹]{9}$/;
+const PERSIAN_PHONE_REGEX = /^(\+98|0)9[\d۰-۹]{9}$/;
 const PERSIAN_SSN_REGEX = /^[\d۰-۹]{10}$/;
 const PERSIAN_POSTAL_CODE_REGEX = /^[\d۰-۹]{10}$/;
 
