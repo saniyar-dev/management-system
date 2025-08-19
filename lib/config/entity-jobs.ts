@@ -21,7 +21,7 @@ export const entityJobConfigs: Record<string, EntityJobConfig> = {
     ]
   },
 
-  preOrder: {
+  pre_order: {
     view: [
       { name: "بررسی پیش سفارش", url: "https://example.com/preorder/view" },
       { name: "بررسی اطلاعات مشتری", url: "https://example.com/preorder/client" }

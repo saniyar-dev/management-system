@@ -78,7 +78,7 @@ export function EditPreOrderComponent({ entity, onSuccess }: EditPreOrderProps) 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Get pre-order job configuration for edit operation
-  const jobsConfig = getEntityJobConfig("preOrder", "edit");
+  const jobsConfig = getEntityJobConfig("pre_order", "edit");
 
   const handleUpdate = async (formData: FormData) => {
     return await UpdatePreOrder(entity.id.toString(), formData);
@@ -136,7 +136,7 @@ export function useEditPreOrder() {
 
   const EditPreOrderModal = React.useCallback(
     ({ entity, onSuccess }: EditPreOrderProps) => {
-      const jobsConfig = getEntityJobConfig("preOrder", "edit");
+      const jobsConfig = getEntityJobConfig("pre_order", "edit");
 
       const handleUpdate = async (formData: FormData) => {
         return await UpdatePreOrder(entity.id.toString(), formData);
