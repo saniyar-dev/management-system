@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useTransition } from "react";
+import React, { useRef, useState, useTransition, useEffect, useCallback } from "react";
 import {
   Modal,
   ModalContent,
@@ -44,6 +44,25 @@ export function EditModal<T extends RowData, S extends string>({
   const [jobs, pendingJobs, startJobsTransition] = useJobs("edit", jobsConfig);
   const [actionMsg, setActionMsg] = useState<ServerActionState<any> | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+    const [formData, setFormData] = useState<Record<string, any>>({})
+
+    useEffect(() => {
+        Object.keys(formData).forEach((key) => {
+            const field = fields.find((f) => f.key.toString() === key);
+            if (field) {
+                const error = validateField(field, formData[key]);
+                if (error) {
+                    setErrors((prev) => ({ ...prev, [key]: error }));
+                } else {
+                    setErrors((prev) => {
+                        const newErrors = { ...prev };
+                        delete newErrors[key];
+                        return newErrors;
+                    });
+                }
+            }
+        })
+    }, [formData])
 
   const targetRef = useRef(null);
   const { moveProps } = useDraggable({
@@ -52,7 +71,7 @@ export function EditModal<T extends RowData, S extends string>({
     isDisabled: !isOpen,
   });
 
-  const validateField = (field: EditFieldConfig<T>, value: any): string | null => {
+  const validateField = useCallback((field: EditFieldConfig<T>, value: any): string | null => {
     // Check required validation
     if (field.required && (!value || value.toString().trim() === '')) {
       return `${field.label} الزامی است`;
@@ -71,34 +90,15 @@ export function EditModal<T extends RowData, S extends string>({
     }
 
     return null;
-  };
+  }, [validationRules]);
 
-  const validateForm = (formData: FormData): Record<string, string> => {
-    const newErrors: Record<string, string> = {};
 
-    fields.forEach(field => {
-      const value = formData.get(field.key.toString());
-      const error = validateField(field, value);
-      if (error) {
-        newErrors[field.key.toString()] = error;
-      }
-    });
-
-    return newErrors;
-  };
-
-  const onSubmit = (formData: FormData) => {
+  const onSubmit = useCallback((formData: FormData) => {
     // Normalize Persian numbers to English before validation
     const normalizedFormData = normalizeFormData(formData);
-    
-    // Validate form
-    const formErrors = validateForm(normalizedFormData);
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      return;
-    }
+    if (Object.keys(errors).length > 0) return;
 
-    setErrors({});
+
     startTransition(async () => {
       const msg = await onUpdate(normalizedFormData);
       setActionMsg(msg);
@@ -115,9 +115,9 @@ export function EditModal<T extends RowData, S extends string>({
         }
       }
     });
-  };
+    }, [onUpdate, jobsConfig, onSuccess, startJobsTransition]); // Now depends on a stable validateForm
 
-  const renderField = (field: EditFieldConfig<T>) => {
+  const renderField = useCallback((field: EditFieldConfig<T>) => {
     const fieldKey = field.key.toString();
     const currentValue = entity.data[field.key];
     const hasError = !!errors[fieldKey];
@@ -135,7 +135,11 @@ export function EditModal<T extends RowData, S extends string>({
       errorMessage: hasError ? errorMessage : undefined,
       variant: "bordered" as const,
       dir: "rtl",
-      className: "text-right"
+      className: "text-right",
+      value: formData[fieldKey],
+      onValueChange: (value: string) => {
+        setFormData((prev) => ({ ...prev, [fieldKey]: value }));
+      }
     };
 
     switch (field.type) {
@@ -206,7 +210,7 @@ export function EditModal<T extends RowData, S extends string>({
           />
         );
     }
-  };
+  }, [errors]);
 
   return (
     <>
@@ -225,7 +229,7 @@ export function EditModal<T extends RowData, S extends string>({
             {title}
           </ModalHeader>
           <ModalBody className="rtl">
-            <section className={`flex ${jobs.length > 0 ? "justify-between" : "justify-center"} gap-6`}>
+            <section className={`flex ${jobs.length > 0 ? "justify-between" : "justify-center"} gap-6 py-4`}>
               <div className="flex-1">
                 <form action={onSubmit} className="w-full flex flex-col gap-4">
                   <div className="flex flex-col items-center justify-center gap-4">
