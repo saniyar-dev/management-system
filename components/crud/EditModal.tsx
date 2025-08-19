@@ -127,7 +127,6 @@ export function EditModal<T extends RowData, S extends string>({
     const displayValue = currentValue ? convertEnglishToPersian(currentValue.toString()) : '';
 
     const commonProps = {
-      key: fieldKey,
       name: fieldKey,
       label: field.label,
       defaultValue: displayValue,
@@ -143,6 +142,7 @@ export function EditModal<T extends RowData, S extends string>({
       case 'textarea':
         return (
           <PersianTextarea
+            key={fieldKey}
             {...commonProps}
             placeholder={`${field.label} را وارد کنید`}
             minRows={3}
@@ -154,6 +154,7 @@ export function EditModal<T extends RowData, S extends string>({
       case 'select':
         return (
           <Select
+            key={fieldKey}
             {...commonProps}
             placeholder={`${field.label} را انتخاب کنید`}
             classNames={{
@@ -172,6 +173,7 @@ export function EditModal<T extends RowData, S extends string>({
       case 'number':
         return (
           <PersianInput
+            key={fieldKey}
             {...commonProps}
             type="text"
             placeholder={`${field.label} را وارد کنید`}
@@ -183,6 +185,7 @@ export function EditModal<T extends RowData, S extends string>({
       case 'date':
         return (
           <PersianInput
+            key={fieldKey}
             {...commonProps}
             type="date"
             placeholder={`${field.label} را انتخاب کنید`}
@@ -194,6 +197,7 @@ export function EditModal<T extends RowData, S extends string>({
       default: // 'input'
         return (
           <PersianInput
+            key={fieldKey}
             {...commonProps}
             type="text"
             placeholder={`${field.label} را وارد کنید`}

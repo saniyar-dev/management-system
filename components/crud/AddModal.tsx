@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useTransition } from "react";
+import React, { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import {
   Modal,
   ModalContent,
@@ -37,21 +37,40 @@ interface AddModalProps<T extends RowData, S extends string> extends AddComponen
 }
 
 export function AddModal<T extends RowData, S extends string>({
-  fields,
-  validationRules,
-  jobsConfig,
-  onAdd,
-  isOpen,
-  onClose,
-  title,
-  tabs,
-  onSuccess
+    fields,
+    validationRules,
+    jobsConfig,
+    onAdd,
+    isOpen,
+    onClose,
+    title,
+    tabs,
+    onSuccess
 }: AddModalProps<T, S>) {
-  const [pending, startTransition] = useTransition();
-  const [jobs, pendingJobs, startJobsTransition] = useJobs("add", jobsConfig);
-  const [actionMsg, setActionMsg] = useState<ServerActionState<any> | null>(null);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+    const [pending, startTransition] = useTransition();
+    const [jobs, pendingJobs, startJobsTransition] = useJobs("add", jobsConfig);
+    const [actionMsg, setActionMsg] = useState<ServerActionState<any> | null>(null);
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [formData, setFormData] = useState<Record<string, any>>({})
 
+    useEffect(() => {
+        Object.keys(formData).forEach((key) => {
+            const field = fields.find((f) => f.key.toString() === key);
+            if (field) {
+                const error = validateField(field, formData[key]);
+                if (error) {
+                    setErrors((prev) => ({ ...prev, [key]: error }));
+                } else {
+                    setErrors((prev) => {
+                        const newErrors = { ...prev };
+                        delete newErrors[key];
+                        return newErrors;
+                    });
+                }
+            }
+        })
+    }, [formData])
+    
   const targetRef = useRef(null);
   const { moveProps } = useDraggable({
     targetRef,
@@ -59,181 +78,117 @@ export function AddModal<T extends RowData, S extends string>({
     isDisabled: !isOpen,
   });
 
-  const validateField = (field: AddFieldConfig<T>, value: any): string | null => {
+  const validateField = useCallback((field: AddFieldConfig<T>, value: any): string | null => {
     // Check required validation
-    if (field.required && (!value || value.toString().trim() === '')) {
-      return `${field.label} الزامی است`;
-    }
-
-    // Check custom field validation
-    if (field.validation) {
-      const fieldError = field.validation(value);
-      if (fieldError) return fieldError;
-    }
-
-    // Check validation rules
-    if (validationRules[field.key]) {
-      const ruleError = validationRules[field.key]!(value);
-      if (ruleError) return ruleError;
-    }
-
-    return null;
-  };
-
-  const validateForm = (formData: FormData, fieldsToValidate: AddFieldConfig<T>[]): Record<string, string> => {
-    const newErrors: Record<string, string> = {};
-
-    fieldsToValidate.forEach(field => {
-      const fieldName = field.fieldName || field.key.toString();
-      const value = formData.get(fieldName);
-      const error = validateField(field, value);
-      if (error) {
-        newErrors[fieldName] = error;
-      }
-    });
-
-    return newErrors;
-  };
-
-  const onSubmit = (formData: FormData, fieldsToValidate: AddFieldConfig<T>[]) => {
-    // Normalize Persian numbers to English before validation
-    const normalizedFormData = normalizeFormData(formData);
-    
-    // Validate form
-    const formErrors = validateForm(normalizedFormData, fieldsToValidate);
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      return;
-    }
-
-    setErrors({});
-    startTransition(async () => {
-      const msg = await onAdd(normalizedFormData);
-      setActionMsg(msg);
-
-      if (msg.success && msg.data) {
-        // Start jobs if add was successful
-        if (jobsConfig.length > 0) {
-          startJobsTransition(msg.data);
+        if (field.required && (!value || value.toString().trim() === '')) {
+            return `${field.label} الزامی است`;
         }
+        if (field.validation) {
+            const fieldError = field.validation(value);
+            if (fieldError) return fieldError;
+        }
+        if (validationRules[field.key]) {
+            const ruleError = validationRules[field.key]!(value);
+            if (ruleError) return ruleError;
+        }
+        return null;
+    }, [validationRules]);
+
+
+    // STABILIZE STEP 2: Wrap the main onSubmit logic in useCallback
+    const onSubmit = useCallback((formData: FormData, fieldsToValidate: AddFieldConfig<T>[]) => {
+        const normalizedFormData = normalizeFormData(formData);
+        if (Object.keys(errors).length > 0) return;
+
+        startTransition(async () => {
+            const msg = await onAdd(normalizedFormData);
+            setActionMsg(msg);
+            if (msg.success && msg.data) {
+                if (jobsConfig.length > 0) {
+                    startJobsTransition(msg.data);
+                }
+                if (onSuccess) {
+                    onSuccess();
+                }
+            }
+        });
+    }, [onAdd, jobsConfig, onSuccess, startJobsTransition]); // Now depends on a stable validateForm
+
+
+    // STABILIZE STEP 3: Wrap the renderField function in useCallback
+    // It depends on `errors`, so it will only be recreated when errors change.
+    const renderField = useCallback((field: AddFieldConfig<T>) => {
+        const fieldKey = field.key.toString();
+        const fieldName = field.fieldName || fieldKey;
+        const hasError = !!errors[fieldName];
+        const errorMessage = errors[fieldName];
         
-        // Call success callback
-        if (onSuccess) {
-          onSuccess();
+        // ... commonProps definition ...
+        // ... switch case for rendering fields ...
+
+        // For brevity, the inner switch-case logic is omitted as it is unchanged.
+        // Just make sure it's inside this useCallback block.
+        const commonProps = {
+             name: fieldName,
+             label: field.label,
+             placeholder: field.placeholder || `${field.label} را وارد کنید`,
+             isRequired: field.required,
+             isInvalid: hasError,
+             errorMessage: hasError ? errorMessage : undefined,
+             variant: "bordered" as const,
+             dir: "rtl",
+             className: "text-right",
+             value: formData[fieldName],
+             onValueChange: (value: string) => {
+                setFormData((prev) => ({ ...prev, [fieldName]: value }));
+             }
+        };
+
+        switch (field.type) {
+             case 'textarea':
+                 return <PersianTextarea key={fieldKey} {...commonProps} minRows={3} allowNumbers={true} displayPersianNumbers={true} />;
+             case 'select':
+                 return (
+                     <Select key={fieldKey} {...commonProps} placeholder={`${field.label} را انتخاب کنید`} classNames={{ trigger: "text-right", value: "text-right" }}>
+                         {field.options?.map((option) => (
+                             <SelectItem key={option.value} className="text-right">{option.label}</SelectItem>
+                         )) || []}
+                     </Select>
+                 );
+             case 'number':
+                 return <PersianInput key={fieldKey} {...commonProps} type="text" allowNumbers={true} displayPersianNumbers={true} />;
+             case 'date':
+                 return <PersianInput key={fieldKey} {...commonProps} type="date" placeholder={`${field.label} را انتخاب کنید`} allowNumbers={false} displayPersianNumbers={false} />;
+             default:
+                 return <PersianInput key={fieldKey} {...commonProps} type="text" allowNumbers={true} displayPersianNumbers={true} />;
         }
-      }
-    });
-  };
+    }, [errors]); // CRITICAL: This now only changes when errors change.
 
-  const renderField = (field: AddFieldConfig<T>) => {
-    const fieldKey = field.key.toString();
-    const fieldName = field.fieldName || fieldKey;
-    const hasError = !!errors[fieldName];
-    const errorMessage = errors[fieldName];
 
-    const commonProps = {
-      key: fieldName,
-      name: fieldName,
-      label: field.label,
-      placeholder: field.placeholder || `${field.label} را وارد کنید`,
-      isRequired: field.required,
-      isInvalid: hasError,
-      errorMessage: hasError ? errorMessage : undefined,
-      variant: "bordered" as const,
-      dir: "rtl",
-      className: "text-right"
-    };
+    // STABILIZE STEP 4: The renderForm useCallback now has stable dependencies
+    const renderForm = useCallback((fieldsToRender: AddFieldConfig<T>[]) => {
+        const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            const formData = new FormData(event.currentTarget);
+            onSubmit(formData, fieldsToRender);
+        };
 
-    switch (field.type) {
-      case 'textarea':
         return (
-          <PersianTextarea
-            {...commonProps}
-            minRows={3}
-            allowNumbers={true}
-            displayPersianNumbers={true}
-          />
+            <form onSubmit={handleFormSubmit} className="w-full flex flex-col gap-4">
+                <div className="flex flex-col items-center justify-center gap-4">
+                    {fieldsToRender.map(renderField)}
+                </div>
+                <div className="flex items-center justify-end gap-2 mt-4">
+                    <Button color="danger" variant="flat" onPress={onClose}>
+                        لغو
+                    </Button>
+                    <Button color="primary" type="submit" isLoading={pending}>
+                        ثبت
+                    </Button>
+                </div>
+            </form>
         );
-
-      case 'select':
-        return (
-          <Select
-            {...commonProps}
-            placeholder={`${field.label} را انتخاب کنید`}
-            classNames={{
-              trigger: "text-right",
-              value: "text-right"
-            }}
-          >
-            {field.options?.map((option) => (
-              <SelectItem key={option.value} className="text-right">
-                {option.label}
-              </SelectItem>
-            )) || []}
-          </Select>
-        );
-
-      case 'number':
-        return (
-          <PersianInput
-            {...commonProps}
-            type="text"
-            allowNumbers={true}
-            displayPersianNumbers={true}
-          />
-        );
-
-      case 'date':
-        return (
-          <PersianInput
-            {...commonProps}
-            type="date"
-            placeholder={`${field.label} را انتخاب کنید`}
-            allowNumbers={false}
-            displayPersianNumbers={false}
-          />
-        );
-
-      default: // 'input'
-        return (
-          <PersianInput
-            {...commonProps}
-            type="text"
-            allowNumbers={true}
-            displayPersianNumbers={true}
-          />
-        );
-    }
-  };
-
-  const renderForm = (fieldsToRender: AddFieldConfig<T>[]) => (
-    <form 
-      action={(formData) => onSubmit(formData, fieldsToRender)} 
-      className="w-full flex flex-col gap-4"
-    >
-      <div className="flex flex-col items-center justify-center gap-4">
-        {fieldsToRender.map(renderField)}
-      </div>
-      
-      <div className="flex items-center justify-end gap-2 mt-4">
-        <Button
-          color="danger"
-          variant="flat"
-          onPress={onClose}
-        >
-          لغو
-        </Button>
-        <Button 
-          color="primary" 
-          type="submit"
-          isLoading={pending}
-        >
-          ثبت
-        </Button>
-      </div>
-    </form>
-  );
-
+    }, [pending, onClose, renderField, onSubmit]); // These are now stable!
   return (
     <>
       <Loading pending={pending} />

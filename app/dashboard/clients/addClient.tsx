@@ -180,6 +180,8 @@ export function AddClientComponent({ onSuccess }: AddClientProps = {}) {
         ایجاد مشتری جدید
       </Button>
 
+{
+  isOpen &&
       <AddModal
         fields={personalClientFields} // Default fields (not used when tabs are provided)
         tabs={clientTabs}
@@ -191,6 +193,7 @@ export function AddClientComponent({ onSuccess }: AddClientProps = {}) {
         onClose={handleClose}
         onSuccess={handleSuccess}
       />
+}
     </>
   );
 }
