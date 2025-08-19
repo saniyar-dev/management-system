@@ -56,7 +56,7 @@ export function ViewPreOrderComponent({ entity, onSuccess }: ViewPreOrderProps) 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Get pre-order job configuration for view operation
-  const jobsConfig = getEntityJobConfig("preOrder", "view");
+  const jobsConfig = getEntityJobConfig("pre_order", "view");
 
   const handleClose = () => {
     onClose();
@@ -112,7 +112,7 @@ export function useViewPreOrder() {
 
   const ViewPreOrderModal = React.useCallback(
     ({ entity, onSuccess }: ViewPreOrderProps) => {
-      const jobsConfig = getEntityJobConfig("preOrder", "view");
+      const jobsConfig = getEntityJobConfig("pre_order", "view");
 
       return (
         <ViewModal

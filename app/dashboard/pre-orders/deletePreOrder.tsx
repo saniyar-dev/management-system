@@ -63,7 +63,7 @@ export function DeletePreOrderComponent({
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Get pre-order job configuration for delete operation
-  const jobsConfig = getEntityJobConfig("preOrder", "delete");
+  const jobsConfig = getEntityJobConfig("pre_order", "delete");
 
   const handleDelete = async (id: string) => {
     return await DeletePreOrder(id);
@@ -153,7 +153,7 @@ export function useDeletePreOrder() {
 
   const DeletePreOrderModal = React.useCallback(
     ({ entity, onSuccess }: DeletePreOrderProps) => {
-      const jobsConfig = getEntityJobConfig("preOrder", "delete");
+      const jobsConfig = getEntityJobConfig("pre_order", "delete");
 
       const handleDelete = async (id: string) => {
         return await DeletePreOrder(id);
