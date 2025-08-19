@@ -44,21 +44,6 @@ const clientEditFields: EditFieldConfig<ClientData>[] = [
   },
 ];
 
-// Status field for editing
-const statusEditField: EditFieldConfig<ClientData> = {
-  key: "status" as keyof ClientData,
-  label: "وضعیت",
-  type: "select",
-  required: true,
-  options: statusOptions.map((option) => ({
-    value: option.uid,
-    label: option.name,
-  })),
-};
-
-// All edit fields including status
-const allEditFields = [...clientEditFields, statusEditField];
-
 // Validation configuration for client fields
 const clientValidationRules: ValidationConfig<ClientData> = {
   name: persianValidationRules.persianName,
@@ -116,7 +101,7 @@ export function EditClientComponent({ entity, onSuccess }: EditClientProps) {
 
       <EditModal
         entity={entity}
-        fields={allEditFields}
+        fields={clientEditFields}
         isOpen={isOpen}
         jobsConfig={jobsConfig}
         title={`ویرایش مشتری: ${entity.data.name}`}
@@ -152,7 +137,7 @@ export function useEditClient() {
       return (
         <EditModal
           entity={entity}
-          fields={allEditFields}
+          fields={clientEditFields}
           isOpen={isOpen}
           jobsConfig={jobsConfig}
           title={`ویرایش مشتری: ${entity.data.name}`}
