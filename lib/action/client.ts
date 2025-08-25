@@ -173,119 +173,101 @@ export async function UpdateClient(
   id: string,
   formData: FormData,
 ): Promise<ServerActionState<string>> {
-  try {
-    // Get current client data to determine type
-    const { data: clientData, error: clientError } = await supabase
-      .from("client")
-      .select("person_id, company_id, type")
-      .eq("id", id)
-      .single();
+  // Get current client data to determine type
+  const { data: clientData, error: clientError } = await supabase
+    .from("client")
+    .select("person_id, company_id, type")
+    .eq("id", id)
+    .single();
 
-    if (clientError || !clientData) {
-      return {
-        message: "مشتری یافت نشد.",
-        success: false,
-      };
-    }
-
-    // Extract form data
-    const name = formData.get("name") as string;
-    const phone = formData.get("phone") as string;
-    const address = formData.get("address") as string;
-    const ssn = formData.get("ssn") as string;
-    const postalCode = formData.get("postal_code") as string;
-    const status = formData.get("status") as Status;
-
-    // Validate required fields
-    if (!name || !phone || !address || !ssn) {
-      return {
-        message: "تمام فیلدهای الزامی را پر کنید.",
-        success: false,
-      };
-    }
-
-    // Business rule validation
-    const businessValidation = businessRuleValidators.validateClientForOrder({
-      name,
-      phone,
-      address,
-      ssn,
-    });
-
-    if (businessValidation) {
-      return {
-        message: businessValidation,
-        success: false,
-      };
-    }
-
-    // Update the appropriate table (person or company)
-    if (clientData.person_id) {
-      const { error: personError } = await supabase
-        .from("person")
-        .update({
-          name,
-          ssn,
-          phone,
-          address,
-          postal_code: postalCode,
-        })
-        .eq("id", clientData.person_id);
-
-      if (personError) {
-        return {
-          message: "خطا در به‌روزرسانی اطلاعات شخصی.",
-          success: false,
-        };
-      }
-    }
-
-    if (clientData.company_id) {
-      const { error: companyError } = await supabase
-        .from("company")
-        .update({
-          name,
-          ssn,
-          phone,
-          address,
-          postal_code: postalCode,
-        })
-        .eq("id", clientData.company_id);
-
-      if (companyError) {
-        return {
-          message: "خطا در به‌روزرسانی اطلاعات شرکت.",
-          success: false,
-        };
-      }
-    }
-
-    // Update client status if provided
-    if (status) {
-      const { error: statusError } = await supabase
-        .from("client")
-        .update({ status })
-        .eq("id", id);
-
-      if (statusError) {
-        return {
-          message: "خطا در به‌روزرسانی وضعیت مشتری.",
-          success: false,
-        };
-      }
-    }
-
+  if (clientError || !clientData) {
     return {
-      message: "اطلاعات مشتری با موفقیت به‌روزرسانی شد.",
-      success: true,
-      data: id,
-    };
-  } catch {
-    return {
-      message: "خطای سرور. لطفاً دوباره تلاش کنید.",
+      message: "مشتری یافت نشد.",
       success: false,
     };
   }
+
+  const updateCompany = async (formData: FormData): Promise<string | null> => {
+    const name = formData.get("company_name") as string;
+    const ssn = formData.get("company_ssn") as string;
+    const phone = formData.get("phone") as string;
+    const county = formData.get("county") as string;
+    const town = formData.get("town") as string;
+    const address = formData.get("address") as string;
+    const postalCode = formData.get("postal_code") as string;
+
+    // return if the formData doesn't container company_name
+    if (name === "" || !name) return null;
+
+    const { error: companyError } = await supabase
+      .from("company")
+      .update({
+        name,
+        ssn,
+        phone,
+        address: `${county}, ${town}, ${address}`,
+        postal_code: postalCode,
+      })
+      .eq("id", clientData.company_id!);
+    
+    if (companyError) {
+      return "خطا در به‌روزرسانی اطلاعات شرکت.";
+    }
+    return null
+  }
+
+  const updatePersonal = async (formData: FormData): Promise<string | null> => {
+    const name = formData.get("name") as string;
+    const phone = formData.get("phone") as string;
+    const county = formData.get("county") as string;
+    const town = formData.get("town") as string;
+    const address = formData.get("address") as string;
+    const ssn = formData.get("ssn") as string;
+    const postalCode = formData.get("postal_code") as string;
+
+    const { error: personError } = await supabase
+      .from("person")
+      .update({
+        name,
+        ssn,
+        phone,
+        address: `${county}, ${town}, ${address}`,
+        postal_code: postalCode,
+      })
+      .eq("id", clientData.person_id!);
+
+    if (personError) {
+      return "خطا در به‌روزرسانی اطلاعات شخصی.";
+    }
+    return null
+  }
+
+  // Update the appropriate table (person or company)
+  if (clientData.person_id) {
+    const personError = await updatePersonal(formData);
+    if (personError) {
+      return {
+        message: personError,
+        success: false,
+      };
+    }
+  }
+
+  if (clientData.company_id) {
+    const companyError = await updateCompany(formData);
+    if (companyError) {
+      return {
+        message: companyError,
+        success: false,
+      };
+    }
+  }
+
+  return {
+    message: "اطلاعات مشتری با موفقیت به‌روزرسانی شد.",
+    success: true,
+    data: id,
+  };
 }
 
 export async function AddClient(formData: FormData) {
