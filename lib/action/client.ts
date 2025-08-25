@@ -41,6 +41,14 @@ export const GetTotalClients: GetTotalRowsFn = async (
   };
 };
 
+const formatAddress = (addr: string): {address: string, town: string, county: string} => {
+  return {
+    county: addr.split(",")[0],
+    town: addr.split(",")[1],
+    address: addr.split(",")[2],
+  };
+}
+
 export const GetClients: GetRowsFn<ClientData, Status> = async (
   start,
   end,
@@ -56,6 +64,7 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
     _limit: searchTerm === "" ? limit : 1000,
     _offset: searchTerm === "" ? (page - 1) * limit : 0,
   });
+  console.log(data)
 
   if (error) {
     return {
@@ -66,39 +75,74 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
 
   const clientPromises = data.map(
     async (client): Promise<Row<ClientData, Status> | null> => {
-      if (client.company_id !== null) {
+      if (client.type === "company" && client.company_id !== null && client.person_id !== null) {
         const { data: company, error: CompanyError } = await supabase
           .rpc("search_company_by_name", { search_term: searchTerm })
           .eq("id", client.company_id)
           .single();
 
-        if (CompanyError) {
-          return null;
-        }
-
-        return {
-          id: client.id,
-          data: company as ClientData,
-          status: client.status as Status,
-          type: client.type as ClientType,
-        };
-      }
-      if (client.person_id !== null) {
         const { data: person, error: PersonError } = await supabase
           .rpc("search_person_by_name", { search_term: searchTerm })
           .eq("id", client.person_id)
           .single();
 
+        if (CompanyError || PersonError) {
+          return null;
+        }
+        const {address, town, county} = formatAddress(company.address!)
+
+        return {
+          id: client.id,
+          data: {
+            company_name: company.name,
+            company_phone: company.phone!,
+            company_ssn: company.ssn,
+            name: person.name,
+            phone: person.phone!,
+            ssn: person.ssn,
+            address: address,
+            county: county,
+            town: town,
+            postal_code: company.postal_code!,
+            id: client.id,
+          },
+          status: client.status as Status,
+          type: client.type as ClientType,
+        };
+      }
+      if (client.type === "personal" && client.person_id !== null) {
+        const { data: person, error: PersonError } = await supabase
+          .rpc("search_person_by_name", { search_term: searchTerm })
+          .eq("id", client.person_id)
+          .single();
+        console.log(person)
+
         if (PersonError) {
           return null;
         }
 
+
+        const {address, town, county} = formatAddress(person.address!)
+
         return {
           id: client.id,
-          data: person as ClientData,
+          data: {
+            company_name: "",
+            company_phone: "",
+            company_ssn: "",
+            name: person.name,
+            phone: person.phone!,
+            ssn: person.ssn,
+            address: address,
+            county: county,
+            town: town,
+            postal_code: person.postal_code!,
+            id: client.id,
+          },
           status: client.status as Status,
           type: client.type as ClientType,
         };
+
       }
 
       return null;
@@ -245,9 +289,11 @@ export async function UpdateClient(
 export async function AddClient(formData: FormData) {
   const createCompany = async (formData: FormData): Promise<string | null> => {
     const name = formData.get("company_name") as string;
-    const phone = formData.get("phone") as string;
-    const address = formData.get("company_address") as string;
     const ssn = formData.get("company_ssn") as string;
+    const phone = formData.get("phone") as string;
+    const county = formData.get("county") as string;
+    const town = formData.get("town") as string;
+    const address = formData.get("address") as string;
     const postalCode = formData.get("company_postal_code") as string;
 
     // return if the formData doesn't container company_name
@@ -259,7 +305,7 @@ export async function AddClient(formData: FormData) {
         name,
         ssn,
         phone,
-        address,
+        address: `${county}, ${town}, ${address}`,
         postal_code: postalCode,
       })
       .select();
@@ -274,6 +320,8 @@ export async function AddClient(formData: FormData) {
   const createPersonal = async (formData: FormData): Promise<string | null> => {
     const name = formData.get("name") as string;
     const phone = formData.get("phone") as string;
+    const county = formData.get("county") as string;
+    const town = formData.get("town") as string;
     const address = formData.get("address") as string;
     const ssn = formData.get("ssn") as string;
     const postalCode = formData.get("postal_code") as string;
@@ -284,7 +332,7 @@ export async function AddClient(formData: FormData) {
         name,
         ssn,
         phone,
-        address,
+        address: `${county}, ${town}, ${address}`,
         postal_code: postalCode,
       })
       .select();
