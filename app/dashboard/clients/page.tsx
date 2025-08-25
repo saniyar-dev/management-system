@@ -47,6 +47,8 @@ const columns: Array<{
   { name: "نام / نام شرکت", uid: "name", sortable: true },
   { name: "کد ملی / شناسه ملی", uid: "ssn", sortable: true },
   { name: "شماره موبایل", uid: "phone" },
+  { name: "استان", uid: "county", sortable: true },
+  { name: "شهرستان / بخش", uid: "town" },
   { name: "آدرس", uid: "address" },
   { name: "کد پستی", uid: "postal_code" },
   { name: "وضعیت", uid: "status", sortable: true },
@@ -57,7 +59,8 @@ const INITIAL_VISIBLE_COLUMNS: Array<ColumnUID> = [
   "name",
   "ssn",
   "phone",
-  "address",
+  "county",
+  "town",
   "status",
   "actions",
 ];
