@@ -18,6 +18,9 @@ export type ClientData = RowData & {
   town: string;
   address: string;
   postal_code: string;
+  company_name: string;
+  company_ssn: string;
+  company_phone: string;
 };
 
 export const statusColorMap: Record<Status, ChipProps["color"]> = {
