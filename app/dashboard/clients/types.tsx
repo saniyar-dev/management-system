@@ -14,6 +14,8 @@ export type ClientData = RowData & {
   name: string;
   ssn: string;
   phone: string;
+  county: string;
+  town: string;
   address: string;
   postal_code: string;
 };

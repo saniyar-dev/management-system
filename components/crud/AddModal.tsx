@@ -24,6 +24,7 @@ import JobComponent from "@/components/jobs";
 import Loading from "@/components/loading";
 import { ServerActionState } from "@/lib/action/type";
 import { normalizeFormData } from "@/lib/utils/persian-validation";
+import { PersianSelector } from "../ui/PersianSelector";
 
 interface AddModalProps<T extends RowData, S extends string> extends AddComponentProps<T, S> {
   isOpen: boolean;
@@ -148,13 +149,7 @@ export function AddModal<T extends RowData, S extends string>({
              case 'textarea':
                  return <PersianTextarea key={fieldKey} {...commonProps} minRows={3} allowNumbers={true} displayPersianNumbers={true} />;
              case 'select':
-                 return (
-                     <Select key={fieldKey} {...commonProps} placeholder={`${field.label} را انتخاب کنید`} classNames={{ trigger: "text-right", value: "text-right" }}>
-                         {field.options?.map((option) => (
-                             <SelectItem key={option.value} className="text-right">{option.label}</SelectItem>
-                         )) || []}
-                     </Select>
-                 );
+                 return <PersianSelector key={fieldKey} {...commonProps} options={field.options || []} />;
              case 'number':
                  return <PersianInput key={fieldKey} {...commonProps} type="text" allowNumbers={true} displayPersianNumbers={true} />;
              case 'date':

@@ -60,9 +60,15 @@ export interface AddFieldConfig<T extends RowData> {
   type: 'input' | 'textarea' | 'select' | 'date' | 'number';
   required?: boolean;
   validation?: (value: any) => string | null;
-  options?: { value: string; label: string }[];
+  options?: SelectOption[];
   placeholder?: string;
   fieldName?: string; // Custom field name for form (if different from key)
+}
+
+export interface SelectOption {
+  id: string,
+  name: string,
+  label: string
 }
 
 // Validation configuration
