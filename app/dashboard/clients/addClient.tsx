@@ -149,7 +149,6 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
 
   {
     key: "postal_code",
-    fieldName: "company_postal_code",
     label: "کد پستی کارخانه/کارگاه/شرکت",
     type: "input",
     required: true,
@@ -161,8 +160,11 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
 // Validation configuration for client fields
 const clientValidationRules: ValidationConfig<ClientData> = {
   name: persianValidationRules.persianName,
+  company_name: persianValidationRules.persianName,
   ssn: persianValidationRules.persianSSN,
+  company_ssn: persianValidationRules.persianSSN,
   phone: persianValidationRules.persianPhone,
+  company_phone: persianValidationRules.persianPhone,
   address: persianValidationRules.persianText,
   postal_code: persianValidationRules.persianPostalCode,
 };
@@ -219,7 +221,7 @@ export function AddClientComponent({ onSuccess }: AddClientProps = {}) {
 {
   isOpen &&
       <AddModal
-        fields={personalClientFields} // Default fields (not used when tabs are provided)
+        fields={companyClientFields} // Default fields (not used when tabs are provided)
         tabs={clientTabs}
         isOpen={isOpen}
         jobsConfig={jobsConfig}

@@ -294,7 +294,7 @@ export async function AddClient(formData: FormData) {
     const county = formData.get("county") as string;
     const town = formData.get("town") as string;
     const address = formData.get("address") as string;
-    const postalCode = formData.get("company_postal_code") as string;
+    const postalCode = formData.get("postal_code") as string;
 
     // return if the formData doesn't container company_name
     if (name === "" || !name) return null;
