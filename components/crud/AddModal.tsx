@@ -144,12 +144,13 @@ export function AddModal<T extends RowData, S extends string>({
                 setFormData((prev) => ({ ...prev, [fieldName]: value }));
              }
         };
+        console.log(formData)
 
         switch (field.type) {
              case 'textarea':
                  return <PersianTextarea key={fieldKey} {...commonProps} minRows={3} allowNumbers={true} displayPersianNumbers={true} />;
              case 'select':
-                 return <PersianSelector key={fieldKey} {...commonProps} options={field.options || []} />;
+                 return <PersianSelector key={fieldKey} {...commonProps} options={field.options!(formData)} onSelectionChange={(selectedOption) => {setFormData((prev) => ({...prev, [fieldName]: selectedOption?.name}))}} />;
              case 'number':
                  return <PersianInput key={fieldKey} {...commonProps} type="text" allowNumbers={true} displayPersianNumbers={true} />;
              case 'date':
@@ -157,7 +158,7 @@ export function AddModal<T extends RowData, S extends string>({
              default:
                  return <PersianInput key={fieldKey} {...commonProps} type="text" allowNumbers={true} displayPersianNumbers={true} />;
         }
-    }, [errors]); // CRITICAL: This now only changes when errors change.
+    }, [errors, formData]); // CRITICAL: This now only changes when errors change.
 
 
     // STABILIZE STEP 4: The renderForm useCallback now has stable dependencies

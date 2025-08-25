@@ -26,6 +26,8 @@ import { SubmitJobs } from "./action/jobs";
 import { GetRowsFn, GetTotalRowsFn } from "@/lib/action/type";
 import { ChevronDownIcon, SearchIcon } from "@/components/icons";
 
+import { provinceOptions } from "@/config/statics"
+
 export const useSession = (): { session: Session | null; pending: boolean } => {
   const [session, setSession] = useState<Session | null>(null);
   const [pending, setPending] = useState(true);
@@ -74,6 +76,7 @@ export const useTableLogic = <TD extends RowData, S extends string>(
     new Set(INITIAL_VISIBLE_COLUMNS),
   );
   const [statusFilter, setStatusFilter] = useState<Selection>("all");
+  const [countyFilter, setCountyFilter] = useState<Selection>("all");
   const [rowTypeFilter, setRowTypeFilter] = useState<Selection>("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
@@ -234,6 +237,30 @@ export const useTableLogic = <TD extends RowData, S extends string>(
                   endContent={<ChevronDownIcon className="text-small" />}
                   variant="flat"
                 >
+                  استان
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectedKeys={countyFilter}
+                selectionMode="multiple"
+                onSelectionChange={setCountyFilter}
+              >
+                {provinceOptions.map((countyOption) => (
+                  <DropdownItem key={countyOption.uid} className="capitalize">
+                    {countyOption.name}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+            <Dropdown>
+              <DropdownTrigger className="hidden sm:flex">
+                <Button
+                  endContent={<ChevronDownIcon className="text-small" />}
+                  variant="flat"
+                >
                   وضعیت
                 </Button>
               </DropdownTrigger>
@@ -300,6 +327,7 @@ export const useTableLogic = <TD extends RowData, S extends string>(
   }, [
     filterValue,
     statusFilter,
+    countyFilter,
     rowTypeFilter,
     visibleColumns,
     onSearchChange,
@@ -381,7 +409,7 @@ export const useTableLogic = <TD extends RowData, S extends string>(
       }
       setRows([]);
     });
-  }, [page, rowsPerPage, filterValue, statusFilter, rowTypeFilter]);
+  }, [page, rowsPerPage, filterValue, statusFilter, rowTypeFilter, countyFilter]);
 
   return {
     bottomContent,

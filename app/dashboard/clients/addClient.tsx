@@ -10,6 +10,7 @@ import { AddFieldConfig, ValidationConfig } from "@/lib/action/crud-types";
 import { getEntityJobConfig } from "@/lib/config/entity-jobs";
 import { persianValidationRules } from "@/lib/utils/persian-validation";
 import { AddClient } from "@/lib/action/client";
+import { provinceOptions } from "@/config/statics"
 
 // Personal client fields
 const personalClientFields: AddFieldConfig<ClientData>[] = [
@@ -43,7 +44,7 @@ const personalClientFields: AddFieldConfig<ClientData>[] = [
     type: "select",
     required: true,
     placeholder: "هرمزگان",
-    options: [{id: "1", name: "هرمزگان", label: "هرمزگان"}],
+    options: () => provinceOptions.map((county) => {return {id: county.uid, name: county.name, label: county.name}}),
     validation: persianValidationRules.persianText,
   },
   {
@@ -51,7 +52,14 @@ const personalClientFields: AddFieldConfig<ClientData>[] = [
     label: "شهرستان / بخش",
     type: "select",
     required: true,
-    options: [{id: "1", name: "بندرعباس", label: "بندرعباس"}],
+    options: (formData) => {
+      const selectedCounty = formData["county"];
+      if (!selectedCounty) {
+        return []
+      }
+      const towns = provinceOptions.find((county) => county.uid === selectedCounty.toString())?.towns;
+      return towns?.map((town) => {return {id: town.uid, name: town.name, label: town.name}}) || [];
+    },
     placeholder: "بندرعباس",
     validation: persianValidationRules.persianText,
   },
@@ -126,7 +134,7 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     type: "select",
     required: true,
     placeholder: "هرمزگان",
-    options: [{id: "1", name: "هرمزگان", label: "هرمزگان"}],
+    options: () => provinceOptions.map((county) => {return {id: county.uid, name: county.name, label: county.name}}),
     validation: persianValidationRules.persianText,
   },
   {
@@ -134,7 +142,15 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     label: "شهرستان / بخش",
     type: "select",
     required: true,
-    options: [{id: "1", name: "بندرعباس", label: "بندرعباس"}],
+    options: (formData) => {
+      const selectedCounty = formData["county"];
+      if (!selectedCounty) {
+        return []
+      }
+      const towns = provinceOptions.find((county) => county.uid === selectedCounty.toString())?.towns;
+      return towns?.map((town) => {return {id: town.uid, name: town.name, label: town.name}}) || [];
+    },
+
     placeholder: "بندرعباس",
     validation: persianValidationRules.persianText,
   },
@@ -146,7 +162,6 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     placeholder: "خیابان مریم، پلاک ۱۰۲",
     validation: persianValidationRules.persianText,
   },
-
   {
     key: "postal_code",
     label: "کد پستی کارخانه/کارگاه/شرکت",
