@@ -86,6 +86,9 @@ export default function ClientsPage() {
     (row: Row<ClientData, Status>, columnKey: Key) => {
       switch (columnKey) {
         case "name":
+          if (row.type === "company") {
+            return <User name={row.data.company_name} />
+          }
           return <User name={row.data.name} />;
         case "status":
           return (
