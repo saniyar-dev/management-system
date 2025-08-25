@@ -27,7 +27,6 @@ import { ViewClientComponent } from "./viewClient";
 import { EditClientComponent } from "./editClient";
 import { DeleteClientComponent } from "./deleteClient";
 
-
 import { Row } from "@/lib/types";
 import { GetClients, GetTotalClients } from "@/lib/action/client";
 import { useTableLogic } from "@/lib/hooks";

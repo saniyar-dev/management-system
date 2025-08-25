@@ -3,14 +3,15 @@
 import React from "react";
 import { useDisclosure, Button } from "@heroui/react";
 
+import { ClientData } from "./types";
+
 import { PlusIcon } from "@/components/icons";
-import { ClientData, Status } from "./types";
 import { AddModal } from "@/components/crud/AddModal";
 import { AddFieldConfig, ValidationConfig } from "@/lib/action/crud-types";
 import { getEntityJobConfig } from "@/lib/config/entity-jobs";
 import { persianValidationRules } from "@/lib/utils/persian-validation";
 import { AddClient } from "@/lib/action/client";
-import { provinceOptions } from "@/config/statics"
+import { provinceOptions } from "@/config/statics";
 
 // Personal client fields
 const personalClientFields: AddFieldConfig<ClientData>[] = [
@@ -44,7 +45,10 @@ const personalClientFields: AddFieldConfig<ClientData>[] = [
     type: "select",
     required: true,
     placeholder: "هرمزگان",
-    options: () => provinceOptions.map((county) => {return {id: county.uid, name: county.name, label: county.name}}),
+    options: () =>
+      provinceOptions.map((county) => {
+        return { id: county.uid, name: county.name, label: county.name };
+      }),
     validation: persianValidationRules.persianText,
   },
   {
@@ -54,11 +58,19 @@ const personalClientFields: AddFieldConfig<ClientData>[] = [
     required: true,
     options: (formData) => {
       const selectedCounty = formData["county"];
+
       if (!selectedCounty) {
-        return []
+        return [];
       }
-      const towns = provinceOptions.find((county) => county.uid === selectedCounty.toString())?.towns;
-      return towns?.map((town) => {return {id: town.uid, name: town.name, label: town.name}}) || [];
+      const towns = provinceOptions.find(
+        (county) => county.uid === selectedCounty.toString(),
+      )?.towns;
+
+      return (
+        towns?.map((town) => {
+          return { id: town.uid, name: town.name, label: town.name };
+        }) || []
+      );
     },
     placeholder: "بندرعباس",
     validation: persianValidationRules.persianText,
@@ -134,7 +146,10 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     type: "select",
     required: true,
     placeholder: "هرمزگان",
-    options: () => provinceOptions.map((county) => {return {id: county.uid, name: county.name, label: county.name}}),
+    options: () =>
+      provinceOptions.map((county) => {
+        return { id: county.uid, name: county.name, label: county.name };
+      }),
     validation: persianValidationRules.persianText,
   },
   {
@@ -144,11 +159,19 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     required: true,
     options: (formData) => {
       const selectedCounty = formData["county"];
+
       if (!selectedCounty) {
-        return []
+        return [];
       }
-      const towns = provinceOptions.find((county) => county.uid === selectedCounty.toString())?.towns;
-      return towns?.map((town) => {return {id: town.uid, name: town.name, label: town.name}}) || [];
+      const towns = provinceOptions.find(
+        (county) => county.uid === selectedCounty.toString(),
+      )?.towns;
+
+      return (
+        towns?.map((town) => {
+          return { id: town.uid, name: town.name, label: town.name };
+        }) || []
+      );
     },
 
     placeholder: "بندرعباس",
@@ -192,7 +215,7 @@ const clientTabs = [
     fields: personalClientFields,
   },
   {
-    key: "company", 
+    key: "company",
     title: "حقوقی",
     fields: companyClientFields,
   },
@@ -233,20 +256,19 @@ export function AddClientComponent({ onSuccess }: AddClientProps = {}) {
         ایجاد مشتری جدید
       </Button>
 
-{
-  isOpen &&
-      <AddModal
-        fields={companyClientFields} // Default fields (not used when tabs are provided)
-        tabs={clientTabs}
-        isOpen={isOpen}
-        jobsConfig={jobsConfig}
-        title="ایجاد مشتری جدید"
-        validationRules={clientValidationRules}
-        onAdd={handleAdd}
-        onClose={handleClose}
-        onSuccess={handleSuccess}
-      />
-}
+      {isOpen && (
+        <AddModal
+          fields={companyClientFields} // Default fields (not used when tabs are provided)
+          isOpen={isOpen}
+          jobsConfig={jobsConfig}
+          tabs={clientTabs}
+          title="ایجاد مشتری جدید"
+          validationRules={clientValidationRules}
+          onAdd={handleAdd}
+          onClose={handleClose}
+          onSuccess={handleSuccess}
+        />
+      )}
     </>
   );
 }
@@ -279,9 +301,9 @@ export function useAddClient() {
       return (
         <AddModal
           fields={personalClientFields}
-          tabs={clientTabs}
           isOpen={isOpen}
           jobsConfig={jobsConfig}
+          tabs={clientTabs}
           title="ایجاد مشتری جدید"
           validationRules={clientValidationRules}
           onAdd={handleAdd}

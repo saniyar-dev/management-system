@@ -11,20 +11,52 @@ export interface DependencyConfig {
 // Entity dependency configurations
 export const entityDependencies: Record<string, DependencyConfig[]> = {
   client: [
-    { table: "pre_order", column: "client_id", message: "این مشتری دارای پیش سفارش است و قابل حذف نیست." },
-    { table: "order", column: "client_id", message: "این مشتری دارای سفارش است و قابل حذف نیست." },
-    { table: "pre_invoice", column: "client_id", message: "این مشتری دارای پیش فاکتور است و قابل حذف نیست." },
-    { table: "invoice", column: "client_id", message: "این مشتری دارای فاکتور است و قابل حذف نیست." },
+    {
+      table: "pre_order",
+      column: "client_id",
+      message: "این مشتری دارای پیش سفارش است و قابل حذف نیست.",
+    },
+    {
+      table: "order",
+      column: "client_id",
+      message: "این مشتری دارای سفارش است و قابل حذف نیست.",
+    },
+    {
+      table: "pre_invoice",
+      column: "client_id",
+      message: "این مشتری دارای پیش فاکتور است و قابل حذف نیست.",
+    },
+    {
+      table: "invoice",
+      column: "client_id",
+      message: "این مشتری دارای فاکتور است و قابل حذف نیست.",
+    },
   ],
   pre_order: [
-    { table: "order", column: "pre_order_id", message: "این پیش سفارش به سفارش تبدیل شده و قابل حذف نیست." },
+    {
+      table: "order",
+      column: "pre_order_id",
+      message: "این پیش سفارش به سفارش تبدیل شده و قابل حذف نیست.",
+    },
   ],
   order: [
-    { table: "pre_invoice", column: "order_id", message: "این سفارش دارای پیش فاکتور است و قابل حذف نیست." },
-    { table: "invoice", column: "order_id", message: "این سفارش فاکتور شده و قابل حذف نیست." },
+    {
+      table: "pre_invoice",
+      column: "order_id",
+      message: "این سفارش دارای پیش فاکتور است و قابل حذف نیست.",
+    },
+    {
+      table: "invoice",
+      column: "order_id",
+      message: "این سفارش فاکتور شده و قابل حذف نیست.",
+    },
   ],
   pre_invoice: [
-    { table: "invoice", column: "pre_invoice_id", message: "این پیش فاکتور به فاکتور تبدیل شده و قابل حذف نیست." },
+    {
+      table: "invoice",
+      column: "pre_invoice_id",
+      message: "این پیش فاکتور به فاکتور تبدیل شده و قابل حذف نیست.",
+    },
   ],
   // invoices typically don't have dependencies that prevent deletion
   invoice: [],
@@ -38,7 +70,7 @@ export const entityDependencies: Record<string, DependencyConfig[]> = {
  */
 export async function checkEntityDependencies(
   entityType: string,
-  entityId: string
+  entityId: string,
 ): Promise<ServerActionState<boolean>> {
   try {
     const dependencies = entityDependencies[entityType] || [];
@@ -86,7 +118,10 @@ export async function checkEntityDependencies(
  * @param status - Current status of the entity
  * @returns string | null - Error message if deletion not allowed, null if allowed
  */
-export function checkStatusBasedDeletion(entityType: string, status: string): string | null {
+export function checkStatusBasedDeletion(
+  entityType: string,
+  status: string,
+): string | null {
   const statusRules: Record<string, Record<string, string>> = {
     order: {
       invoiced: "سفارش فاکتور شده قابل حذف نیست.",
@@ -102,6 +137,7 @@ export function checkStatusBasedDeletion(entityType: string, status: string): st
   };
 
   const entityRules = statusRules[entityType];
+
   if (entityRules && entityRules[status]) {
     return entityRules[status];
   }
@@ -117,11 +153,14 @@ export function checkStatusBasedDeletion(entityType: string, status: string): st
  */
 export async function cascadeDeleteRelatedRecords(
   entityType: string,
-  entityId: string
+  entityId: string,
 ): Promise<ServerActionState<boolean>> {
   try {
     // Define cascade deletion rules
-    const cascadeRules: Record<string, Array<{ table: string; column: string }>> = {
+    const cascadeRules: Record<
+      string,
+      Array<{ table: string; column: string }>
+    > = {
       client: [
         // When deleting a client, we handle person/company deletion in the main delete function
         // No automatic cascade here to avoid accidental data loss
@@ -182,12 +221,13 @@ export async function genericEntityDelete(
   entityType: string,
   entityId: string,
   tableName: string,
-  additionalChecks?: (entityId: string) => Promise<string | null>
+  additionalChecks?: (entityId: string) => Promise<string | null>,
 ): Promise<ServerActionState<boolean>> {
   try {
     // Run additional checks if provided
     if (additionalChecks) {
       const additionalError = await additionalChecks(entityId);
+
       if (additionalError) {
         return {
           message: additionalError,
@@ -198,6 +238,7 @@ export async function genericEntityDelete(
 
     // Check dependencies
     const dependencyCheck = await checkEntityDependencies(entityType, entityId);
+
     if (!dependencyCheck.success || dependencyCheck.data === false) {
       return dependencyCheck;
     }

@@ -3,10 +3,9 @@
 import React from "react";
 import { useDisclosure } from "@heroui/react";
 
-import { EditIcon } from "@/components/icons";
-
 import { PreOrderData, Status, statusOptions } from "./types";
 
+import { EditIcon } from "@/components/icons";
 import { EditModal } from "@/components/crud/EditModal";
 import { Row } from "@/lib/types";
 import { EditFieldConfig, ValidationConfig } from "@/lib/action/crud-types";
@@ -30,6 +29,7 @@ const preOrderEditFields: EditFieldConfig<PreOrderData>[] = [
     required: false,
     validation: (value: any) => {
       if (!value || value === "") return null; // Optional field
+
       return persianValidationRules.currency(value);
     },
   },
@@ -47,12 +47,12 @@ const statusEditField: EditFieldConfig<PreOrderData> = {
   })),
   validation: (value: any, entity?: Row<PreOrderData, Status>) => {
     if (!value) return "انتخاب وضعیت الزامی است";
-    
+
     // Additional validation for status transitions
     if (entity && entity.status === "converted" && value !== "converted") {
       return "پیش سفارش تبدیل شده قابل تغییر وضعیت نیست";
     }
-    
+
     return null;
   },
 };
@@ -65,6 +65,7 @@ const preOrderValidationRules: ValidationConfig<PreOrderData> = {
   description: persianValidationRules.persianText,
   estimated_amount: (value: any) => {
     if (!value || value === "") return null; // Optional field
+
     return persianValidationRules.currency(value);
   },
 };
@@ -74,7 +75,10 @@ interface EditPreOrderProps {
   onSuccess?: () => void;
 }
 
-export function EditPreOrderComponent({ entity, onSuccess }: EditPreOrderProps) {
+export function EditPreOrderComponent({
+  entity,
+  onSuccess,
+}: EditPreOrderProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Get pre-order job configuration for edit operation

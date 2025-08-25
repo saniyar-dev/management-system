@@ -2,15 +2,6 @@
 
 import React from "react";
 import { useDisclosure } from "@heroui/react";
-
-import { PlusIcon } from "@/components/icons";
-import { PreOrderData, Status } from "./types";
-// import { AddModal } from "@/components/crud/AddModal";
-import { AddFieldConfig, ValidationConfig } from "@/lib/action/crud-types";
-import { getEntityJobConfig } from "@/lib/config/entity-jobs";
-import { persianValidationRules } from "@/lib/utils/persian-validation";
-import { AddPreOrder } from "@/lib/action/pre-order";
-import { ClientSelector } from "@/components/ClientSelector";
 import {
   Modal,
   ModalContent,
@@ -19,6 +10,17 @@ import {
   Button,
   useDraggable,
 } from "@heroui/react";
+import { useRef, useState, useTransition } from "react";
+
+import { PreOrderData } from "./types";
+
+import { PlusIcon } from "@/components/icons";
+// import { AddModal } from "@/components/crud/AddModal";
+import { AddFieldConfig, ValidationConfig } from "@/lib/action/crud-types";
+import { getEntityJobConfig } from "@/lib/config/entity-jobs";
+import { persianValidationRules } from "@/lib/utils/persian-validation";
+import { AddPreOrder } from "@/lib/action/pre-order";
+import { ClientSelector } from "@/components/ClientSelector";
 import { PersianInput } from "@/components/ui/PersianInput";
 import { PersianTextarea } from "@/components/ui/PersianTextarea";
 import { useJobs } from "@/lib/hooks";
@@ -26,7 +28,6 @@ import JobComponent from "@/components/jobs";
 import Loading from "@/components/loading";
 import { ServerActionState } from "@/lib/action/type";
 import { normalizeFormData } from "@/lib/utils/persian-validation";
-import { useRef, useState, useTransition } from "react";
 
 // Pre-order form fields configuration
 const preOrderFields: AddFieldConfig<PreOrderData>[] = [
@@ -51,22 +52,25 @@ const preOrderFields: AddFieldConfig<PreOrderData>[] = [
 // Validation configuration for pre-order fields
 const preOrderValidationRules: ValidationConfig<PreOrderData> = {
   client_id: (value: string) => {
-    if (!value || value.trim() === '') {
-      return 'انتخاب مشتری الزامی است';
+    if (!value || value.trim() === "") {
+      return "انتخاب مشتری الزامی است";
     }
+
     return null;
   },
   description: persianValidationRules.persianText,
   estimated_amount: (value: number | string) => {
-    if (value === '' || value === null || value === undefined) {
+    if (value === "" || value === null || value === undefined) {
       return null; // Optional field
     }
+
     return persianValidationRules.currency(value);
   },
   client_name: (value: string) => {
-    if (!value || value.trim() === '') {
-      return 'نام مشتری الزامی است';
+    if (!value || value.trim() === "") {
+      return "نام مشتری الزامی است";
     }
+
     return null;
   },
   created_at: () => null, // Auto-generated
@@ -147,11 +151,13 @@ function AddPreOrderModal({
   isOpen,
   onClose,
   title,
-  onSuccess
+  onSuccess,
 }: AddPreOrderModalProps) {
   const [pending, startTransition] = useTransition();
   const [jobs, pendingJobs, startJobsTransition] = useJobs("add", jobsConfig);
-  const [actionMsg, setActionMsg] = useState<ServerActionState<any> | null>(null);
+  const [actionMsg, setActionMsg] = useState<ServerActionState<any> | null>(
+    null,
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const targetRef = useRef(null);
@@ -161,22 +167,28 @@ function AddPreOrderModal({
     isDisabled: !isOpen,
   });
 
-  const validateField = (field: AddFieldConfig<PreOrderData>, value: any): string | null => {
+  const validateField = (
+    field: AddFieldConfig<PreOrderData>,
+    value: any,
+  ): string | null => {
     // Check required validation
-    if (field.required && (!value || value.toString().trim() === '')) {
+    if (field.required && (!value || value.toString().trim() === "")) {
       return `${field.label} الزامی است`;
     }
 
     // Check custom field validation
     if (field.validation) {
       const fieldError = field.validation(value);
+
       if (fieldError) return fieldError;
     }
 
     // Check validation rules
     const validationRule = validationRules[field.key];
+
     if (validationRule) {
       const ruleError = validationRule(value as never);
+
       if (ruleError) return ruleError;
     }
 
@@ -188,15 +200,17 @@ function AddPreOrderModal({
 
     // Validate client selection
     const clientId = formData.get("client_id");
-    if (!clientId || clientId.toString().trim() === '') {
-      newErrors["client_id"] = 'انتخاب مشتری الزامی است';
+
+    if (!clientId || clientId.toString().trim() === "") {
+      newErrors["client_id"] = "انتخاب مشتری الزامی است";
     }
 
     // Validate other fields
-    fields.forEach(field => {
+    fields.forEach((field) => {
       const fieldName = field.fieldName || field.key.toString();
       const value = formData.get(fieldName);
       const error = validateField(field, value);
+
       if (error) {
         newErrors[fieldName] = error;
       }
@@ -208,17 +222,20 @@ function AddPreOrderModal({
   const onSubmit = (formData: FormData) => {
     // Normalize Persian numbers to English before validation
     const normalizedFormData = normalizeFormData(formData);
-    
+
     // Validate form
     const formErrors = validateForm(normalizedFormData);
+
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
+
       return;
     }
 
     setErrors({});
     startTransition(async () => {
       const msg = await onAdd(normalizedFormData);
+
       setActionMsg(msg);
 
       if (msg.success && msg.data) {
@@ -226,7 +243,7 @@ function AddPreOrderModal({
         if (jobsConfig.length > 0) {
           startJobsTransition(msg.data);
         }
-        
+
         // Call success callback
         if (onSuccess) {
           onSuccess();
@@ -251,27 +268,27 @@ function AddPreOrderModal({
       errorMessage: hasError ? errorMessage : undefined,
       variant: "bordered" as const,
       dir: "rtl",
-      className: "text-right"
+      className: "text-right",
     };
 
     switch (field.type) {
-      case 'textarea':
+      case "textarea":
         return (
           <PersianTextarea
             {...commonProps}
-            minRows={3}
             allowNumbers={true}
             displayPersianNumbers={true}
+            minRows={3}
           />
         );
 
-      case 'number':
+      case "number":
         return (
           <PersianInput
             {...commonProps}
-            type="text"
             allowNumbers={true}
             displayPersianNumbers={true}
+            type="text"
           />
         );
 
@@ -279,9 +296,9 @@ function AddPreOrderModal({
         return (
           <PersianInput
             {...commonProps}
-            type="text"
             allowNumbers={true}
             displayPersianNumbers={true}
+            type="text"
           />
         );
     }
@@ -292,31 +309,33 @@ function AddPreOrderModal({
       <Loading pending={pending} />
       <Modal
         ref={targetRef}
+        className="rtl"
+        dir="rtl"
         isOpen={isOpen}
+        scrollBehavior="inside"
         size={jobs.length > 0 ? "5xl" : "2xl"}
         onOpenChange={(open) => !open && onClose()}
-        scrollBehavior="inside"
-        dir="rtl"
-        className="rtl"
       >
         <ModalContent>
-          <ModalHeader {...moveProps} className="flex flex-col gap-1 text-right">
+          <ModalHeader
+            {...moveProps}
+            className="flex flex-col gap-1 text-right"
+          >
             {title}
           </ModalHeader>
           <ModalBody className="rtl">
-            <section className={`flex ${jobs.length > 0 ? "justify-between" : "justify-center"} gap-6`}>
+            <section
+              className={`flex ${jobs.length > 0 ? "justify-between" : "justify-center"} gap-6`}
+            >
               <div className="flex-1">
-                <form 
-                  action={onSubmit} 
-                  className="w-full flex flex-col gap-4"
-                >
+                <form action={onSubmit} className="w-full flex flex-col gap-4">
                   <div className="flex flex-col items-center justify-center gap-4">
                     {/* Client Selector */}
                     <div className="w-full">
                       <ClientSelector
+                        isRequired={true}
                         label="انتخاب مشتری"
                         placeholder="نام مشتری را تایپ کنید یا انتخاب کنید..."
-                        isRequired={true}
                       />
                       {errors["client_id"] && (
                         <div className="text-danger text-sm mt-1 text-right">
@@ -324,24 +343,16 @@ function AddPreOrderModal({
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Other Fields */}
                     {fields.map(renderField)}
                   </div>
-                  
+
                   <div className="flex items-center justify-end gap-2 mt-4">
-                    <Button
-                      color="danger"
-                      variant="flat"
-                      onPress={onClose}
-                    >
+                    <Button color="danger" variant="flat" onPress={onClose}>
                       لغو
                     </Button>
-                    <Button 
-                      color="primary" 
-                      type="submit"
-                      isLoading={pending}
-                    >
+                    <Button color="primary" isLoading={pending} type="submit">
                       ثبت پیش سفارش
                     </Button>
                   </div>
@@ -362,7 +373,9 @@ function AddPreOrderModal({
               {/* Jobs section */}
               {jobs.length > 0 && (
                 <section className="flex flex-col gap-4 min-w-[300px]">
-                  <h3 className="text-lg font-semibold text-right">وضعیت عملیات‌ها</h3>
+                  <h3 className="text-lg font-semibold text-right">
+                    وضعیت عملیات‌ها
+                  </h3>
                   {jobs.map((job, index) => (
                     <JobComponent
                       key={`job-${index}`}

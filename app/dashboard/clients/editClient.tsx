@@ -3,10 +3,9 @@
 import React from "react";
 import { useDisclosure } from "@heroui/react";
 
+import { ClientData, Status } from "./types";
+
 import { EditIcon } from "@/components/icons";
-
-import { ClientData, Status, statusOptions } from "./types";
-
 import { EditModal } from "@/components/crud/EditModal";
 import { Row } from "@/lib/types";
 import { EditFieldConfig, ValidationConfig } from "@/lib/action/crud-types";

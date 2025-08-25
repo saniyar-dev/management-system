@@ -1,7 +1,14 @@
 import { ClientType, Row } from "../types";
 import { supabase } from "../utils";
-import { persianValidationRules, businessRuleValidators } from "../utils/persian-validation";
-import { checkEntityDependencies, checkStatusBasedDeletion, genericEntityDelete } from "../utils/dependency-checker";
+import {
+  persianValidationRules,
+  businessRuleValidators,
+} from "../utils/persian-validation";
+import {
+  checkEntityDependencies,
+  checkStatusBasedDeletion,
+  genericEntityDelete,
+} from "../utils/dependency-checker";
 
 import { GetRowsFn, GetTotalRowsFn, ServerActionState } from "./type";
 
@@ -128,7 +135,7 @@ export async function AddPreOrder(
 
 export async function UpdatePreOrder(
   id: string,
-  formData: FormData
+  formData: FormData,
 ): Promise<ServerActionState<string>> {
   try {
     // Get current pre-order data
@@ -159,7 +166,9 @@ export async function UpdatePreOrder(
     }
 
     // Validate description
-    const descriptionValidation = persianValidationRules.persianText(description);
+    const descriptionValidation =
+      persianValidationRules.persianText(description);
+
     if (descriptionValidation) {
       return {
         message: descriptionValidation,
@@ -169,7 +178,9 @@ export async function UpdatePreOrder(
 
     // Validate estimated amount if provided
     if (estimated_amount) {
-      const amountValidation = persianValidationRules.currency(estimated_amount);
+      const amountValidation =
+        persianValidationRules.currency(estimated_amount);
+
       if (amountValidation) {
         return {
           message: amountValidation,
@@ -187,11 +198,12 @@ export async function UpdatePreOrder(
         converted: [], // Cannot change from converted
       };
 
-      const transitionValidation = businessRuleValidators.validateStatusTransition(
-        preOrderData.status,
-        status,
-        allowedTransitions
-      );
+      const transitionValidation =
+        businessRuleValidators.validateStatusTransition(
+          preOrderData.status,
+          status,
+          allowedTransitions,
+        );
 
       if (transitionValidation) {
         return {
@@ -248,7 +260,9 @@ export async function UpdatePreOrder(
   }
 }
 
-export async function DeletePreOrder(id: string): Promise<ServerActionState<boolean>> {
+export async function DeletePreOrder(
+  id: string,
+): Promise<ServerActionState<boolean>> {
   try {
     // Get current pre-order data to check status
     const { data: preOrderData, error: preOrderError } = await supabase
@@ -265,7 +279,11 @@ export async function DeletePreOrder(id: string): Promise<ServerActionState<bool
     }
 
     // Check status-based deletion rules
-    const statusCheck = checkStatusBasedDeletion("pre_order", preOrderData.status);
+    const statusCheck = checkStatusBasedDeletion(
+      "pre_order",
+      preOrderData.status,
+    );
+
     if (statusCheck) {
       return {
         message: statusCheck,
@@ -283,6 +301,8 @@ export async function DeletePreOrder(id: string): Promise<ServerActionState<bool
   }
 }
 
-export async function CheckPreOrderDependencies(id: string): Promise<ServerActionState<boolean>> {
+export async function CheckPreOrderDependencies(
+  id: string,
+): Promise<ServerActionState<boolean>> {
   return await checkEntityDependencies("pre_order", id);
 }

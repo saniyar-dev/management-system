@@ -1,4 +1,5 @@
 import { Row, RowData } from "../types";
+
 import { ServerActionState } from "./type";
 
 // Base CRUD component interface
@@ -9,19 +10,22 @@ export interface CRUDComponentProps<T extends RowData, S extends string> {
 }
 
 // View component - read-only display
-export interface ViewComponentProps<T extends RowData, S extends string> extends CRUDComponentProps<T, S> {
+export interface ViewComponentProps<T extends RowData, S extends string>
+  extends CRUDComponentProps<T, S> {
   fields: ViewFieldConfig<T>[];
 }
 
 // Edit component - editable form
-export interface EditComponentProps<T extends RowData, S extends string> extends CRUDComponentProps<T, S> {
+export interface EditComponentProps<T extends RowData, S extends string>
+  extends CRUDComponentProps<T, S> {
   fields: EditFieldConfig<T>[];
   validationRules: ValidationConfig<T>;
   onUpdate: (formData: FormData) => Promise<ServerActionState<string>>;
 }
 
 // Delete component - confirmation dialog
-export interface DeleteComponentProps<T extends RowData, S extends string> extends CRUDComponentProps<T, S> {
+export interface DeleteComponentProps<T extends RowData, S extends string>
+  extends CRUDComponentProps<T, S> {
   onDelete: (id: string) => Promise<ServerActionState<boolean>>;
   dependencyCheck?: (id: string) => Promise<boolean>;
 }
@@ -39,15 +43,15 @@ export interface AddComponentProps<T extends RowData, S extends string> {
 export interface ViewFieldConfig<T extends RowData> {
   key: keyof T;
   label: string;
-  type: 'text' | 'number' | 'date' | 'status' | 'currency';
+  type: "text" | "number" | "date" | "status" | "currency";
   formatter?: (value: any) => string;
 }
 
-// Edit field configuration  
+// Edit field configuration
 export interface EditFieldConfig<T extends RowData> {
   key: keyof T;
   label: string;
-  type: 'input' | 'textarea' | 'select' | 'date' | 'number';
+  type: "input" | "textarea" | "select" | "date" | "number";
   required?: boolean;
   validation?: (value: any) => string | null;
   options?: { value: string; label: string }[];
@@ -57,7 +61,7 @@ export interface EditFieldConfig<T extends RowData> {
 export interface AddFieldConfig<T extends RowData> {
   key: keyof T;
   label: string;
-  type: 'input' | 'textarea' | 'select' | 'date' | 'number';
+  type: "input" | "textarea" | "select" | "date" | "number";
   required?: boolean;
   validation?: (value: any) => string | null;
   options?: (formData: Record<string, any>) => SelectOption[];
@@ -66,9 +70,9 @@ export interface AddFieldConfig<T extends RowData> {
 }
 
 export interface SelectOption {
-  id: string,
-  name: string,
-  label: string
+  id: string;
+  name: string;
+  label: string;
 }
 
 // Validation configuration
@@ -79,28 +83,28 @@ export type ValidationConfig<T extends RowData> = {
 // Update operations
 export type UpdateEntityFn<T extends RowData> = (
   id: string,
-  formData: FormData
+  formData: FormData,
 ) => Promise<ServerActionState<string>>;
 
-// Delete operations  
+// Delete operations
 export type DeleteEntityFn = (
-  id: string
+  id: string,
 ) => Promise<ServerActionState<boolean>>;
 
 // Dependency check
 export type CheckDependenciesFn = (
-  id: string
+  id: string,
 ) => Promise<ServerActionState<boolean>>;
 
 // Error state interface
 export interface ErrorState {
   field?: string;
   message: string;
-  type: 'validation' | 'server' | 'dependency';
+  type: "validation" | "server" | "dependency";
 }
 
 // CRUD operation types
-export type CRUDOperation = 'view' | 'edit' | 'delete';
+export type CRUDOperation = "view" | "edit" | "delete";
 
 // Entity job configurations
 export interface EntityJobConfig {

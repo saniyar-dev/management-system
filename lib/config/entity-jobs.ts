@@ -5,114 +5,154 @@ export const entityJobConfigs: Record<string, EntityJobConfig> = {
   client: {
     view: [
       { name: "بررسی اطلاعات مشتری", url: "https://example.com/client/view" },
-      { name: "بررسی سابقه مشتری", url: "https://example.com/client/history" }
+      { name: "بررسی سابقه مشتری", url: "https://example.com/client/history" },
     ],
     edit: [
       { name: "به‌روزرسانی اطلاعات", url: "https://example.com/client/update" },
-      { name: "اعتبارسنجی اطلاعات", url: "https://example.com/client/validate" }
+      {
+        name: "اعتبارسنجی اطلاعات",
+        url: "https://example.com/client/validate",
+      },
     ],
     delete: [
-      { name: "بررسی وابستگی‌ها", url: "https://example.com/client/dependencies" },
-      { name: "حذف از سیستم", url: "https://example.com/client/delete" }
+      {
+        name: "بررسی وابستگی‌ها",
+        url: "https://example.com/client/dependencies",
+      },
+      { name: "حذف از سیستم", url: "https://example.com/client/delete" },
     ],
     add: [
       { name: "ارسال به کارتابل", url: "https://example.com/client/add" },
-      { name: "ارسال پیام به مشتری", url: "https://example.com/client/notify" }
-    ]
+      { name: "ارسال پیام به مشتری", url: "https://example.com/client/notify" },
+    ],
   },
 
   pre_order: {
     view: [
       { name: "بررسی پیش سفارش", url: "https://example.com/preorder/view" },
-      { name: "بررسی اطلاعات مشتری", url: "https://example.com/preorder/client" }
+      {
+        name: "بررسی اطلاعات مشتری",
+        url: "https://example.com/preorder/client",
+      },
     ],
     edit: [
       { name: "ویرایش پیش سفارش", url: "https://example.com/preorder/update" },
-      { name: "محاسبه مجدد مبلغ", url: "https://example.com/preorder/calculate" }
+      {
+        name: "محاسبه مجدد مبلغ",
+        url: "https://example.com/preorder/calculate",
+      },
     ],
     delete: [
       { name: "بررسی امکان لغو", url: "https://example.com/preorder/check" },
-      { name: "لغو پیش سفارش", url: "https://example.com/preorder/cancel" }
+      { name: "لغو پیش سفارش", url: "https://example.com/preorder/cancel" },
     ],
     add: [
       { name: "ثبت پیش سفارش", url: "https://example.com/preorder/add" },
-      { name: "اطلاع‌رسانی به مشتری", url: "https://example.com/preorder/notify" }
-    ]
+      {
+        name: "اطلاع‌رسانی به مشتری",
+        url: "https://example.com/preorder/notify",
+      },
+    ],
   },
 
   order: {
     view: [
       { name: "بررسی سفارش", url: "https://example.com/order/view" },
-      { name: "بررسی وضعیت تولید", url: "https://example.com/order/production" }
+      {
+        name: "بررسی وضعیت تولید",
+        url: "https://example.com/order/production",
+      },
     ],
     edit: [
       { name: "ویرایش سفارش", url: "https://example.com/order/update" },
-      { name: "به‌روزرسانی وضعیت", url: "https://example.com/order/status" }
+      { name: "به‌روزرسانی وضعیت", url: "https://example.com/order/status" },
     ],
     delete: [
       { name: "بررسی امکان حذف", url: "https://example.com/order/check" },
-      { name: "لغو سفارش", url: "https://example.com/order/cancel" }
+      { name: "لغو سفارش", url: "https://example.com/order/cancel" },
     ],
     add: [
       { name: "ثبت سفارش", url: "https://example.com/order/add" },
-      { name: "شروع فرآیند تولید", url: "https://example.com/order/production-start" }
-    ]
+      {
+        name: "شروع فرآیند تولید",
+        url: "https://example.com/order/production-start",
+      },
+    ],
   },
 
   preInvoice: {
     view: [
       { name: "بررسی پیش فاکتور", url: "https://example.com/preinvoice/view" },
-      { name: "محاسبه مالیات", url: "https://example.com/preinvoice/tax" }
+      { name: "محاسبه مالیات", url: "https://example.com/preinvoice/tax" },
     ],
     edit: [
-      { name: "ویرایش پیش فاکتور", url: "https://example.com/preinvoice/update" },
-      { name: "محاسبه مجدد", url: "https://example.com/preinvoice/recalculate" }
+      {
+        name: "ویرایش پیش فاکتور",
+        url: "https://example.com/preinvoice/update",
+      },
+      {
+        name: "محاسبه مجدد",
+        url: "https://example.com/preinvoice/recalculate",
+      },
     ],
     delete: [
       { name: "بررسی امکان حذف", url: "https://example.com/preinvoice/check" },
-      { name: "حذف پیش فاکتور", url: "https://example.com/preinvoice/delete" }
+      { name: "حذف پیش فاکتور", url: "https://example.com/preinvoice/delete" },
     ],
     add: [
       { name: "ایجاد پیش فاکتور", url: "https://example.com/preinvoice/add" },
-      { name: "محاسبه مالیات", url: "https://example.com/preinvoice/tax-calculate" }
-    ]
+      {
+        name: "محاسبه مالیات",
+        url: "https://example.com/preinvoice/tax-calculate",
+      },
+    ],
   },
 
   invoice: {
     view: [
       { name: "بررسی فاکتور", url: "https://example.com/invoice/view" },
-      { name: "بررسی وضعیت پرداخت", url: "https://example.com/invoice/payment" }
+      {
+        name: "بررسی وضعیت پرداخت",
+        url: "https://example.com/invoice/payment",
+      },
     ],
     edit: [
       { name: "ویرایش فاکتور", url: "https://example.com/invoice/update" },
-      { name: "به‌روزرسانی پرداخت", url: "https://example.com/invoice/payment-update" }
+      {
+        name: "به‌روزرسانی پرداخت",
+        url: "https://example.com/invoice/payment-update",
+      },
     ],
     delete: [
       { name: "بررسی امکان ابطال", url: "https://example.com/invoice/check" },
-      { name: "ابطال فاکتور", url: "https://example.com/invoice/void" }
+      { name: "ابطال فاکتور", url: "https://example.com/invoice/void" },
     ],
     add: [
       { name: "صدور فاکتور", url: "https://example.com/invoice/add" },
-      { name: "ارسال فاکتور", url: "https://example.com/invoice/send" }
-    ]
-  }
+      { name: "ارسال فاکتور", url: "https://example.com/invoice/send" },
+    ],
+  },
 };
 
 // Helper function to get job configuration for an entity and operation
 export const getEntityJobConfig = (
-  entityType: string, 
-  operation: 'view' | 'edit' | 'delete' | 'add'
+  entityType: string,
+  operation: "view" | "edit" | "delete" | "add",
 ): { name: string; url: string }[] => {
   const config = entityJobConfigs[entityType];
+
   if (!config) {
     console.warn(`No job configuration found for entity type: ${entityType}`);
+
     return [];
   }
-  
+
   return config[operation] || [];
 };
 
 // Helper function to get all job configurations for an entity
-export const getAllEntityJobConfigs = (entityType: string): EntityJobConfig | null => {
+export const getAllEntityJobConfigs = (
+  entityType: string,
+): EntityJobConfig | null => {
   return entityJobConfigs[entityType] || null;
 };

@@ -3,8 +3,6 @@
 import React from "react";
 import { useDisclosure } from "@heroui/react";
 
-import { EyeIcon } from "@/components/icons";
-
 import {
   ClientData,
   Status,
@@ -12,6 +10,7 @@ import {
   statusColorMap,
 } from "./types";
 
+import { EyeIcon } from "@/components/icons";
 import { ViewModal } from "@/components/crud/ViewModal";
 import { Row } from "@/lib/types";
 import { ViewFieldConfig } from "@/lib/action/crud-types";

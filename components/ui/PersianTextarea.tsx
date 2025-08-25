@@ -2,9 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { Textarea, TextAreaProps } from "@heroui/react";
-import { convertPersianToEnglish, convertEnglishToPersian } from "@/lib/utils/persian-validation";
 
-interface PersianTextareaProps extends Omit<TextAreaProps, 'onChange' | 'onValueChange'> {
+import {
+  convertPersianToEnglish,
+  convertEnglishToPersian,
+} from "@/lib/utils/persian-validation";
+
+interface PersianTextareaProps
+  extends Omit<TextAreaProps, "onChange" | "onValueChange"> {
   allowNumbers?: boolean;
   displayPersianNumbers?: boolean;
   onValueChange?: (value: string) => void;
@@ -21,45 +26,48 @@ export function PersianTextarea({
   ...props
 }: PersianTextareaProps) {
   const [displayValue, setDisplayValue] = useState(() => {
-    const initialValue = controlledValue || defaultValue || '';
-    return displayPersianNumbers && allowNumbers ? 
-      convertEnglishToPersian(initialValue.toString()) : 
-      initialValue.toString();
+    const initialValue = controlledValue || defaultValue || "";
+
+    return displayPersianNumbers && allowNumbers
+      ? convertEnglishToPersian(initialValue.toString())
+      : initialValue.toString();
   });
 
   // Update display value when controlled value changes
   useEffect(() => {
     if (controlledValue !== undefined) {
-      const newDisplayValue = displayPersianNumbers && allowNumbers ? 
-        convertEnglishToPersian(controlledValue.toString()) : 
-        controlledValue.toString();
+      const newDisplayValue =
+        displayPersianNumbers && allowNumbers
+          ? convertEnglishToPersian(controlledValue.toString())
+          : controlledValue.toString();
+
       setDisplayValue(newDisplayValue);
     }
   }, [controlledValue, displayPersianNumbers, allowNumbers]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    
+
     if (allowNumbers) {
       // Convert Persian numbers to English for internal processing
       const englishValue = convertPersianToEnglish(inputValue);
-      
+
       // Update display value (show Persian numbers if enabled)
-      const newDisplayValue = displayPersianNumbers ? 
-        convertEnglishToPersian(englishValue) : 
-        englishValue;
-      
+      const newDisplayValue = displayPersianNumbers
+        ? convertEnglishToPersian(englishValue)
+        : englishValue;
+
       setDisplayValue(newDisplayValue);
-      
+
       // Create a new event with English numbers for form processing
       const syntheticEvent = {
         ...e,
         target: {
           ...e.target,
-          value: englishValue
-        }
+          value: englishValue,
+        },
       } as React.ChangeEvent<HTMLInputElement>;
-      
+
       // Call callbacks with English numbers
       if (onValueChange) {
         onValueChange(englishValue);
@@ -82,15 +90,15 @@ export function PersianTextarea({
   return (
     <Textarea
       {...props}
-      value={displayValue}
-      onChange={handleInputChange}
-      dir="rtl"
-      className={`text-right ${props.className || ''}`}
+      className={`text-right ${props.className || ""}`}
       classNames={{
         input: "text-right",
         inputWrapper: "text-right",
-        ...props.classNames
+        ...props.classNames,
       }}
+      dir="rtl"
+      value={displayValue}
+      onChange={handleInputChange}
     />
   );
 }

@@ -1,2 +1,2 @@
-export { PersianInput } from './PersianInput';
-export { PersianTextarea } from './PersianTextarea';
+export { PersianInput } from "./PersianInput";
+export { PersianTextarea } from "./PersianTextarea";

@@ -41,13 +41,15 @@ export const GetTotalClients: GetTotalRowsFn = async (
   };
 };
 
-const formatAddress = (addr: string): {address: string, town: string, county: string} => {
+const formatAddress = (
+  addr: string,
+): { address: string; town: string; county: string } => {
   return {
     county: addr.split(",")[0],
     town: addr.split(",")[1],
     address: addr.split(",")[2],
   };
-}
+};
 
 export const GetClients: GetRowsFn<ClientData, Status> = async (
   start,
@@ -64,7 +66,8 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
     _limit: searchTerm === "" ? limit : 1000,
     _offset: searchTerm === "" ? (page - 1) * limit : 0,
   });
-  console.log(data)
+
+  console.log(data);
 
   if (error) {
     return {
@@ -75,7 +78,11 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
 
   const clientPromises = data.map(
     async (client): Promise<Row<ClientData, Status> | null> => {
-      if (client.type === "company" && client.company_id !== null && client.person_id !== null) {
+      if (
+        client.type === "company" &&
+        client.company_id !== null &&
+        client.person_id !== null
+      ) {
         const { data: company, error: CompanyError } = await supabase
           .rpc("search_company_by_name", { search_term: searchTerm })
           .eq("id", client.company_id)
@@ -89,7 +96,7 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
         if (CompanyError || PersonError) {
           return null;
         }
-        const {address, town, county} = formatAddress(company.address!)
+        const { address, town, county } = formatAddress(company.address!);
 
         return {
           id: client.id,
@@ -115,14 +122,14 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           .rpc("search_person_by_name", { search_term: searchTerm })
           .eq("id", client.person_id)
           .single();
-        console.log(person)
+
+        console.log(person);
 
         if (PersonError) {
           return null;
         }
 
-
-        const {address, town, county} = formatAddress(person.address!)
+        const { address, town, county } = formatAddress(person.address!);
 
         return {
           id: client.id,
@@ -142,7 +149,6 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           status: client.status as Status,
           type: client.type as ClientType,
         };
-
       }
 
       return null;
@@ -169,7 +175,7 @@ export async function GetClientJobs(): Promise<ServerActionState<any>> {
 
 export async function UpdateClient(
   id: string,
-  formData: FormData
+  formData: FormData,
 ): Promise<ServerActionState<string>> {
   try {
     // Get current client data to determine type
@@ -207,7 +213,7 @@ export async function UpdateClient(
       name,
       phone,
       address,
-      ssn
+      ssn,
     });
 
     if (businessValidation) {
@@ -385,13 +391,17 @@ export async function AddClient(formData: FormData) {
   };
 }
 
-export async function DeleteClient(id: string): Promise<ServerActionState<boolean>> {
+export async function DeleteClient(
+  id: string,
+): Promise<ServerActionState<boolean>> {
   try {
     // First check for dependencies
     const dependencyCheck = await CheckClientDependencies(id);
+
     if (!dependencyCheck.success || dependencyCheck.data === false) {
       return {
-        message: dependencyCheck.message || "مشتری دارای وابستگی است و قابل حذف نیست.",
+        message:
+          dependencyCheck.message || "مشتری دارای وابستگی است و قابل حذف نیست.",
         success: false,
       };
     }
@@ -462,6 +472,8 @@ export async function DeleteClient(id: string): Promise<ServerActionState<boolea
   }
 }
 
-export async function CheckClientDependencies(id: string): Promise<ServerActionState<boolean>> {
+export async function CheckClientDependencies(
+  id: string,
+): Promise<ServerActionState<boolean>> {
   return await checkEntityDependencies("client", id);
 }

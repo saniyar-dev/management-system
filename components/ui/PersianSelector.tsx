@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useTransition } from "react";
+import React, { useState, useTransition } from "react";
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
+
 import { SelectOption } from "@/lib/action/crud-types";
 
 interface SelectorProps {
@@ -9,12 +10,12 @@ interface SelectorProps {
   name: string;
   placeholder?: string;
   isRequired?: boolean;
-  options:  SelectOption[];
+  options: SelectOption[];
   onSelectionChange?: (selectedOption: SelectOption | null) => void;
 }
 
 export function PersianSelector({
-  name =  "client",
+  name = "client",
   label = "انتخاب مشتری",
   placeholder = "نام مشتری را تایپ کنید یا انتخاب کنید...",
   isRequired = false,
@@ -61,7 +62,11 @@ export function PersianSelector({
       </Autocomplete>
 
       {/* Hidden inputs for form submission */}
-      <input name={`${name}_id`} type="hidden" value={selectedOption?.id || ""} />
+      <input
+        name={`${name}_id`}
+        type="hidden"
+        value={selectedOption?.id || ""}
+      />
       <input
         name={`${name}`}
         type="hidden"
@@ -70,7 +75,7 @@ export function PersianSelector({
       <input
         name={`${name}_label`}
         type="hidden"
-        value={selectedOption?.label|| ""}
+        value={selectedOption?.label || ""}
       />
     </>
   );

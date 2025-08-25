@@ -25,8 +25,7 @@ import { SubmitJobs } from "./action/jobs";
 
 import { GetRowsFn, GetTotalRowsFn } from "@/lib/action/type";
 import { ChevronDownIcon, SearchIcon } from "@/components/icons";
-
-import { provinceOptions } from "@/config/statics"
+import { provinceOptions } from "@/config/statics";
 
 export const useSession = (): { session: Session | null; pending: boolean } => {
   const [session, setSession] = useState<Session | null>(null);
@@ -409,7 +408,14 @@ export const useTableLogic = <TD extends RowData, S extends string>(
       }
       setRows([]);
     });
-  }, [page, rowsPerPage, filterValue, statusFilter, rowTypeFilter, countyFilter]);
+  }, [
+    page,
+    rowsPerPage,
+    filterValue,
+    statusFilter,
+    rowTypeFilter,
+    countyFilter,
+  ]);
 
   return {
     bottomContent,
