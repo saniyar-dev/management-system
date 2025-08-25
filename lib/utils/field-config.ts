@@ -63,9 +63,27 @@ export const commonFieldConfigs = {
       type: "text" as const,
       formatter: fieldFormatters.text,
     },
+    company_name: {
+      key: "company_name" as const,
+      label: "نام شرکت",
+      type: "text" as const,
+      formatter: fieldFormatters.text,
+    },
     phone: {
       key: "phone" as const,
       label: "شماره تماس",
+      type: "text" as const,
+      formatter: fieldFormatters.text,
+    },
+    county: {
+      key: "county" as const,
+      label: "آدرس",
+      type: "text" as const,
+      formatter: fieldFormatters.text,
+    },
+    town: {
+      key: "town" as const,
+      label: "آدرس",
       type: "text" as const,
       formatter: fieldFormatters.text,
     },
@@ -78,6 +96,12 @@ export const commonFieldConfigs = {
     ssn: {
       key: "ssn" as const,
       label: "کد ملی",
+      type: "text" as const,
+      formatter: fieldFormatters.text,
+    },
+    company_ssn: {
+      key: "company_ssn" as const,
+      label: "شناسه ملی",
       type: "text" as const,
       formatter: fieldFormatters.text,
     },

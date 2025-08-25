@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { useDisclosure } from "@heroui/react";
 
 import {
@@ -18,18 +18,26 @@ import { getEntityJobConfig } from "@/lib/config/entity-jobs";
 import { commonFieldConfigs } from "@/lib/utils/field-config";
 
 // Client-specific view field configuration
-const clientViewFields: ViewFieldConfig<ClientData>[] = [
+const defaultViewFields: ViewFieldConfig<ClientData>[] = [
   {
     ...commonFieldConfigs.viewFields.name,
-    label: "نام / نام شرکت",
+    label: "نام",
   },
   {
     ...commonFieldConfigs.viewFields.ssn,
-    label: "کد ملی / شناسه ملی",
+    label: "کد ملی",
   },
   {
     ...commonFieldConfigs.viewFields.phone,
     label: "شماره موبایل",
+  },
+  {
+    ...commonFieldConfigs.viewFields.county,
+    label: "استان",
+  },
+  {
+    ...commonFieldConfigs.viewFields.town,
+    label: "شهرستان / بخش",
   },
   {
     ...commonFieldConfigs.viewFields.address,
@@ -51,6 +59,23 @@ export function ViewClientComponent({ entity, onSuccess }: ViewClientProps) {
 
   // Get client job configuration for view operation
   const jobsConfig = getEntityJobConfig("client", "view");
+
+  const clientViewFields = useMemo((): ViewFieldConfig<ClientData>[] => {
+    if (entity.type === "company") {
+      return [
+        {
+          ...commonFieldConfigs.viewFields.company_name,
+          label: "نام شرکت",
+        },
+        {
+          ...commonFieldConfigs.viewFields.company_ssn,
+          label: "شناسه ملی شرکت",
+        },
+        ...defaultViewFields,
+      ];
+    }
+    return defaultViewFields;
+  }, [entity.type])
 
   const handleClose = () => {
     onClose();
@@ -92,53 +117,10 @@ export function ViewClientComponent({ entity, onSuccess }: ViewClientProps) {
           >
         }
         statusMap={clientStatusNameMap}
-        title={`مشاهده جزئیات مشتری: ${entity.data.name}`}
+        title={`مشاهده جزئیات مشتری: ${entity.type === "company" ? entity.data.company_name : entity.data.name}`}
         onClose={handleClose}
         onSuccess={onSuccess}
       />
     </>
   );
-}
-
-// Hook for using ViewClient component
-export function useViewClient() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const ViewClientModal = React.useCallback(
-    ({ entity, onSuccess }: ViewClientProps) => {
-      const jobsConfig = getEntityJobConfig("client", "view");
-
-      return (
-        <ViewModal
-          entity={entity}
-          fields={clientViewFields}
-          isOpen={isOpen}
-          jobsConfig={jobsConfig}
-          statusColorMap={
-            statusColorMap as Record<
-              Status,
-              | "default"
-              | "primary"
-              | "secondary"
-              | "success"
-              | "warning"
-              | "danger"
-            >
-          }
-          statusMap={clientStatusNameMap}
-          title={`مشاهده جزئیات مشتری: ${entity.data.name}`}
-          onClose={onClose}
-          onSuccess={onSuccess}
-        />
-      );
-    },
-    [isOpen, onClose],
-  );
-
-  return {
-    isOpen,
-    onOpen,
-    onClose,
-    ViewClientModal,
-  };
 }
