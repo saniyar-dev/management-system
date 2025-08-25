@@ -1,4 +1,5 @@
-import { ViewFieldConfig, EditFieldConfig } from "../action/crud-types";
+import { provinceOptions } from "@/config/statics";
+import { ViewFieldConfig, EditFieldConfig, SelectOption } from "../action/crud-types";
 import { RowData } from "../types";
 
 import {
@@ -77,13 +78,13 @@ export const commonFieldConfigs = {
     },
     county: {
       key: "county" as const,
-      label: "آدرس",
+      label: "استان",
       type: "text" as const,
       formatter: fieldFormatters.text,
     },
     town: {
       key: "town" as const,
-      label: "آدرس",
+      label: "شهرستان / بخش",
       type: "text" as const,
       formatter: fieldFormatters.text,
     },
@@ -145,11 +146,49 @@ export const commonFieldConfigs = {
       type: "input" as const,
       required: true,
     },
+    company_name: {
+      key: "company_name" as const,
+      label: "نام شرکت",
+      type: "input" as const,
+      required: true,
+    },
     phone: {
       key: "phone" as const,
       label: "شماره تماس",
       type: "input" as const,
       required: true,
+    },
+    county: {
+      key: "county" as const,
+      label: "استان",
+      type: "select" as const,
+      required: true,
+      options: () =>
+        provinceOptions.map((county) => {
+          return { id: county.uid, name: county.name, label: county.name };
+        }),
+    },
+    town: {
+      key: "town" as const,
+      label: "شهرستان / بخش",
+      type: "select" as const,
+      required: true,
+      options: (formData: Record<string, any>) => {
+        const selectedCounty = formData["county"];
+
+        if (!selectedCounty) {
+          return [];
+        }
+        const towns = provinceOptions.find(
+          (county) => county.uid === selectedCounty.toString(),
+        )?.towns;
+
+        return (
+          towns?.map((town) => {
+            return { id: town.uid, name: town.name, label: town.name };
+          }) || []
+        );
+      },
     },
     address: {
       key: "address" as const,
@@ -160,6 +199,12 @@ export const commonFieldConfigs = {
     ssn: {
       key: "ssn" as const,
       label: "کد ملی",
+      type: "input" as const,
+      required: true,
+    },
+    company_ssn: {
+      key: "company_ssn" as const,
+      label: "شناسه ملی",
       type: "input" as const,
       required: true,
     },
@@ -204,7 +249,7 @@ export const createEditFieldConfig = <T extends RowData>(
   type: EditFieldConfig<T>["type"],
   required: boolean = false,
   validation?: (value: any) => string | null,
-  options?: { value: string; label: string }[],
+  options?: (formData: Record<string, any>) => SelectOption[],
 ): EditFieldConfig<T> => ({
   key,
   label,
@@ -226,7 +271,7 @@ export const createStatusFieldConfig = <T extends RowData>(
 
 // Status edit field configuration helper
 export const createStatusEditFieldConfig = <T extends RowData>(
-  statusOptions: { value: string; label: string }[],
+  statusOptions: (formData: Record<string, any>) => SelectOption[]
 ): EditFieldConfig<T> => ({
   key: "status" as keyof T,
   label: "وضعیت",

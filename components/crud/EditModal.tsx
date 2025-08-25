@@ -30,6 +30,7 @@ import {
   normalizeFormData,
   convertEnglishToPersian,
 } from "@/lib/utils/persian-validation";
+import { PersianSelector } from "../ui/PersianSelector";
 
 interface EditModalProps<T extends RowData, S extends string>
   extends EditComponentProps<T, S> {
@@ -183,22 +184,19 @@ export function EditModal<T extends RowData, S extends string>({
 
         case "select":
           return (
-            <Select
+            <PersianSelector
               key={fieldKey}
               {...commonProps}
-              classNames={{
-                trigger: "text-right",
-                value: "text-right",
+              options={field.options!(formData)}
+              onSelectionChange={(selectedOption) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  [fieldKey]: selectedOption?.name,
+                }));
               }}
-              placeholder={`${field.label} را انتخاب کنید`}
-            >
-              {field.options?.map((option) => (
-                <SelectItem key={option.value} className="text-right">
-                  {option.label}
-                </SelectItem>
-              )) || []}
-            </Select>
+            />
           );
+
 
         case "number":
           return (

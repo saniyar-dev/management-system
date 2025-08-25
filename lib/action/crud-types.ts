@@ -54,7 +54,7 @@ export interface EditFieldConfig<T extends RowData> {
   type: "input" | "textarea" | "select" | "date" | "number";
   required?: boolean;
   validation?: (value: any) => string | null;
-  options?: { value: string; label: string }[];
+  options?: (formData: Record<string, any>) => SelectOption[];
 }
 
 // Add field configuration
