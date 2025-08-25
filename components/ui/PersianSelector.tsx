@@ -63,7 +63,7 @@ export function PersianSelector({
       {/* Hidden inputs for form submission */}
       <input name={`${name}_id`} type="hidden" value={selectedOption?.id || ""} />
       <input
-        name={`${name}_name`}
+        name={`${name}`}
         type="hidden"
         value={selectedOption?.name || ""}
       />
