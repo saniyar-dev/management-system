@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState } from "react";
 import { Autocomplete, AutocompleteItem } from "@heroui/react";
 
 import { SelectOption } from "@/lib/action/crud-types";
@@ -22,7 +22,6 @@ export function PersianSelector({
   onSelectionChange,
   options,
 }: SelectorProps) {
-  const [isLoading, startTransition] = useTransition();
   const [selectedOption, setSelectedOption] = useState<SelectOption | null>(
     null,
   );
@@ -47,7 +46,6 @@ export function PersianSelector({
         allowsCustomValue={false}
         className="w-full"
         defaultItems={options}
-        isLoading={isLoading}
         isRequired={isRequired}
         label={label}
         menuTrigger="input"

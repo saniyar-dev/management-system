@@ -104,7 +104,7 @@ export async function checkEntityDependencies(
       success: true,
       data: true,
     };
-  } catch (error) {
+  } catch {
     return {
       message: "خطای سرور در بررسی وابستگی‌ها.",
       success: false,
@@ -201,7 +201,7 @@ export async function cascadeDeleteRelatedRecords(
       success: true,
       data: true,
     };
-  } catch (error) {
+  } catch {
     return {
       message: "خطا در حذف رکوردهای مرتبط.",
       success: false,
@@ -264,7 +264,7 @@ export async function genericEntityDelete(
       success: true,
       data: true,
     };
-  } catch (error) {
+  } catch {
     return {
       message: "خطای سرور. لطفاً دوباره تلاش کنید.",
       success: false,

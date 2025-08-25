@@ -236,10 +236,6 @@ describe("Pre-Order CRUD Operations", () => {
 
       const mockSelect = vi.fn().mockReturnValue(mockSupabaseChain);
       const mockDelete = vi.fn().mockReturnValue(mockDeleteSupabaseChain);
-      const mockFrom = vi.fn().mockReturnValue({
-        select: mockSelect,
-        delete: mockDelete,
-      });
 
       // First call returns pre-order data, subsequent calls return dependency checks
       (supabase.from as any)
@@ -302,7 +298,6 @@ describe("Pre-Order CRUD Operations", () => {
       };
 
       const mockSelect = vi.fn().mockReturnValue(mockSupabaseChain);
-      const mockFrom = vi.fn().mockReturnValue({ select: mockSelect });
 
       // First call returns pre-order data, second call returns dependency check
       (supabase.from as any)

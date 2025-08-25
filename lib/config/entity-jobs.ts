@@ -142,8 +142,6 @@ export const getEntityJobConfig = (
   const config = entityJobConfigs[entityType];
 
   if (!config) {
-    console.warn(`No job configuration found for entity type: ${entityType}`);
-
     return [];
   }
 

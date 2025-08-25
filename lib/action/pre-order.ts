@@ -252,7 +252,7 @@ export async function UpdatePreOrder(
       success: true,
       data: id,
     };
-  } catch (error) {
+  } catch {
     return {
       message: "خطای سرور. لطفاً دوباره تلاش کنید.",
       success: false,
@@ -293,7 +293,7 @@ export async function DeletePreOrder(
 
     // Use generic entity delete which handles dependency checking
     return await genericEntityDelete("pre_order", id, "pre_order");
-  } catch (error) {
+  } catch {
     return {
       message: "خطای سرور. لطفاً دوباره تلاش کنید.",
       success: false,

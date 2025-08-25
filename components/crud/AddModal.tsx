@@ -114,7 +114,7 @@ export function AddModal<T extends RowData, S extends string>({
 
   // STABILIZE STEP 2: Wrap the main onSubmit logic in useCallback
   const onSubmit = useCallback(
-    (formData: FormData, fieldsToValidate: AddFieldConfig<T>[]) => {
+    (formData: FormData) => {
       const normalizedFormData = normalizeFormData(formData);
 
       if (Object.keys(errors).length > 0) return;
@@ -234,7 +234,7 @@ export function AddModal<T extends RowData, S extends string>({
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
 
-        onSubmit(formData, fieldsToRender);
+        onSubmit(formData);
       };
 
       return (

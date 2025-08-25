@@ -67,8 +67,6 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
     _offset: searchTerm === "" ? (page - 1) * limit : 0,
   });
 
-  console.log(data);
-
   if (error) {
     return {
       message: "ایراد سمت سرور لطفا اینترنت خود را بررسی کنید.",
@@ -122,8 +120,6 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           .rpc("search_person_by_name", { search_term: searchTerm })
           .eq("id", client.person_id)
           .single();
-
-        console.log(person);
 
         if (PersonError) {
           return null;
@@ -284,7 +280,7 @@ export async function UpdateClient(
       success: true,
       data: id,
     };
-  } catch (error) {
+  } catch {
     return {
       message: "خطای سرور. لطفاً دوباره تلاش کنید.",
       success: false,
@@ -464,7 +460,7 @@ export async function DeleteClient(
       success: true,
       data: true,
     };
-  } catch (error) {
+  } catch {
     return {
       message: "خطای سرور. لطفاً دوباره تلاش کنید.",
       success: false,

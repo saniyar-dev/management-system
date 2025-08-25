@@ -42,7 +42,7 @@ export function ViewModal<T extends RowData, S extends string>({
   title,
   statusMap,
   statusColorMap,
-  onSuccess,
+  // onSuccess,
 }: ViewModalProps<T, S>) {
   const [pending, startTransition] = useTransition();
   const [jobs, pendingJobs, startJobsTransition] = useJobs("view", jobsConfig);
