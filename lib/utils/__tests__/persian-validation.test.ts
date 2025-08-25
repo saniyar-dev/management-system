@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+
 import {
   convertPersianToEnglish,
   convertEnglishToPersian,
@@ -48,6 +49,7 @@ describe("Persian Number Conversion", () => {
   describe("normalizeFormData", () => {
     it("should normalize Persian numbers in FormData", () => {
       const formData = new FormData();
+
       formData.append("name", "محمد احمدی");
       formData.append("phone", "۰۹۱۲۳۴۵۶۷۸۹");
       formData.append("ssn", "۰۰۱۲۳۴۵۶۷۸");
@@ -63,6 +65,7 @@ describe("Persian Number Conversion", () => {
 
     it("should handle mixed Persian and English numbers", () => {
       const formData = new FormData();
+
       formData.append("mixed", "12۳۴56");
       formData.append("text", "test ۱۲3");
 

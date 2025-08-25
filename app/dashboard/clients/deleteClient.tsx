@@ -3,8 +3,6 @@
 import React from "react";
 import { useDisclosure } from "@heroui/react";
 
-import { DeleteIcon } from "@/components/icons";
-
 import {
   ClientData,
   Status,
@@ -12,6 +10,7 @@ import {
   statusColorMap,
 } from "./types";
 
+import { DeleteIcon } from "@/components/icons";
 import { DeleteModal } from "@/components/crud/DeleteModal";
 import { Row } from "@/lib/types";
 import { getEntityJobConfig } from "@/lib/config/entity-jobs";

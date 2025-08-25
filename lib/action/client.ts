@@ -41,6 +41,16 @@ export const GetTotalClients: GetTotalRowsFn = async (
   };
 };
 
+const formatAddress = (
+  addr: string,
+): { address: string; town: string; county: string } => {
+  return {
+    county: addr.split(",")[0],
+    town: addr.split(",")[1],
+    address: addr.split(",")[2],
+  };
+};
+
 export const GetClients: GetRowsFn<ClientData, Status> = async (
   start,
   end,
@@ -66,24 +76,46 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
 
   const clientPromises = data.map(
     async (client): Promise<Row<ClientData, Status> | null> => {
-      if (client.company_id !== null) {
+      if (
+        client.type === "company" &&
+        client.company_id !== null &&
+        client.person_id !== null
+      ) {
         const { data: company, error: CompanyError } = await supabase
           .rpc("search_company_by_name", { search_term: searchTerm })
           .eq("id", client.company_id)
           .single();
 
-        if (CompanyError) {
+        const { data: person, error: PersonError } = await supabase
+          .rpc("search_person_by_name", { search_term: searchTerm })
+          .eq("id", client.person_id)
+          .single();
+
+        if (CompanyError || PersonError) {
           return null;
         }
+        const { address, town, county } = formatAddress(company.address!);
 
         return {
           id: client.id,
-          data: company as ClientData,
+          data: {
+            company_name: company.name,
+            company_phone: company.phone!,
+            company_ssn: company.ssn,
+            name: person.name,
+            phone: person.phone!,
+            ssn: person.ssn,
+            address: address,
+            county: county,
+            town: town,
+            postal_code: company.postal_code!,
+            id: client.id,
+          },
           status: client.status as Status,
           type: client.type as ClientType,
         };
       }
-      if (client.person_id !== null) {
+      if (client.type === "personal" && client.person_id !== null) {
         const { data: person, error: PersonError } = await supabase
           .rpc("search_person_by_name", { search_term: searchTerm })
           .eq("id", client.person_id)
@@ -93,9 +125,23 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           return null;
         }
 
+        const { address, town, county } = formatAddress(person.address!);
+
         return {
           id: client.id,
-          data: person as ClientData,
+          data: {
+            company_name: "",
+            company_phone: "",
+            company_ssn: "",
+            name: person.name,
+            phone: person.phone!,
+            ssn: person.ssn,
+            address: address,
+            county: county,
+            town: town,
+            postal_code: person.postal_code!,
+            id: client.id,
+          },
           status: client.status as Status,
           type: client.type as ClientType,
         };
@@ -125,130 +171,114 @@ export async function GetClientJobs(): Promise<ServerActionState<any>> {
 
 export async function UpdateClient(
   id: string,
-  formData: FormData
+  formData: FormData,
 ): Promise<ServerActionState<string>> {
-  try {
-    // Get current client data to determine type
-    const { data: clientData, error: clientError } = await supabase
-      .from("client")
-      .select("person_id, company_id, type")
-      .eq("id", id)
-      .single();
+  // Get current client data to determine type
+  const { data: clientData, error: clientError } = await supabase
+    .from("client")
+    .select("person_id, company_id, type")
+    .eq("id", id)
+    .single();
 
-    if (clientError || !clientData) {
-      return {
-        message: "مشتری یافت نشد.",
-        success: false,
-      };
-    }
-
-    // Extract form data
-    const name = formData.get("name") as string;
-    const phone = formData.get("phone") as string;
-    const address = formData.get("address") as string;
-    const ssn = formData.get("ssn") as string;
-    const postalCode = formData.get("postal_code") as string;
-    const status = formData.get("status") as Status;
-
-    // Validate required fields
-    if (!name || !phone || !address || !ssn) {
-      return {
-        message: "تمام فیلدهای الزامی را پر کنید.",
-        success: false,
-      };
-    }
-
-    // Business rule validation
-    const businessValidation = businessRuleValidators.validateClientForOrder({
-      name,
-      phone,
-      address,
-      ssn
-    });
-
-    if (businessValidation) {
-      return {
-        message: businessValidation,
-        success: false,
-      };
-    }
-
-    // Update the appropriate table (person or company)
-    if (clientData.person_id) {
-      const { error: personError } = await supabase
-        .from("person")
-        .update({
-          name,
-          ssn,
-          phone,
-          address,
-          postal_code: postalCode,
-        })
-        .eq("id", clientData.person_id);
-
-      if (personError) {
-        return {
-          message: "خطا در به‌روزرسانی اطلاعات شخصی.",
-          success: false,
-        };
-      }
-    }
-
-    if (clientData.company_id) {
-      const { error: companyError } = await supabase
-        .from("company")
-        .update({
-          name,
-          ssn,
-          phone,
-          address,
-          postal_code: postalCode,
-        })
-        .eq("id", clientData.company_id);
-
-      if (companyError) {
-        return {
-          message: "خطا در به‌روزرسانی اطلاعات شرکت.",
-          success: false,
-        };
-      }
-    }
-
-    // Update client status if provided
-    if (status) {
-      const { error: statusError } = await supabase
-        .from("client")
-        .update({ status })
-        .eq("id", id);
-
-      if (statusError) {
-        return {
-          message: "خطا در به‌روزرسانی وضعیت مشتری.",
-          success: false,
-        };
-      }
-    }
-
+  if (clientError || !clientData) {
     return {
-      message: "اطلاعات مشتری با موفقیت به‌روزرسانی شد.",
-      success: true,
-      data: id,
-    };
-  } catch (error) {
-    return {
-      message: "خطای سرور. لطفاً دوباره تلاش کنید.",
+      message: "مشتری یافت نشد.",
       success: false,
     };
   }
+
+  const updateCompany = async (formData: FormData): Promise<string | null> => {
+    const name = formData.get("company_name") as string;
+    const ssn = formData.get("company_ssn") as string;
+    const phone = formData.get("phone") as string;
+    const county = formData.get("county") as string;
+    const town = formData.get("town") as string;
+    const address = formData.get("address") as string;
+    const postalCode = formData.get("postal_code") as string;
+
+    // return if the formData doesn't container company_name
+    if (name === "" || !name) return null;
+
+    const { error: companyError } = await supabase
+      .from("company")
+      .update({
+        name,
+        ssn,
+        phone,
+        address: `${county}, ${town}, ${address}`,
+        postal_code: postalCode,
+      })
+      .eq("id", clientData.company_id!);
+    
+    if (companyError) {
+      return "خطا در به‌روزرسانی اطلاعات شرکت.";
+    }
+    return null
+  }
+
+  const updatePersonal = async (formData: FormData): Promise<string | null> => {
+    const name = formData.get("name") as string;
+    const phone = formData.get("phone") as string;
+    const county = formData.get("county") as string;
+    const town = formData.get("town") as string;
+    const address = formData.get("address") as string;
+    const ssn = formData.get("ssn") as string;
+    const postalCode = formData.get("postal_code") as string;
+
+    const { error: personError } = await supabase
+      .from("person")
+      .update({
+        name,
+        ssn,
+        phone,
+        address: `${county}, ${town}, ${address}`,
+        postal_code: postalCode,
+      })
+      .eq("id", clientData.person_id!);
+
+    if (personError) {
+      return "خطا در به‌روزرسانی اطلاعات شخصی.";
+    }
+    return null
+  }
+
+  // Update the appropriate table (person or company)
+  if (clientData.person_id) {
+    const personError = await updatePersonal(formData);
+    if (personError) {
+      return {
+        message: personError,
+        success: false,
+      };
+    }
+  }
+
+  if (clientData.company_id) {
+    const companyError = await updateCompany(formData);
+    if (companyError) {
+      return {
+        message: companyError,
+        success: false,
+      };
+    }
+  }
+
+  return {
+    message: "اطلاعات مشتری با موفقیت به‌روزرسانی شد.",
+    success: true,
+    data: id,
+  };
 }
 
 export async function AddClient(formData: FormData) {
   const createCompany = async (formData: FormData): Promise<string | null> => {
     const name = formData.get("company_name") as string;
-    const phone = formData.get("phone") as string;
-    const address = formData.get("company_address") as string;
     const ssn = formData.get("company_ssn") as string;
-    const postalCode = formData.get("company_postal_code") as string;
+    const phone = formData.get("phone") as string;
+    const county = formData.get("county") as string;
+    const town = formData.get("town") as string;
+    const address = formData.get("address") as string;
+    const postalCode = formData.get("postal_code") as string;
 
     // return if the formData doesn't container company_name
     if (name === "" || !name) return null;
@@ -259,7 +289,7 @@ export async function AddClient(formData: FormData) {
         name,
         ssn,
         phone,
-        address,
+        address: `${county}, ${town}, ${address}`,
         postal_code: postalCode,
       })
       .select();
@@ -274,6 +304,8 @@ export async function AddClient(formData: FormData) {
   const createPersonal = async (formData: FormData): Promise<string | null> => {
     const name = formData.get("name") as string;
     const phone = formData.get("phone") as string;
+    const county = formData.get("county") as string;
+    const town = formData.get("town") as string;
     const address = formData.get("address") as string;
     const ssn = formData.get("ssn") as string;
     const postalCode = formData.get("postal_code") as string;
@@ -284,7 +316,7 @@ export async function AddClient(formData: FormData) {
         name,
         ssn,
         phone,
-        address,
+        address: `${county}, ${town}, ${address}`,
         postal_code: postalCode,
       })
       .select();
@@ -337,13 +369,17 @@ export async function AddClient(formData: FormData) {
   };
 }
 
-export async function DeleteClient(id: string): Promise<ServerActionState<boolean>> {
+export async function DeleteClient(
+  id: string,
+): Promise<ServerActionState<boolean>> {
   try {
     // First check for dependencies
     const dependencyCheck = await CheckClientDependencies(id);
+
     if (!dependencyCheck.success || dependencyCheck.data === false) {
       return {
-        message: dependencyCheck.message || "مشتری دارای وابستگی است و قابل حذف نیست.",
+        message:
+          dependencyCheck.message || "مشتری دارای وابستگی است و قابل حذف نیست.",
         success: false,
       };
     }
@@ -406,7 +442,7 @@ export async function DeleteClient(id: string): Promise<ServerActionState<boolea
       success: true,
       data: true,
     };
-  } catch (error) {
+  } catch {
     return {
       message: "خطای سرور. لطفاً دوباره تلاش کنید.",
       success: false,
@@ -414,6 +450,8 @@ export async function DeleteClient(id: string): Promise<ServerActionState<boolea
   }
 }
 
-export async function CheckClientDependencies(id: string): Promise<ServerActionState<boolean>> {
+export async function CheckClientDependencies(
+  id: string,
+): Promise<ServerActionState<boolean>> {
   return await checkEntityDependencies("client", id);
 }

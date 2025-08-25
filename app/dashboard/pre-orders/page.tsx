@@ -91,7 +91,8 @@ export default function PreOrdersPage() {
       case "estimated_amount":
         return (
           <span className="font-mono">
-            {item.data.estimated_amount === -1 || item.data.estimated_amount === null
+            {item.data.estimated_amount === -1 ||
+            item.data.estimated_amount === null
               ? "تعیین نشده"
               : fieldFormatters.currency(item.data.estimated_amount)}
           </span>

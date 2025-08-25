@@ -3,8 +3,6 @@
 import React from "react";
 import { useDisclosure } from "@heroui/react";
 
-import { DeleteIcon } from "@/components/icons";
-
 import {
   PreOrderData,
   Status,
@@ -12,10 +10,14 @@ import {
   statusColorMap,
 } from "./types";
 
+import { DeleteIcon } from "@/components/icons";
 import { DeleteModal } from "@/components/crud/DeleteModal";
 import { Row } from "@/lib/types";
 import { getEntityJobConfig } from "@/lib/config/entity-jobs";
-import { DeletePreOrder, CheckPreOrderDependencies } from "@/lib/action/pre-order";
+import {
+  DeletePreOrder,
+  CheckPreOrderDependencies,
+} from "@/lib/action/pre-order";
 import { fieldFormatters } from "@/lib/utils/field-config";
 
 // Pre-order specific display fields for delete confirmation
@@ -30,6 +32,7 @@ const preOrderDisplayFields = [
     label: "شرح پیش سفارش",
     formatter: (value: any) => {
       if (!value) return "-";
+
       // Truncate long descriptions for display
       return value.length > 50 ? `${value.substring(0, 50)}...` : value;
     },
@@ -41,6 +44,7 @@ const preOrderDisplayFields = [
       if (value === -1 || value === null || value === undefined) {
         return "تعیین نشده";
       }
+
       return fieldFormatters.currency(value);
     },
   },
@@ -94,9 +98,10 @@ export function DeletePreOrderComponent({
 
   // Check if pre-order can be deleted based on status
   const canDelete = entity.status !== "converted";
-  const deleteDisabledReason = entity.status === "converted" 
-    ? "پیش سفارش تبدیل شده قابل حذف نیست" 
-    : undefined;
+  const deleteDisabledReason =
+    entity.status === "converted"
+      ? "پیش سفارش تبدیل شده قابل حذف نیست"
+      : undefined;
 
   return (
     <>

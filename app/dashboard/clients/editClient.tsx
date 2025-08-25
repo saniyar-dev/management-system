@@ -1,12 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { useDisclosure } from "@heroui/react";
 
+import { ClientData, Status } from "./types";
+
 import { EditIcon } from "@/components/icons";
-
-import { ClientData, Status, statusOptions } from "./types";
-
 import { EditModal } from "@/components/crud/EditModal";
 import { Row } from "@/lib/types";
 import { EditFieldConfig, ValidationConfig } from "@/lib/action/crud-types";
@@ -16,7 +15,7 @@ import { persianValidationRules } from "@/lib/utils/persian-validation";
 import { UpdateClient } from "@/lib/action/client";
 
 // Client-specific edit field configuration
-const clientEditFields: EditFieldConfig<ClientData>[] = [
+const defaultEditFields: EditFieldConfig<ClientData>[] = [
   {
     ...commonFieldConfigs.editFields.name,
     label: "نام / نام شرکت",
@@ -31,6 +30,14 @@ const clientEditFields: EditFieldConfig<ClientData>[] = [
     ...commonFieldConfigs.editFields.phone,
     label: "شماره موبایل",
     validation: persianValidationRules.persianPhone,
+  },
+  {
+    ...commonFieldConfigs.editFields.county,
+    label: "استان",
+  },
+  {
+    ...commonFieldConfigs.editFields.town,
+    label: "شهرستان / بخش",
   },
   {
     ...commonFieldConfigs.editFields.address,
@@ -60,6 +67,23 @@ interface EditClientProps {
 
 export function EditClientComponent({ entity, onSuccess }: EditClientProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const clientEditFields = useMemo((): EditFieldConfig<ClientData>[] => {
+    if (entity.type === "company") {
+      return [
+        {
+          ...commonFieldConfigs.editFields.company_name,
+          label: "نام شرکت",
+        },
+        {
+          ...commonFieldConfigs.editFields.company_ssn,
+          label: "شناسه ملی شرکت",
+        },
+        ...defaultEditFields,
+      ];
+    }
+    return defaultEditFields;
+  }, [entity.type])
 
   // Get client job configuration for edit operation
   const jobsConfig = getEntityJobConfig("client", "edit");
@@ -112,49 +136,4 @@ export function EditClientComponent({ entity, onSuccess }: EditClientProps) {
       />
     </>
   );
-}
-
-// Hook for using EditClient component
-export function useEditClient() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const EditClientModal = React.useCallback(
-    ({ entity, onSuccess }: EditClientProps) => {
-      const jobsConfig = getEntityJobConfig("client", "edit");
-
-      const handleUpdate = async (formData: FormData) => {
-        return await UpdateClient(entity.id.toString(), formData);
-      };
-
-      const handleSuccess = () => {
-        // Refresh the page or update the table data
-        window.location.reload();
-        if (onSuccess) {
-          onSuccess();
-        }
-      };
-
-      return (
-        <EditModal
-          entity={entity}
-          fields={clientEditFields}
-          isOpen={isOpen}
-          jobsConfig={jobsConfig}
-          title={`ویرایش مشتری: ${entity.data.name}`}
-          validationRules={clientValidationRules}
-          onClose={onClose}
-          onSuccess={handleSuccess}
-          onUpdate={handleUpdate}
-        />
-      );
-    },
-    [isOpen, onClose],
-  );
-
-  return {
-    isOpen,
-    onOpen,
-    onClose,
-    EditClientModal,
-  };
 }

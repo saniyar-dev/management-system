@@ -2,7 +2,7 @@
 replicaCount: 2
 image:
   repository: registry.home-lab.ir/simanban/admin-front
-  tag: "07918e4f"
+  tag: "7c9ec41e"
 
 # Simple service
 service:

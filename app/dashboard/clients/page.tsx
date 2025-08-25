@@ -27,7 +27,6 @@ import { ViewClientComponent } from "./viewClient";
 import { EditClientComponent } from "./editClient";
 import { DeleteClientComponent } from "./deleteClient";
 
-
 import { Row } from "@/lib/types";
 import { GetClients, GetTotalClients } from "@/lib/action/client";
 import { useTableLogic } from "@/lib/hooks";
@@ -47,6 +46,8 @@ const columns: Array<{
   { name: "نام / نام شرکت", uid: "name", sortable: true },
   { name: "کد ملی / شناسه ملی", uid: "ssn", sortable: true },
   { name: "شماره موبایل", uid: "phone" },
+  { name: "استان", uid: "county", sortable: true },
+  { name: "شهرستان / بخش", uid: "town" },
   { name: "آدرس", uid: "address" },
   { name: "کد پستی", uid: "postal_code" },
   { name: "وضعیت", uid: "status", sortable: true },
@@ -57,7 +58,8 @@ const INITIAL_VISIBLE_COLUMNS: Array<ColumnUID> = [
   "name",
   "ssn",
   "phone",
-  "address",
+  "county",
+  "town",
   "status",
   "actions",
 ];
@@ -84,6 +86,9 @@ export default function ClientsPage() {
     (row: Row<ClientData, Status>, columnKey: Key) => {
       switch (columnKey) {
         case "name":
+          if (row.type === "company") {
+            return <User name={row.data.company_name} />
+          }
           return <User name={row.data.name} />;
         case "status":
           return (

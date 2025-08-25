@@ -3,13 +3,15 @@
 import React from "react";
 import { useDisclosure, Button } from "@heroui/react";
 
+import { ClientData } from "./types";
+
 import { PlusIcon } from "@/components/icons";
-import { ClientData, Status } from "./types";
 import { AddModal } from "@/components/crud/AddModal";
 import { AddFieldConfig, ValidationConfig } from "@/lib/action/crud-types";
 import { getEntityJobConfig } from "@/lib/config/entity-jobs";
 import { persianValidationRules } from "@/lib/utils/persian-validation";
 import { AddClient } from "@/lib/action/client";
+import { provinceOptions } from "@/config/statics";
 
 // Personal client fields
 const personalClientFields: AddFieldConfig<ClientData>[] = [
@@ -38,11 +40,47 @@ const personalClientFields: AddFieldConfig<ClientData>[] = [
     validation: persianValidationRules.persianSSN,
   },
   {
+    key: "county",
+    label: "استان",
+    type: "select",
+    required: true,
+    placeholder: "هرمزگان",
+    options: () =>
+      provinceOptions.map((county) => {
+        return { id: county.uid, name: county.name, label: county.name };
+      }),
+    validation: persianValidationRules.persianText,
+  },
+  {
+    key: "town",
+    label: "شهرستان / بخش",
+    type: "select",
+    required: true,
+    options: (formData) => {
+      const selectedCounty = formData["county"];
+
+      if (!selectedCounty) {
+        return [];
+      }
+      const towns = provinceOptions.find(
+        (county) => county.uid === selectedCounty.toString(),
+      )?.towns;
+
+      return (
+        towns?.map((town) => {
+          return { id: town.uid, name: town.name, label: town.name };
+        }) || []
+      );
+    },
+    placeholder: "بندرعباس",
+    validation: persianValidationRules.persianText,
+  },
+  {
     key: "address",
-    label: "آدرس",
+    label: "جزئیات آدرس",
     type: "textarea",
     required: true,
-    placeholder: "هرمزگان، بندر عباس، خیابان مریم، پلاک ۱۰۲",
+    placeholder: "خیابان مریم، پلاک ۱۰۲",
     validation: persianValidationRules.persianText,
   },
   {
@@ -85,7 +123,7 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     validation: persianValidationRules.persianSSN,
   },
   {
-    key: "name",
+    key: "company_name",
     fieldName: "company_name",
     label: "نام کارخانه/کارگاه/شرکت",
     type: "input",
@@ -94,7 +132,7 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     validation: persianValidationRules.persianText,
   },
   {
-    key: "ssn",
+    key: "company_ssn",
     fieldName: "company_ssn",
     label: "شناسه ملی کارخانه/کارگاه/شرکت",
     type: "input",
@@ -103,17 +141,52 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     validation: persianValidationRules.persianSSN,
   },
   {
+    key: "county",
+    label: "استان",
+    type: "select",
+    required: true,
+    placeholder: "هرمزگان",
+    options: () =>
+      provinceOptions.map((county) => {
+        return { id: county.uid, name: county.name, label: county.name };
+      }),
+    validation: persianValidationRules.persianText,
+  },
+  {
+    key: "town",
+    label: "شهرستان / بخش",
+    type: "select",
+    required: true,
+    options: (formData) => {
+      const selectedCounty = formData["county"];
+
+      if (!selectedCounty) {
+        return [];
+      }
+      const towns = provinceOptions.find(
+        (county) => county.uid === selectedCounty.toString(),
+      )?.towns;
+
+      return (
+        towns?.map((town) => {
+          return { id: town.uid, name: town.name, label: town.name };
+        }) || []
+      );
+    },
+
+    placeholder: "بندرعباس",
+    validation: persianValidationRules.persianText,
+  },
+  {
     key: "address",
-    fieldName: "company_address",
-    label: "آدرس کارخانه/کارگاه/شرکت",
+    label: "جزئیات آدرس",
     type: "textarea",
     required: true,
-    placeholder: "هرمزگان، بندر عباس، جاده قدیم، قطعه ۱۰۵",
+    placeholder: "خیابان مریم، پلاک ۱۰۲",
     validation: persianValidationRules.persianText,
   },
   {
     key: "postal_code",
-    fieldName: "company_postal_code",
     label: "کد پستی کارخانه/کارگاه/شرکت",
     type: "input",
     required: true,
@@ -125,8 +198,11 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
 // Validation configuration for client fields
 const clientValidationRules: ValidationConfig<ClientData> = {
   name: persianValidationRules.persianName,
+  company_name: persianValidationRules.persianName,
   ssn: persianValidationRules.persianSSN,
+  company_ssn: persianValidationRules.persianSSN,
   phone: persianValidationRules.persianPhone,
+  company_phone: persianValidationRules.persianPhone,
   address: persianValidationRules.persianText,
   postal_code: persianValidationRules.persianPostalCode,
 };
@@ -139,7 +215,7 @@ const clientTabs = [
     fields: personalClientFields,
   },
   {
-    key: "company", 
+    key: "company",
     title: "حقوقی",
     fields: companyClientFields,
   },
@@ -180,20 +256,19 @@ export function AddClientComponent({ onSuccess }: AddClientProps = {}) {
         ایجاد مشتری جدید
       </Button>
 
-{
-  isOpen &&
-      <AddModal
-        fields={personalClientFields} // Default fields (not used when tabs are provided)
-        tabs={clientTabs}
-        isOpen={isOpen}
-        jobsConfig={jobsConfig}
-        title="ایجاد مشتری جدید"
-        validationRules={clientValidationRules}
-        onAdd={handleAdd}
-        onClose={handleClose}
-        onSuccess={handleSuccess}
-      />
-}
+      {isOpen && (
+        <AddModal
+          fields={companyClientFields} // Default fields (not used when tabs are provided)
+          isOpen={isOpen}
+          jobsConfig={jobsConfig}
+          tabs={clientTabs}
+          title="ایجاد مشتری جدید"
+          validationRules={clientValidationRules}
+          onAdd={handleAdd}
+          onClose={handleClose}
+          onSuccess={handleSuccess}
+        />
+      )}
     </>
   );
 }
@@ -226,9 +301,9 @@ export function useAddClient() {
       return (
         <AddModal
           fields={personalClientFields}
-          tabs={clientTabs}
           isOpen={isOpen}
           jobsConfig={jobsConfig}
+          tabs={clientTabs}
           title="ایجاد مشتری جدید"
           validationRules={clientValidationRules}
           onAdd={handleAdd}

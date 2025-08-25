@@ -3,8 +3,6 @@
 import React from "react";
 import { useDisclosure } from "@heroui/react";
 
-import { EyeIcon } from "@/components/icons";
-
 import {
   PreOrderData,
   Status,
@@ -12,6 +10,7 @@ import {
   statusColorMap,
 } from "./types";
 
+import { EyeIcon } from "@/components/icons";
 import { ViewModal } from "@/components/crud/ViewModal";
 import { Row } from "@/lib/types";
 import { ViewFieldConfig } from "@/lib/action/crud-types";
@@ -38,6 +37,7 @@ const preOrderViewFields: ViewFieldConfig<PreOrderData>[] = [
       if (value === -1 || value === null || value === undefined) {
         return "تعیین نشده";
       }
+
       return fieldFormatters.currency(value);
     },
   },
@@ -52,7 +52,10 @@ interface ViewPreOrderProps {
   onSuccess?: () => void;
 }
 
-export function ViewPreOrderComponent({ entity, onSuccess }: ViewPreOrderProps) {
+export function ViewPreOrderComponent({
+  entity,
+  onSuccess,
+}: ViewPreOrderProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Get pre-order job configuration for view operation

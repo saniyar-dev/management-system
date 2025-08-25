@@ -29,5 +29,5 @@ export type GetTotalRowsFn = (
 export type {
   UpdateEntityFn,
   DeleteEntityFn,
-  CheckDependenciesFn
-} from './crud-types';
+  CheckDependenciesFn,
+} from "./crud-types";

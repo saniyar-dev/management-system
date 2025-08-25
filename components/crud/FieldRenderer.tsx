@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Chip } from "@heroui/react";
+
 import { ViewFieldConfig } from "@/lib/action/crud-types";
 import { RowData } from "@/lib/types";
 
@@ -9,27 +10,29 @@ interface FieldRendererProps<T extends RowData> {
   field: ViewFieldConfig<T>;
   value: any;
   statusMap?: Record<string, string>;
-  statusColorMap?: Record<string, "default" | "primary" | "secondary" | "success" | "warning" | "danger">;
+  statusColorMap?: Record<
+    string,
+    "default" | "primary" | "secondary" | "success" | "warning" | "danger"
+  >;
 }
 
 export function FieldRenderer<T extends RowData>({
   field,
   value,
   statusMap,
-  statusColorMap
+  statusColorMap,
 }: FieldRendererProps<T>) {
-  
   const renderValue = () => {
     // Handle null/undefined values
-    if (value === null || value === undefined || value === '') {
+    if (value === null || value === undefined || value === "") {
       return <span className="text-default-400">-</span>;
     }
 
     // Handle status fields with chips
-    if (field.type === 'status' && statusMap) {
+    if (field.type === "status" && statusMap) {
       const statusLabel = statusMap[value] || value;
       const statusColor = statusColorMap?.[value] || "default";
-      
+
       return (
         <Chip
           className="capitalize"
@@ -45,44 +48,54 @@ export function FieldRenderer<T extends RowData>({
     // Use custom formatter if provided
     if (field.formatter) {
       const formatted = field.formatter(value);
+
       return <span className="text-right">{formatted}</span>;
     }
 
     // Default rendering based on field type
     switch (field.type) {
-      case 'currency':
-        const numValue = typeof value === 'string' ? parseFloat(value) : value;
+      case "currency":
+        const numValue = typeof value === "string" ? parseFloat(value) : value;
+
         if (isNaN(numValue)) return <span className="text-default-400">-</span>;
+
         return (
           <span className="font-medium text-success text-right" dir="rtl">
-            {new Intl.NumberFormat('fa-IR').format(numValue)} ریال
+            {new Intl.NumberFormat("fa-IR").format(numValue)} ریال
           </span>
         );
 
-      case 'number':
-        const num = typeof value === 'string' ? parseFloat(value) : value;
+      case "number":
+        const num = typeof value === "string" ? parseFloat(value) : value;
+
         if (isNaN(num)) return <span className="text-default-400">-</span>;
+
         return (
           <span className="font-mono text-right" dir="rtl">
-            {new Intl.NumberFormat('fa-IR').format(num)}
+            {new Intl.NumberFormat("fa-IR").format(num)}
           </span>
         );
 
-      case 'date':
+      case "date":
         try {
           const date = new Date(value);
+
           return (
             <span className="font-mono text-right" dir="rtl">
-              {date.toLocaleDateString('fa-IR')}
+              {date.toLocaleDateString("fa-IR")}
             </span>
           );
         } catch {
           return <span className="text-default-400">-</span>;
         }
 
-      case 'text':
+      case "text":
       default:
-        return <span className="text-right" dir="rtl">{String(value)}</span>;
+        return (
+          <span className="text-right" dir="rtl">
+            {String(value)}
+          </span>
+        );
     }
   };
 
