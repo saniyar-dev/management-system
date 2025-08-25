@@ -35,30 +35,9 @@ const preOrderEditFields: EditFieldConfig<PreOrderData>[] = [
   },
 ];
 
-// Status field for editing with pre-order specific validation
-const statusEditField: EditFieldConfig<PreOrderData> = {
-  key: "status" as keyof PreOrderData,
-  label: "وضعیت",
-  type: "select",
-  required: true,
-  options: statusOptions.map((option) => ({
-    value: option.uid,
-    label: option.name,
-  })),
-  validation: (value: any, entity?: Row<PreOrderData, Status>) => {
-    if (!value) return "انتخاب وضعیت الزامی است";
-
-    // Additional validation for status transitions
-    if (entity && entity.status === "converted" && value !== "converted") {
-      return "پیش سفارش تبدیل شده قابل تغییر وضعیت نیست";
-    }
-
-    return null;
-  },
-};
 
 // All edit fields including status
-const allEditFields = [...preOrderEditFields, statusEditField];
+const allEditFields = [...preOrderEditFields];
 
 // Validation configuration for pre-order fields
 const preOrderValidationRules: ValidationConfig<PreOrderData> = {
