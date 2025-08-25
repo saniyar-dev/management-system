@@ -96,6 +96,24 @@ const personalClientFields: AddFieldConfig<ClientData>[] = [
 // Company client fields - using different field names for form but same validation
 const companyClientFields: AddFieldConfig<ClientData>[] = [
   {
+    key: "company_name",
+    fieldName: "company_name",
+    label: "نام کارخانه/کارگاه/شرکت",
+    type: "input",
+    required: true,
+    placeholder: "بتن ریزی سیرجان",
+    validation: persianValidationRules.persianText,
+  },
+  {
+    key: "company_ssn",
+    fieldName: "company_ssn",
+    label: "شناسه ملی کارخانه/کارگاه/شرکت",
+    type: "input",
+    required: true,
+    placeholder: "شناسه ملی شرکت",
+    validation: persianValidationRules.persianSSN,
+  },
+  {
     key: "name",
     fieldName: "name",
     label: "نام و نام خانوادگی مدیرعامل/نماینده",
@@ -120,24 +138,6 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     type: "input",
     required: true,
     placeholder: "۰۳۱۲۸۲۹۸۰۴",
-    validation: persianValidationRules.persianSSN,
-  },
-  {
-    key: "company_name",
-    fieldName: "company_name",
-    label: "نام کارخانه/کارگاه/شرکت",
-    type: "input",
-    required: true,
-    placeholder: "بتن ریزی سیرجان",
-    validation: persianValidationRules.persianText,
-  },
-  {
-    key: "company_ssn",
-    fieldName: "company_ssn",
-    label: "شناسه ملی کارخانه/کارگاه/شرکت",
-    type: "input",
-    required: true,
-    placeholder: "شناسه ملی شرکت",
     validation: persianValidationRules.persianSSN,
   },
   {

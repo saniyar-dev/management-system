@@ -18,12 +18,12 @@ import { UpdateClient } from "@/lib/action/client";
 const defaultEditFields: EditFieldConfig<ClientData>[] = [
   {
     ...commonFieldConfigs.editFields.name,
-    label: "نام / نام شرکت",
+    label: "نام",
     validation: persianValidationRules.persianName,
   },
   {
     ...commonFieldConfigs.editFields.ssn,
-    label: "کد ملی / شناسه ملی",
+    label: "کد ملی",
     validation: persianValidationRules.persianSSN,
   },
   {
