@@ -11,7 +11,7 @@ export default function DashboardsLayout({
   return (
     <section className="flex justify-start gap-4 h-full">
       <div className="w-[180px] h-full border-l-1 pl-2">
-        <Listbox aria-label="sidebar menu" variant="flat">
+        <Listbox aria-label="sidebar menu" variant="flat" disabledKeys={["pre-orders", "orders", "pre-invoices", "invoices"]}>
           <ListboxSection showDivider>
             <ListboxItem key="home" as={Link} href="/dashboard">
               ‌خانه
