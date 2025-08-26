@@ -1,261 +1,324 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
-import { Tab, Tabs } from "@heroui/react";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  Button,
-  useDisclosure,
-  useDraggable,
-  Input,
-} from "@heroui/react";
+import React from "react";
+import { useDisclosure, Button } from "@heroui/react";
 
-import JobComponent from "@/components/jobs";
+import { ClientData } from "./types";
+
 import { PlusIcon } from "@/components/icons";
+import { AddModal } from "@/components/crud/AddModal";
+import { AddFieldConfig, ValidationConfig } from "@/lib/action/crud-types";
+import { getEntityJobConfig } from "@/lib/config/entity-jobs";
+import { persianValidationRules } from "@/lib/utils/persian-validation";
 import { AddClient } from "@/lib/action/client";
-import { ServerActionState } from "@/lib/action/type";
-import Loading from "@/components/loading";
-import { useJobs } from "@/lib/hooks";
+import { provinceOptions } from "@/config/statics";
 
-const jobsToProceed: { url: string; name: string }[] = [
+// Personal client fields
+const personalClientFields: AddFieldConfig<ClientData>[] = [
   {
-    name: "ارسال به کارتابل ",
-    url: "https://google.com",
+    key: "name",
+    label: "نام و نام خانوادگی",
+    type: "input",
+    required: true,
+    placeholder: "نام مشتری را وارد کنید",
+    validation: persianValidationRules.persianName,
   },
   {
-    name: "ارسال پیام به مشتری",
-    url: "https://google.com",
+    key: "phone",
+    label: "شماره موبایل",
+    type: "input",
+    required: true,
+    placeholder: "۰۹۱۲۳۴۵۶۷۸۹",
+    validation: persianValidationRules.persianPhone,
+  },
+  {
+    key: "ssn",
+    label: "کد ملی",
+    type: "input",
+    required: true,
+    placeholder: "۰۳۱۲۸۲۹۸۰۴",
+    validation: persianValidationRules.persianSSN,
+  },
+  {
+    key: "county",
+    label: "استان",
+    type: "select",
+    required: true,
+    placeholder: "هرمزگان",
+    options: () =>
+      provinceOptions.map((county) => {
+        return { id: county.uid, name: county.name, label: county.name };
+      }),
+    validation: persianValidationRules.persianText,
+  },
+  {
+    key: "town",
+    label: "شهرستان / بخش",
+    type: "select",
+    required: true,
+    options: (formData) => {
+      const selectedCounty = formData["county"];
+
+      if (!selectedCounty) {
+        return [];
+      }
+      const towns = provinceOptions.find(
+        (county) => county.uid === selectedCounty.toString(),
+      )?.towns;
+
+      return (
+        towns?.map((town) => {
+          return { id: town.uid, name: town.name, label: town.name };
+        }) || []
+      );
+    },
+    placeholder: "بندرعباس",
+    validation: persianValidationRules.persianText,
+  },
+  {
+    key: "address",
+    label: "جزئیات آدرس",
+    type: "textarea",
+    required: true,
+    placeholder: "خیابان مریم، پلاک ۱۰۲",
+    validation: persianValidationRules.persianText,
+  },
+  {
+    key: "postal_code",
+    label: "کد پستی",
+    type: "input",
+    required: true,
+    placeholder: "۴۴۸۸۹۱۱۰۲",
+    validation: persianValidationRules.persianPostalCode,
   },
 ];
 
-export function AddClientComponent() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [pending, startTransition] = useTransition();
-  const [actionMsg, setActionMsg] = useState<ServerActionState<any> | null>(
-    null,
-  );
-  const [jobs, pendingJobs, startJobsTransition] = useJobs(
-    "client",
-    jobsToProceed,
-  );
+// Company client fields - using different field names for form but same validation
+const companyClientFields: AddFieldConfig<ClientData>[] = [
+  {
+    key: "company_name",
+    fieldName: "company_name",
+    label: "نام کارخانه/کارگاه/شرکت",
+    type: "input",
+    required: true,
+    placeholder: "بتن ریزی سیرجان",
+    validation: persianValidationRules.persianText,
+  },
+  {
+    key: "company_ssn",
+    fieldName: "company_ssn",
+    label: "شناسه ملی کارخانه/کارگاه/شرکت",
+    type: "input",
+    required: true,
+    placeholder: "شناسه ملی شرکت",
+    validation: persianValidationRules.persianSSN,
+  },
+  {
+    key: "name",
+    fieldName: "name",
+    label: "نام و نام خانوادگی مدیرعامل/نماینده",
+    type: "input",
+    required: true,
+    placeholder: "نام مدیرعامل را وارد کنید",
+    validation: persianValidationRules.persianName,
+  },
+  {
+    key: "phone",
+    fieldName: "phone",
+    label: "شماره موبایل مدیرعامل/نماینده",
+    type: "input",
+    required: true,
+    placeholder: "۰۹۱۲۳۴۵۶۷۸۹",
+    validation: persianValidationRules.persianPhone,
+  },
+  {
+    key: "ssn",
+    fieldName: "ssn",
+    label: "کد ملی مدیرعامل/نماینده",
+    type: "input",
+    required: true,
+    placeholder: "۰۳۱۲۸۲۹۸۰۴",
+    validation: persianValidationRules.persianSSN,
+  },
+  {
+    key: "county",
+    label: "استان",
+    type: "select",
+    required: true,
+    placeholder: "هرمزگان",
+    options: () =>
+      provinceOptions.map((county) => {
+        return { id: county.uid, name: county.name, label: county.name };
+      }),
+    validation: persianValidationRules.persianText,
+  },
+  {
+    key: "town",
+    label: "شهرستان / بخش",
+    type: "select",
+    required: true,
+    options: (formData) => {
+      const selectedCounty = formData["county"];
 
-  const targetRef = React.useRef(null);
-  const { moveProps } = useDraggable({
-    targetRef,
-    canOverflow: true,
-    isDisabled: !isOpen,
-  });
-
-  const onSubmit = (formData: FormData) => {
-    startTransition(async () => {
-      const msg = await AddClient(formData);
-
-      setActionMsg(msg);
-
-      if (msg.success && msg.data) {
-        startJobsTransition(msg.data);
+      if (!selectedCounty) {
+        return [];
       }
-    });
+      const towns = provinceOptions.find(
+        (county) => county.uid === selectedCounty.toString(),
+      )?.towns;
+
+      return (
+        towns?.map((town) => {
+          return { id: town.uid, name: town.name, label: town.name };
+        }) || []
+      );
+    },
+
+    placeholder: "بندرعباس",
+    validation: persianValidationRules.persianText,
+  },
+  {
+    key: "address",
+    label: "جزئیات آدرس",
+    type: "textarea",
+    required: true,
+    placeholder: "خیابان مریم، پلاک ۱۰۲",
+    validation: persianValidationRules.persianText,
+  },
+  {
+    key: "postal_code",
+    label: "کد پستی کارخانه/کارگاه/شرکت",
+    type: "input",
+    required: true,
+    placeholder: "۴۴۸۸۹۱۱۰۲",
+    validation: persianValidationRules.persianPostalCode,
+  },
+];
+
+// Validation configuration for client fields
+const clientValidationRules: ValidationConfig<ClientData> = {
+  name: persianValidationRules.persianName,
+  company_name: persianValidationRules.persianName,
+  ssn: persianValidationRules.persianSSN,
+  company_ssn: persianValidationRules.persianSSN,
+  phone: persianValidationRules.persianPhone,
+  company_phone: persianValidationRules.persianPhone,
+  address: persianValidationRules.persianText,
+  postal_code: persianValidationRules.persianPostalCode,
+};
+
+// Tab configuration for personal and company clients
+const clientTabs = [
+  {
+    key: "personal",
+    title: "حقیقی",
+    fields: personalClientFields,
+  },
+  {
+    key: "company",
+    title: "حقوقی",
+    fields: companyClientFields,
+  },
+];
+
+interface AddClientProps {
+  onSuccess?: () => void;
+}
+
+export function AddClientComponent({ onSuccess }: AddClientProps = {}) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  // Get client job configuration for add operation
+  const jobsConfig = getEntityJobConfig("client", "add");
+
+  const handleAdd = async (formData: FormData) => {
+    return await AddClient(formData);
+  };
+
+  const handleClose = () => {
+    onClose();
+    if (onSuccess) {
+      onSuccess();
+    }
+  };
+
+  const handleSuccess = () => {
+    // Refresh the page or update the table data
+    window.location.reload();
+    if (onSuccess) {
+      onSuccess();
+    }
   };
 
   return (
     <>
-      <Loading pending={pending} />
       <Button color="primary" endContent={<PlusIcon />} onPress={onOpen}>
         ایجاد مشتری جدید
       </Button>
-      <Modal
-        ref={targetRef}
-        isOpen={isOpen}
-        size={`${jobs.length > 0 ? "5xl" : "2xl"}`}
-        onOpenChange={onOpenChange}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader {...moveProps} className="flex flex-col gap-1">
-                ایجاد مشتری جدید
-              </ModalHeader>
-              <section
-                className={`flex justify-${jobs.length > 0 ? "between" : "center"} p-6`}
-              >
-                <div>
-                  <Tabs
-                    fullWidth
-                    aria-label="Tabs Form"
-                    placement="top"
-                    size="md"
-                  >
-                    <Tab key="personal" title="حقیقی">
-                      <form
-                        action={onSubmit}
-                        className="w-xl flex flex-col gap-6"
-                      >
-                        <div className="flex flex-col items-center justify-center gap-4">
-                          <Input
-                            isRequired
-                            id="name"
-                            label="نام و نام خاوادگی"
-                            name="name"
-                            placeholder="نام مشتری"
-                            variant="bordered"
-                          />
-                          <Input
-                            isRequired
-                            id="phone"
-                            label="شماره موبایل"
-                            name="phone"
-                            placeholder="09900790244"
-                            variant="bordered"
-                          />
-                          <Input
-                            isRequired
-                            id="ssn"
-                            label="کد ملی"
-                            name="ssn"
-                            placeholder="0312829804"
-                            variant="bordered"
-                          />
-                          <Input
-                            isRequired
-                            id="address"
-                            label="آدرس"
-                            name="address"
-                            placeholder="هرمزگان، بندر عباس، خیابان مریم، پلاک ۱۰۲"
-                            variant="bordered"
-                          />
-                          <Input
-                            isRequired
-                            id="postal_code"
-                            label="کد پستی"
-                            name="postal_code"
-                            placeholder="448891102"
-                            variant="bordered"
-                          />
-                        </div>
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            color="danger"
-                            variant="flat"
-                            onPress={onClose}
-                          >
-                            بستن
-                          </Button>
-                          <Button color="primary" type="submit">
-                            ثبت
-                          </Button>
-                        </div>
-                      </form>
-                    </Tab>
-                    <Tab key="company" title="حقوقی">
-                      <form
-                        action={onSubmit}
-                        className="w-xl flex flex-col gap-6"
-                      >
-                        <div className="flex flex-col items-center justify-center gap-4">
-                          <Input
-                            isRequired
-                            id="name"
-                            label="نام و نام خاوادگی مدیر عامل/نماینده"
-                            name="name"
-                            placeholder="نام مشتری"
-                            variant="bordered"
-                          />
-                          <Input
-                            isRequired
-                            id="phone"
-                            label="شماره موبایل مدیر عامل/نماینده"
-                            name="phone"
-                            placeholder="09900790244"
-                            variant="bordered"
-                          />
-                          <Input
-                            isRequired
-                            id="ssn"
-                            label="کد ملی مدیر عامل/نماینده"
-                            name="ssn"
-                            placeholder="0312829804"
-                            variant="bordered"
-                          />
-                          <Input
-                            isRequired
-                            id="company_name"
-                            label="نام کارخانه/کارگاه/شرکت"
-                            name="company_name"
-                            placeholder="بتن ریزی سیرجان"
-                            variant="bordered"
-                          />
-                          <Input
-                            isRequired
-                            id="company_ssn"
-                            label="شناسه ملی کارخانه/کارگاه/شرکت"
-                            name="company_ssn"
-                            placeholder="شناسه ملی بتن ریزی سیرجان"
-                            variant="bordered"
-                          />
-                          <Input
-                            isRequired
-                            id="company_address"
-                            label="آدرس کارخانه/کارگاه/شرکت"
-                            name="company_address"
-                            placeholder="هرمزگان، بندر عباس،جاده قدیم، قطعه ۱۰۵"
-                            variant="bordered"
-                          />
-                          <Input
-                            isRequired
-                            id="company_postal_code"
-                            label="کد پستی کارخانه/کارگاه/شرکت"
-                            name="company_postal_code"
-                            placeholder="448891102"
-                            variant="bordered"
-                          />
-                        </div>
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            color="danger"
-                            variant="flat"
-                            onPress={onClose}
-                          >
-                            بستن
-                          </Button>
-                          <Button color="primary" type="submit">
-                            ثبت
-                          </Button>
-                        </div>
-                      </form>
-                    </Tab>
-                  </Tabs>
-                  {actionMsg && (
-                    <div
-                      className={
-                        "text-right px-3 py-1" +
-                        ` ${actionMsg.success ? "text-success" : "text-danger"}`
-                      }
-                    >
-                      {actionMsg.message}
-                    </div>
-                  )}
-                </div>
-                <section className="flex flex-col gap-4">
-                  {jobs.length > 0 &&
-                    jobs.map((job, index) => {
-                      return (
-                        <JobComponent
-                          key={index}
-                          initData={jobsToProceed[index]}
-                          job={job}
-                          pending={pendingJobs}
-                        />
-                      );
-                    })}
-                </section>
-              </section>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+
+      {isOpen && (
+        <AddModal
+          fields={companyClientFields} // Default fields (not used when tabs are provided)
+          isOpen={isOpen}
+          jobsConfig={jobsConfig}
+          tabs={clientTabs}
+          title="ایجاد مشتری جدید"
+          validationRules={clientValidationRules}
+          onAdd={handleAdd}
+          onClose={handleClose}
+          onSuccess={handleSuccess}
+        />
+      )}
     </>
   );
+}
+
+// Wrapper component for useTableLogic compatibility
+export function AddClientButtonComponent() {
+  return <AddClientComponent />;
+}
+
+// Hook for using AddClient component
+export function useAddClient() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const AddClientModal = React.useCallback(
+    ({ onSuccess }: AddClientProps) => {
+      const jobsConfig = getEntityJobConfig("client", "add");
+
+      const handleAdd = async (formData: FormData) => {
+        return await AddClient(formData);
+      };
+
+      const handleSuccess = () => {
+        // Refresh the page or update the table data
+        window.location.reload();
+        if (onSuccess) {
+          onSuccess();
+        }
+      };
+
+      return (
+        <AddModal
+          fields={personalClientFields}
+          isOpen={isOpen}
+          jobsConfig={jobsConfig}
+          tabs={clientTabs}
+          title="ایجاد مشتری جدید"
+          validationRules={clientValidationRules}
+          onAdd={handleAdd}
+          onClose={onClose}
+          onSuccess={handleSuccess}
+        />
+      );
+    },
+    [isOpen, onClose],
+  );
+
+  return {
+    isOpen,
+    onOpen,
+    onClose,
+    AddClientModal,
+  };
 }

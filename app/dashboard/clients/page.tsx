@@ -22,9 +22,11 @@ import {
   statusColorMap,
   statusOptions,
 } from "./types";
-import { AddClientComponent } from "./addClient";
+import { AddClientButtonComponent } from "./addClient";
+import { ViewClientComponent } from "./viewClient";
+import { EditClientComponent } from "./editClient";
+import { DeleteClientComponent } from "./deleteClient";
 
-import { EyeIcon, EditIcon, DeleteIcon } from "@/components/icons";
 import { Row } from "@/lib/types";
 import { GetClients, GetTotalClients } from "@/lib/action/client";
 import { useTableLogic } from "@/lib/hooks";
@@ -44,6 +46,8 @@ const columns: Array<{
   { name: "نام / نام شرکت", uid: "name", sortable: true },
   { name: "کد ملی / شناسه ملی", uid: "ssn", sortable: true },
   { name: "شماره موبایل", uid: "phone" },
+  { name: "استان", uid: "county", sortable: true },
+  { name: "شهرستان / بخش", uid: "town" },
   { name: "آدرس", uid: "address" },
   { name: "کد پستی", uid: "postal_code" },
   { name: "وضعیت", uid: "status", sortable: true },
@@ -54,7 +58,8 @@ const INITIAL_VISIBLE_COLUMNS: Array<ColumnUID> = [
   "name",
   "ssn",
   "phone",
-  "address",
+  "county",
+  "town",
   "status",
   "actions",
 ];
@@ -74,13 +79,16 @@ export default function ClientsPage() {
     INITIAL_VISIBLE_COLUMNS,
     GetClients,
     GetTotalClients,
-    AddClientComponent,
+    AddClientButtonComponent,
   );
 
   const renderCell = useCallback(
     (row: Row<ClientData, Status>, columnKey: Key) => {
       switch (columnKey) {
         case "name":
+          if (row.type === "company") {
+            return <User name={row.data.company_name} />
+          }
           return <User name={row.data.name} />;
         case "status":
           return (
@@ -96,20 +104,14 @@ export default function ClientsPage() {
         case "actions":
           return (
             <div className="relative flex items-center gap-4 justify-center">
-              <Tooltip content="Details">
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <EyeIcon />
-                </span>
+              <Tooltip content="مشاهده جزئیات">
+                <ViewClientComponent entity={row} />
               </Tooltip>
-              <Tooltip content="Edit user">
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <EditIcon />
-                </span>
+              <Tooltip content="ویرایش مشتری">
+                <EditClientComponent entity={row} />
               </Tooltip>
-              <Tooltip color="danger" content="Delete user">
-                <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                  <DeleteIcon />
-                </span>
+              <Tooltip color="danger" content="حذف مشتری">
+                <DeleteClientComponent entity={row} />
               </Tooltip>
             </div>
           );
