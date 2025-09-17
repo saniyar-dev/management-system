@@ -367,14 +367,13 @@ EXCEPTION
         RAISE WARNING 'Error in get_filtered_clients_with_permissions: %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql;
--- Su
-pporting count function for pagination with permission filtering
+-- Supporting count function for pagination with permission filtering
 CREATE OR REPLACE FUNCTION public.get_filtered_clients_total_with_permissions(
     requesting_user_mask integer,
     _types text[] DEFAULT ARRAY['all'],
     _statuses text[] DEFAULT ARRAY['all']
 )
-RETURNS bigint AS $
+RETURNS bigint AS $$
 BEGIN
     -- Validate input parameters
     IF requesting_user_mask IS NULL OR requesting_user_mask NOT IN (1, 2, 4, 8) THEN
@@ -401,4 +400,4 @@ EXCEPTION
         RAISE WARNING 'Error in get_filtered_clients_total_with_permissions: %', SQLERRM;
         RETURN 0;
 END;
-$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql;

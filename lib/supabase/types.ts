@@ -464,6 +464,14 @@ export type Database = {
         }
         Returns: string
       }
+      get_filtered_clients_total_with_permissions: {
+        Args: {
+          requesting_user_mask: number
+          _types?: string[]
+          _statuses?: string[]
+        }
+        Returns: number
+      }
       get_filtered_clients_with_permissions: {
         Args: {
           requesting_user_id: string
@@ -484,14 +492,6 @@ export type Database = {
           panel_user_id: string
           is_mutable: boolean
         }[]
-      }
-      get_filtered_clients_total_with_permissions: {
-        Args: {
-          requesting_user_mask: number
-          _types?: string[]
-          _statuses?: string[]
-        }
-        Returns: number
       }
       search_company_by_name: {
         Args: {
