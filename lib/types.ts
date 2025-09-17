@@ -32,3 +32,10 @@ export const jobStatusColorMap: Record<
   done: "success",
   error: "danger",
 };
+
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  permission_mask: 1 | 2 | 4 | 8;
+}

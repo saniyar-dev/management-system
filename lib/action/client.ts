@@ -7,6 +7,7 @@ import { GetRowsFn, GetTotalRowsFn, ServerActionState } from "./type";
 
 import { Status } from "@/app/dashboard/clients/types";
 import { ClientData } from "@/app/dashboard/clients/types";
+import { GetUser } from "./auth";
 
 export const GetTotalClients: GetTotalRowsFn = async (
   clientType,
@@ -60,12 +61,29 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
   limit,
   page,
 ) => {
-  const { data, error } = await supabase.rpc("filter_client_paginated", {
+  // const { data, error } = await supabase.rpc("filter_client_paginated", {
+  //   _statuses: status,
+  //   _types: clientType,
+  //   _limit: searchTerm === "" ? limit : 1000,
+  //   _offset: searchTerm === "" ? (page - 1) * limit : 0,
+  // });
+
+  const { data: user, success, message } = await GetUser()
+  if (!success || !user) {
+    return {
+      success,
+      message
+    }
+  }
+
+  const { data, error } = await supabase.rpc("get_filtered_clients_with_permissions", {
+    requesting_user_id: user.id,
+    requesting_user_mask: user.permission_mask,
     _statuses: status,
     _types: clientType,
     _limit: searchTerm === "" ? limit : 1000,
     _offset: searchTerm === "" ? (page - 1) * limit : 0,
-  });
+  })
 
   if (error) {
     return {
