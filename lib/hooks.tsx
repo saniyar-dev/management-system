@@ -136,7 +136,13 @@ export const useTableLogic = <TD extends RowData, S extends string>(
 
           let cmp = 0;
 
-          if (first !== undefined && second !== undefined) {
+          if (a.isMutable && !b.isMutable) {
+            cmp = -1;
+          } else if (!a.isMutable && b.isMutable) {
+            cmp = 1;
+          } else if (a.isMutable && b.isMutable) {
+            cmp = persian_alphabetic_compare(first, second);
+          } else if (!a.isMutable && !b.isMutable) {
             cmp = persian_alphabetic_compare(first, second);
           }
 
@@ -149,7 +155,13 @@ export const useTableLogic = <TD extends RowData, S extends string>(
 
           let cmp = 0;
 
-          if (first !== undefined && second !== undefined) {
+          if (a.isMutable && !b.isMutable) {
+            cmp = -1;
+          } else if (!a.isMutable && b.isMutable) {
+            cmp = 1;
+          } else if (a.isMutable && b.isMutable) {
+            cmp = persian_alphabetic_compare(first, second);
+          } else if (!a.isMutable && !b.isMutable) {
             cmp = persian_alphabetic_compare(first, second);
           }
 
