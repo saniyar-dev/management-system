@@ -10,6 +10,7 @@ export type Row<T extends RowData, S> = {
   type: ClientType;
   data: T;
   status: S;
+  isMutable: boolean
 };
 
 export type RowData = {

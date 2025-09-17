@@ -61,13 +61,6 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
   limit,
   page,
 ) => {
-  // const { data, error } = await supabase.rpc("filter_client_paginated", {
-  //   _statuses: status,
-  //   _types: clientType,
-  //   _limit: searchTerm === "" ? limit : 1000,
-  //   _offset: searchTerm === "" ? (page - 1) * limit : 0,
-  // });
-
   const { data: user, success, message } = await GetUser()
   if (!success || !user) {
     return {
@@ -131,6 +124,7 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           },
           status: client.status as Status,
           type: client.type as ClientType,
+          isMutable: client.is_mutable
         };
       }
       if (client.type === "personal" && client.person_id !== null) {
@@ -162,6 +156,7 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           },
           status: client.status as Status,
           type: client.type as ClientType,
+          isMutable: client.is_mutable
         };
       }
 
@@ -289,6 +284,14 @@ export async function UpdateClient(
 }
 
 export async function AddClient(formData: FormData) {
+  const {data: user, success, message} = await GetUser()
+  if (!success || !user) {
+    return {
+      success,
+      message
+    }
+  }
+
   const createCompany = async (formData: FormData): Promise<string | null> => {
     const name = formData.get("company_name") as string;
     const ssn = formData.get("company_ssn") as string;
@@ -357,6 +360,8 @@ export async function AddClient(formData: FormData) {
         company_id,
         type: company_id ? "company" : "personal",
         status: "todo",
+        panel_user_id: user.id,
+        permission_mask: 16 - user.permission_mask
       })
       .select();
 
