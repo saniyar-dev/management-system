@@ -73,6 +73,7 @@ export default function ClientsPage() {
     headerColumns,
     pending,
     sortedItems,
+    disabledKeys
   } = useTableLogic(
     statusOptions,
     columns,
@@ -135,6 +136,7 @@ export default function ClientsPage() {
       topContent={topContent}
       topContentPlacement="outside"
       onSortChange={setSortDescriptor}
+      disabledKeys={disabledKeys}
     >
       <TableHeader columns={headerColumns}>
         {(column) => (
