@@ -485,6 +485,14 @@ export type Database = {
           is_mutable: boolean
         }[]
       }
+      get_filtered_clients_total_with_permissions: {
+        Args: {
+          requesting_user_mask: number
+          _types?: string[]
+          _statuses?: string[]
+        }
+        Returns: number
+      }
       search_company_by_name: {
         Args: {
           search_term: string
