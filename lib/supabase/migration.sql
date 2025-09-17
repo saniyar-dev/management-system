@@ -40,7 +40,9 @@ CREATE TABLE IF NOT EXISTS public.client (
     type text NOT NULL,
     status text NOT NULL,
     person_id uuid NULL,
-    company_id uuid NULL
+    company_id uuid NULL,
+    permission_mask integer NOT NULL DEFAULT 15,
+    panel_user_id uuid NULL
 );
 
 -- Create the 'pre_order' table
@@ -79,6 +81,16 @@ CREATE TABLE IF NOT EXISTS public.n8n_job (
     status text NOT NULL
 );
 
+-- Create the 'panel_users' table for hierarchical permissions
+CREATE TABLE IF NOT EXISTS public.panel_users (
+    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    name text NOT NULL,
+    email text UNIQUE NOT NULL,
+    permission_mask integer NOT NULL CHECK (permission_mask IN (1, 2, 4, 8))
+);
+
 -- =================================================================
 -- 2. Add Foreign Key Constraints
 -- =================================================================
@@ -99,6 +111,9 @@ ADD CONSTRAINT public_order_client_id_fkey FOREIGN KEY (client_id) REFERENCES pu
 ALTER TABLE public.order
 ADD CONSTRAINT public_order_pre_order_id_fkey FOREIGN KEY (pre_order_id) REFERENCES public.pre_order(id) ON DELETE SET NULL;
 
+ALTER TABLE public.client
+ADD CONSTRAINT public_client_panel_user_id_fkey FOREIGN KEY (panel_user_id) REFERENCES public.panel_users(id) ON DELETE SET NULL;
+
 -- =================================================================
 -- 3. Enable Realtime Replication on New Tables
 -- =================================================================
@@ -110,6 +125,7 @@ alter table public.client replica identity full;
 alter table public.pre_order replica identity full;
 alter table public.order replica identity full;
 alter table public.n8n_job replica identity full;
+alter table public.panel_users replica identity full;
 
 -- =================================================================
 -- 4. Create Database Functions
@@ -259,3 +275,24 @@ BEGIN
     OFFSET _offset;
 END;
 $$ LANGUAGE plpgsql;
+-- =================================================================
+-- 5. Create Performance Indexes for Permission System
+-- =================================================================
+
+-- Index for permission-based filtering on client table
+CREATE INDEX IF NOT EXISTS idx_client_permission_mask ON public.client(permission_mask);
+
+-- Index for user-based filtering on client table
+CREATE INDEX IF NOT EXISTS idx_client_panel_user_id ON public.client(panel_user_id);
+
+-- Composite index for common permission + user queries
+CREATE INDEX IF NOT EXISTS idx_client_permission_user ON public.client(permission_mask, panel_user_id);
+
+-- Index for date-based mutability checks
+CREATE INDEX IF NOT EXISTS idx_client_created_at ON public.client(created_at);
+
+-- Index for panel_users email lookups
+CREATE INDEX IF NOT EXISTS idx_panel_users_email ON public.panel_users(email);
+
+-- Index for panel_users permission_mask filtering
+CREATE INDEX IF NOT EXISTS idx_panel_users_permission_mask ON public.panel_users(permission_mask);
