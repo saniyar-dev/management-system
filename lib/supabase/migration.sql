@@ -296,3 +296,74 @@ CREATE INDEX IF NOT EXISTS idx_panel_users_email ON public.panel_users(email);
 
 -- Index for panel_users permission_mask filtering
 CREATE INDEX IF NOT EXISTS idx_panel_users_permission_mask ON public.panel_users(permission_mask);
+-- =================================================================
+-- 6. Hierarchical Permission System Functions
+-- =================================================================
+
+-- Core permission filtering function with mutability calculation
+CREATE OR REPLACE FUNCTION public.get_filtered_clients_with_permissions(
+    requesting_user_id uuid,
+    requesting_user_mask integer,
+    _types text[] DEFAULT ARRAY['all'],
+    _statuses text[] DEFAULT ARRAY['all'],
+    _limit integer DEFAULT 50,
+    _offset integer DEFAULT 0
+)
+RETURNS TABLE(
+    id uuid,
+    created_at timestamp with time zone,
+    "type" text,
+    "status" text,
+    person_id uuid,
+    company_id uuid,
+    permission_mask integer,
+    panel_user_id uuid,
+    is_mutable boolean
+) AS $$
+DECLARE
+    three_weeks_ago timestamp with time zone;
+BEGIN
+    -- Calculate the threshold date for mutability (3 weeks ago)
+    three_weeks_ago := NOW() - INTERVAL '3 weeks';
+    
+    -- Validate input parameters
+    IF requesting_user_mask IS NULL OR requesting_user_mask NOT IN (1, 2, 4, 8) THEN
+        -- Return empty result set for invalid permission masks
+        RETURN;
+    END IF;
+    
+    -- Return filtered clients with permission checks and mutability calculation
+    RETURN QUERY
+    SELECT 
+        c.id,
+        c.created_at,
+        c.type,
+        c.status,
+        c.person_id,
+        c.company_id,
+        c.permission_mask,
+        c.panel_user_id,
+        -- Mutability logic: true if user owns the client OR client is older than 3 weeks
+        CASE 
+            WHEN c.panel_user_id = requesting_user_id THEN true
+            WHEN c.created_at < three_weeks_ago THEN true
+            ELSE false
+        END as is_mutable
+    FROM public.client c
+    WHERE 
+        -- Permission check: (user_mask & client_mask) = user_mask
+        (requesting_user_mask & c.permission_mask) = requesting_user_mask
+        -- Type filtering
+        AND ('all' = ANY(_types) OR c.type = ANY(_types))
+        -- Status filtering  
+        AND ('all' = ANY(_statuses) OR c.status = ANY(_statuses))
+    ORDER BY c.created_at DESC
+    LIMIT _limit
+    OFFSET _offset;
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Log error and return empty result set
+        RAISE WARNING 'Error in get_filtered_clients_with_permissions: %', SQLERRM;
+END;
+$$ LANGUAGE plpgsql;

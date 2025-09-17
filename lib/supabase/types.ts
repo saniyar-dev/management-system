@@ -464,6 +464,27 @@ export type Database = {
         }
         Returns: string
       }
+      get_filtered_clients_with_permissions: {
+        Args: {
+          requesting_user_id: string
+          requesting_user_mask: number
+          _types?: string[]
+          _statuses?: string[]
+          _limit?: number
+          _offset?: number
+        }
+        Returns: {
+          id: string
+          created_at: string
+          type: string
+          status: string
+          person_id: string
+          company_id: string
+          permission_mask: number
+          panel_user_id: string
+          is_mutable: boolean
+        }[]
+      }
       search_company_by_name: {
         Args: {
           search_term: string

@@ -1,13 +1,13 @@
 # Implementation Plan
 
-- [ ] 1. Create panel_users table and modify client table schema
+- [x] 1. Create panel_users table and modify client table schema
   - Add panel_users table with proper constraints and indexes
   - Add permission_mask and panel_user_id columns to client table
   - Create foreign key relationships and constraints
   - Add performance indexes for permission-based queries
   - _Requirements: 5.2, 5.3, 5.4, 6.1, 6.3, 6.4, 6.5_
 
-- [ ] 2. Implement core permission filtering function
+- [x] 2. Implement core permission filtering function
   - Create get_filtered_clients_with_permissions function with proper signature
   - Implement bitmask-based permission filtering logic
   - Add mutability calculation based on ownership and creation date
