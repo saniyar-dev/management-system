@@ -1,5 +1,8 @@
-import { provinceOptions } from "@/config/statics";
-import { ViewFieldConfig, EditFieldConfig, SelectOption } from "../action/crud-types";
+import {
+  ViewFieldConfig,
+  EditFieldConfig,
+  SelectOption,
+} from "../action/crud-types";
 import { RowData } from "../types";
 
 import {
@@ -7,6 +10,8 @@ import {
   formatPersianDate,
   convertEnglishToPersian,
 } from "./persian-validation";
+
+import { provinceOptions } from "@/config/statics";
 
 // Field formatters for view components
 export const fieldFormatters = {
@@ -271,7 +276,7 @@ export const createStatusFieldConfig = <T extends RowData>(
 
 // Status edit field configuration helper
 export const createStatusEditFieldConfig = <T extends RowData>(
-  statusOptions: (formData: Record<string, any>) => SelectOption[]
+  statusOptions: (formData: Record<string, any>) => SelectOption[],
 ): EditFieldConfig<T> => ({
   key: "status" as keyof T,
   label: "وضعیت",

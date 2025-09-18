@@ -14,9 +14,9 @@ import {
   ModalBody,
   Button,
   useDraggable,
-  Select,
-  SelectItem,
 } from "@heroui/react";
+
+import { PersianSelector } from "../ui/PersianSelector";
 
 import { PersianInput } from "@/components/ui/PersianInput";
 import { PersianTextarea } from "@/components/ui/PersianTextarea";
@@ -30,7 +30,6 @@ import {
   normalizeFormData,
   convertEnglishToPersian,
 } from "@/lib/utils/persian-validation";
-import { PersianSelector } from "../ui/PersianSelector";
 
 interface EditModalProps<T extends RowData, S extends string>
   extends EditComponentProps<T, S> {
@@ -196,7 +195,6 @@ export function EditModal<T extends RowData, S extends string>({
               }}
             />
           );
-
 
         case "number":
           return (

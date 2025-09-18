@@ -12,16 +12,15 @@ import { Link } from "@heroui/link";
 import NextLink from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Skeleton, User } from "@heroui/react";
 
 import Loading from "./loading";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { GetUser, Logout } from "@/lib/action/auth";
-import { ServerActionState } from "@/lib/action/type";
 import { useSession } from "@/lib/hooks";
 import { User as UserType } from "@/lib/types";
-import { Skeleton, User } from "@heroui/react";
 
 // const searchInput = (
 //   <Input
@@ -51,21 +50,21 @@ export const Navbar = () => {
   const { session } = useSession();
 
   const [userPending, startUserTransition] = useTransition();
-  const [user, setUser] = useState<UserType>()
+  const [user, setUser] = useState<UserType>();
 
   useEffect(() => {
     startUserTransition(async () => {
-      const {message, success, data: user} = await GetUser()
-      console.log(message, success, user)
+      const { message, success, data: user } = await GetUser();
+
+      console.log(message, success, user);
       if (success && user) {
-        setUser(user)
+        setUser(user);
       } else {
         // here we need to activate global errors
         // console.log(message)
       }
-    })
-  }, [])
-
+    });
+  }, []);
 
   return (
     <>
@@ -91,6 +90,7 @@ export const Navbar = () => {
                     onClick={() =>
                       startTransistion(async () => {
                         const msg = await Logout();
+
                         if (msg.success) {
                           router.push("/login");
                         }
@@ -121,17 +121,22 @@ export const Navbar = () => {
             <ThemeSwitch />
           </NavbarItem>
           <NavbarItem className="hidden sm:flex items-center">
-            {userPending || !user ?     
-            <div className="max-w-[300px] w-full flex items-center gap-3">
-              <div className="w-full flex">
-                <Skeleton className="rounded-full w-11 h-11" />
+            {userPending || !user ? (
+              <div className="max-w-[300px] w-full flex items-center gap-3">
+                <div className="w-full flex">
+                  <Skeleton className="rounded-full w-11 h-11" />
+                </div>
+                <div className="w-full flex flex-col gap-2">
+                  <Skeleton className="h-3 w-40 rounded-lg" />
+                  <Skeleton className="h-2 w-15 rounded-lg" />
+                </div>
               </div>
-              <div className="w-full flex flex-col gap-2">
-                <Skeleton className="h-3 w-40 rounded-lg" />
-                <Skeleton className="h-2 w-15 rounded-lg" />
-              </div>
-            </div> :
-            <User name={user!.email} description={`کاربر سطح ${Math.log2(user!.permission_mask) + 1}`} />}
+            ) : (
+              <User
+                description={`کاربر سطح ${Math.log2(user!.permission_mask) + 1}`}
+                name={user!.email}
+              />
+            )}
           </NavbarItem>
         </NavbarContent>
 

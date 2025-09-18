@@ -3,7 +3,7 @@
 import React from "react";
 import { useDisclosure } from "@heroui/react";
 
-import { PreOrderData, Status, statusOptions } from "./types";
+import { PreOrderData, Status } from "./types";
 
 import { EditIcon } from "@/components/icons";
 import { EditModal } from "@/components/crud/EditModal";
@@ -34,7 +34,6 @@ const preOrderEditFields: EditFieldConfig<PreOrderData>[] = [
     },
   },
 ];
-
 
 // All edit fields including status
 const allEditFields = [...preOrderEditFields];

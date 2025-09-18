@@ -10,7 +10,7 @@ export type Row<T extends RowData, S> = {
   type: ClientType;
   data: T;
   status: S;
-  isMutable: boolean
+  isMutable: boolean;
 };
 
 export type RowData = {
@@ -39,4 +39,4 @@ export type User = {
   name: string;
   email: string;
   permission_mask: 1 | 2 | 4 | 8;
-}
+};

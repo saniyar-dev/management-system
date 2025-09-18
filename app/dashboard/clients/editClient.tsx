@@ -63,10 +63,14 @@ const clientValidationRules: ValidationConfig<ClientData> = {
 interface EditClientProps {
   entity: Row<ClientData, Status>;
   onSuccess?: () => void;
-  isDisabled?: boolean
+  isDisabled?: boolean;
 }
 
-export function EditClientComponent({ entity, onSuccess, isDisabled=false }: EditClientProps) {
+export function EditClientComponent({
+  entity,
+  onSuccess,
+  isDisabled = false,
+}: EditClientProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const clientEditFields = useMemo((): EditFieldConfig<ClientData>[] => {
@@ -83,8 +87,9 @@ export function EditClientComponent({ entity, onSuccess, isDisabled=false }: Edi
         ...defaultEditFields,
       ];
     }
+
     return defaultEditFields;
-  }, [entity.type])
+  }, [entity.type]);
 
   // Get client job configuration for edit operation
   const jobsConfig = getEntityJobConfig("client", "edit");
@@ -110,25 +115,25 @@ export function EditClientComponent({ entity, onSuccess, isDisabled=false }: Edi
 
   return (
     <>
-    {
-      isDisabled ?
-      <span className="text-lg text-default-100 cursor-not-allowed" tabIndex={1}>
-        <EditIcon />
-      </span> :
-      <span
-        className="text-lg text-default-400 cursor-pointer active:opacity-50"
-        role="button"
-        tabIndex={2}
-        onClick={onOpen}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            onOpen();
-          }
-        }}
-      >
-        <EditIcon />
-      </span>
-    }
+      {isDisabled ? (
+        <span className="text-lg text-default-100 cursor-not-allowed">
+          <EditIcon />
+        </span>
+      ) : (
+        <span
+          className="text-lg text-default-400 cursor-pointer active:opacity-50"
+          role="button"
+          tabIndex={0}
+          onClick={onOpen}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              onOpen();
+            }
+          }}
+        >
+          <EditIcon />
+        </span>
+      )}
 
       <EditModal
         entity={entity}

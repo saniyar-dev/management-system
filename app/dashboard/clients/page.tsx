@@ -42,17 +42,17 @@ const columns: Array<{
   uid: ColumnUID;
   sortable?: boolean;
 }> = [
-    { name: "ID", uid: "id", sortable: true },
-    { name: "نام / نام شرکت", uid: "name", sortable: true },
-    { name: "کد ملی / شناسه ملی", uid: "ssn", sortable: true },
-    { name: "شماره موبایل", uid: "phone" },
-    { name: "استان", uid: "county", sortable: true },
-    { name: "شهرستان / بخش", uid: "town" },
-    { name: "آدرس", uid: "address" },
-    { name: "کد پستی", uid: "postal_code" },
-    { name: "وضعیت", uid: "status", sortable: true },
-    { name: "ACTIONS", uid: "actions" },
-  ];
+  { name: "ID", uid: "id", sortable: true },
+  { name: "نام / نام شرکت", uid: "name", sortable: true },
+  { name: "کد ملی / شناسه ملی", uid: "ssn", sortable: true },
+  { name: "شماره موبایل", uid: "phone" },
+  { name: "استان", uid: "county", sortable: true },
+  { name: "شهرستان / بخش", uid: "town" },
+  { name: "آدرس", uid: "address" },
+  { name: "کد پستی", uid: "postal_code" },
+  { name: "وضعیت", uid: "status", sortable: true },
+  { name: "ACTIONS", uid: "actions" },
+];
 
 const INITIAL_VISIBLE_COLUMNS: Array<ColumnUID> = [
   "name",
@@ -73,7 +73,7 @@ export default function ClientsPage() {
     headerColumns,
     pending,
     sortedItems,
-    disabledKeys
+    disabledKeys,
   } = useTableLogic(
     statusOptions,
     columns,
@@ -88,13 +88,14 @@ export default function ClientsPage() {
       switch (columnKey) {
         case "name":
           if (row.type === "company") {
-            return <User name={row.data.company_name} />
+            return <User name={row.data.company_name} />;
           }
+
           return <User name={row.data.name} />;
         case "status":
           return (
             <Chip
-              className={`capitalize ${!row.isMutable ? 'opacity-50' : ''}`}
+              className={`capitalize ${!row.isMutable ? "opacity-50" : ""}`}
               color={statusColorMap[row.status]}
               size="sm"
               variant="flat"
@@ -119,14 +120,14 @@ export default function ClientsPage() {
             );
           } else {
             return (
-              <div className="relative flex items-center gap-4 justify-center" >
-                <Tooltip content="مشاهده جزئیات" >
+              <div className="relative flex items-center gap-4 justify-center">
+                <Tooltip content="مشاهده جزئیات">
                   <ViewClientComponent entity={row} />
                 </Tooltip>
-                <Tooltip content="ویرایش مشتری" >
+                <Tooltip content="ویرایش مشتری">
                   <EditClientComponent entity={row} isDisabled={true} />
                 </Tooltip>
-                <Tooltip color="danger" content="حذف مشتری" >
+                <Tooltip color="danger" content="حذف مشتری">
                   <DeleteClientComponent entity={row} isDisabled={true} />
                 </Tooltip>
               </div>
@@ -148,11 +149,11 @@ export default function ClientsPage() {
       classNames={{
         wrapper: "max-h-[520px]",
       }}
+      disabledKeys={disabledKeys}
       sortDescriptor={sortDescriptor}
       topContent={topContent}
       topContentPlacement="outside"
       onSortChange={setSortDescriptor}
-      disabledKeys={disabledKeys}
     >
       <TableHeader columns={headerColumns}>
         {(column) => (
