@@ -63,9 +63,10 @@ const clientValidationRules: ValidationConfig<ClientData> = {
 interface EditClientProps {
   entity: Row<ClientData, Status>;
   onSuccess?: () => void;
+  isDisabled?: boolean
 }
 
-export function EditClientComponent({ entity, onSuccess }: EditClientProps) {
+export function EditClientComponent({ entity, onSuccess, isDisabled=false }: EditClientProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const clientEditFields = useMemo((): EditFieldConfig<ClientData>[] => {
@@ -109,10 +110,15 @@ export function EditClientComponent({ entity, onSuccess }: EditClientProps) {
 
   return (
     <>
+    {
+      isDisabled ?
+      <span className="text-lg text-default-100 cursor-not-allowed" tabIndex={1}>
+        <EditIcon />
+      </span> :
       <span
         className="text-lg text-default-400 cursor-pointer active:opacity-50"
         role="button"
-        tabIndex={0}
+        tabIndex={2}
         onClick={onOpen}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -122,6 +128,7 @@ export function EditClientComponent({ entity, onSuccess }: EditClientProps) {
       >
         <EditIcon />
       </span>
+    }
 
       <EditModal
         entity={entity}

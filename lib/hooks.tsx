@@ -127,6 +127,7 @@ export const useTableLogic = <TD extends RowData, S extends string>(
     return compare_char_at_index(s1, s2, 0);
   }
 
+
   const sortedItems = useMemo(() => {
     switch (sortDescriptor.column) {
       case "status":
@@ -136,7 +137,13 @@ export const useTableLogic = <TD extends RowData, S extends string>(
 
           let cmp = 0;
 
-          if (first !== undefined && second !== undefined) {
+          if (a.isMutable && !b.isMutable) {
+            cmp = -1;
+          } else if (!a.isMutable && b.isMutable) {
+            cmp = 1;
+          } else if (a.isMutable && b.isMutable) {
+            cmp = persian_alphabetic_compare(first, second);
+          } else if (!a.isMutable && !b.isMutable) {
             cmp = persian_alphabetic_compare(first, second);
           }
 
@@ -149,7 +156,13 @@ export const useTableLogic = <TD extends RowData, S extends string>(
 
           let cmp = 0;
 
-          if (first !== undefined && second !== undefined) {
+          if (a.isMutable && !b.isMutable) {
+            cmp = -1;
+          } else if (!a.isMutable && b.isMutable) {
+            cmp = 1;
+          } else if (a.isMutable && b.isMutable) {
+            cmp = persian_alphabetic_compare(first, second);
+          } else if (!a.isMutable && !b.isMutable) {
             cmp = persian_alphabetic_compare(first, second);
           }
 
@@ -157,6 +170,12 @@ export const useTableLogic = <TD extends RowData, S extends string>(
         });
     }
   }, [sortDescriptor, rows]);
+
+  const disabledKeys = useMemo(() => {
+    return sortedItems
+      .map((item) => item.isMutable ? undefined : item.id)
+      .filter((key): key is string => key !== undefined);
+  }, [sortedItems])
 
   const onNextPage = useCallback(() => {
     if (page < pages) {
@@ -425,6 +444,7 @@ export const useTableLogic = <TD extends RowData, S extends string>(
     headerColumns,
     pending,
     sortedItems,
+    disabledKeys
   };
 };
 

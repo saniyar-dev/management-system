@@ -16,6 +16,7 @@ import { Row } from "@/lib/types";
 import { ViewFieldConfig } from "@/lib/action/crud-types";
 import { getEntityJobConfig } from "@/lib/config/entity-jobs";
 import { commonFieldConfigs } from "@/lib/utils/field-config";
+import { isDynamicServerError } from "next/dist/client/components/hooks-server-context";
 
 // Client-specific view field configuration
 const defaultViewFields: ViewFieldConfig<ClientData>[] = [
@@ -52,9 +53,10 @@ const defaultViewFields: ViewFieldConfig<ClientData>[] = [
 interface ViewClientProps {
   entity: Row<ClientData, Status>;
   onSuccess?: () => void;
+  isDisabled?: boolean;
 }
 
-export function ViewClientComponent({ entity, onSuccess }: ViewClientProps) {
+export function ViewClientComponent({ entity, onSuccess, isDisabled=false }: ViewClientProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Get client job configuration for view operation
@@ -86,6 +88,11 @@ export function ViewClientComponent({ entity, onSuccess }: ViewClientProps) {
 
   return (
     <>
+    {
+      isDisabled ?
+      <span className="text-lg text-default-400 cursor-not-allowed" tabIndex={0}>
+        <EyeIcon />
+      </span> : 
       <span
         className="text-lg text-default-400 cursor-pointer active:opacity-50"
         role="button"
@@ -99,6 +106,7 @@ export function ViewClientComponent({ entity, onSuccess }: ViewClientProps) {
       >
         <EyeIcon />
       </span>
+    }
 
       <ViewModal
         entity={entity}
