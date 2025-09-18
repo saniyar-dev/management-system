@@ -64,7 +64,7 @@ export const Navbar = () => {
         // console.log(message)
       }
     });
-  }, []);
+  }, [session]);
 
   return (
     <>
@@ -120,6 +120,8 @@ export const Navbar = () => {
           <NavbarItem className="hidden sm:flex gap-2">
             <ThemeSwitch />
           </NavbarItem>
+          {
+          session &&
           <NavbarItem className="hidden sm:flex items-center">
             {userPending || !user ? (
               <div className="max-w-[300px] w-full flex items-center gap-3">
@@ -138,6 +140,7 @@ export const Navbar = () => {
               />
             )}
           </NavbarItem>
+          }
         </NavbarContent>
 
         <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
