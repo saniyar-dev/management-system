@@ -120,27 +120,26 @@ export const Navbar = () => {
           <NavbarItem className="hidden sm:flex gap-2">
             <ThemeSwitch />
           </NavbarItem>
-          {
-          session &&
-          <NavbarItem className="hidden sm:flex items-center">
-            {userPending || !user ? (
-              <div className="max-w-[300px] w-full flex items-center gap-3">
-                <div className="w-full flex">
-                  <Skeleton className="rounded-full w-11 h-11" />
+          {session && (
+            <NavbarItem className="hidden sm:flex items-center">
+              {userPending || !user ? (
+                <div className="max-w-[300px] w-full flex items-center gap-3">
+                  <div className="w-full flex">
+                    <Skeleton className="rounded-full w-11 h-11" />
+                  </div>
+                  <div className="w-full flex flex-col gap-2">
+                    <Skeleton className="h-3 w-40 rounded-lg" />
+                    <Skeleton className="h-2 w-15 rounded-lg" />
+                  </div>
                 </div>
-                <div className="w-full flex flex-col gap-2">
-                  <Skeleton className="h-3 w-40 rounded-lg" />
-                  <Skeleton className="h-2 w-15 rounded-lg" />
-                </div>
-              </div>
-            ) : (
-              <User
-                description={`کاربر سطح ${Math.log2(user!.permission_mask) + 1}`}
-                name={user!.email}
-              />
-            )}
-          </NavbarItem>
-          }
+              ) : (
+                <User
+                  description={`کاربر سطح ${Math.log2(user!.permission_mask) + 1}`}
+                  name={user!.email}
+                />
+              )}
+            </NavbarItem>
+          )}
         </NavbarContent>
 
         <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">

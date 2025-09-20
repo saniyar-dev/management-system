@@ -48,7 +48,7 @@ export function ViewModal<T extends RowData, S extends string>({
   const [pending, startTransition] = useTransition();
   const [jobs, pendingJobs, startJobsTransition] = useJobs("view", jobsConfig);
 
-  const [ownerInfo, setOwnerInfo] = useState<User>()
+  const [ownerInfo, setOwnerInfo] = useState<User>();
 
   const targetRef = useRef(null);
   const { moveProps } = useDraggable({
@@ -62,11 +62,19 @@ export function ViewModal<T extends RowData, S extends string>({
     if (isOpen && jobsConfig.length > 0) {
       startTransition(async () => {
         startJobsTransition(entity.id.toString());
-        const {data, message, success} = await GetUserInfoById(entity.ownerId)
+        const { data, message, success } = await GetUserInfoById(
+          entity.ownerId,
+        );
+
         if (!success || !data) {
-          setOwnerInfo({email: message, name: message, id: message, permission_mask: 1})
+          setOwnerInfo({
+            email: message,
+            name: message,
+            id: message,
+            permission_mask: 1,
+          });
         } else {
-          setOwnerInfo(data)
+          setOwnerInfo(data);
         }
       });
     }
@@ -97,21 +105,21 @@ export function ViewModal<T extends RowData, S extends string>({
             >
               <div className="flex-1">
                 <div className="space-y-3">
-                  {
-                    ownerInfo ?
+                  {ownerInfo ? (
                     <>
-                      <FieldRenderer field={{
-                        key: "id",
-                        label: "کاربر سازنده",
-                        type: "text",
-                      }}
-                      value={ownerInfo.email}
-                      /> 
+                      <FieldRenderer
+                        field={{
+                          key: "id",
+                          label: "کاربر سازنده",
+                          type: "text",
+                        }}
+                        value={ownerInfo.email}
+                      />
                       <Divider className="my-2" />
                     </>
-                    : 
+                  ) : (
                     <div>اطالاعات کاربر سازنده این مورد پیدا نشد!</div>
-                  }
+                  )}
                   {fields.map((field, index) => (
                     <div key={`${field.key.toString()}-${index}`}>
                       <FieldRenderer
