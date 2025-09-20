@@ -127,6 +127,7 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           },
           status: client.status as Status,
           type: client.type as ClientType,
+          ownerId: client.panel_user_id,
           isMutable: client.is_mutable,
         };
       }
@@ -159,6 +160,7 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           },
           status: client.status as Status,
           type: client.type as ClientType,
+          ownerId: client.panel_user_id,
           isMutable: client.is_mutable,
         };
       }
