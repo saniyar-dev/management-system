@@ -81,6 +81,7 @@ export const GetPreOrders: GetRowsFn<PreOrderData, Status> = async (
         },
         status: preOrder.status as Status,
         type: preOrder.type as ClientType,
+        ownerId: "",
         isMutable: true,
       };
     });
