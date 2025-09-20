@@ -12,14 +12,15 @@ import { Link } from "@heroui/link";
 import NextLink from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Skeleton, User } from "@heroui/react";
 
 import Loading from "./loading";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { Logout } from "@/lib/action/auth";
-import { ServerActionState } from "@/lib/action/type";
+import { GetUser, Logout } from "@/lib/action/auth";
 import { useSession } from "@/lib/hooks";
+import { User as UserType } from "@/lib/types";
 
 // const searchInput = (
 //   <Input
@@ -43,20 +44,27 @@ import { useSession } from "@/lib/hooks";
 // );
 
 export const Navbar = () => {
-  const [message, setMessage] = useState<ServerActionState<null>>({
-    message: "",
-    success: false,
-  });
   const [pending, startTransistion] = useTransition();
   const router = useRouter();
 
   const { session } = useSession();
 
+  const [userPending, startUserTransition] = useTransition();
+  const [user, setUser] = useState<UserType>();
+
   useEffect(() => {
-    if (message.success) {
-      router.push("/login");
-    }
-  }, [message]);
+    startUserTransition(async () => {
+      const { message, success, data: user } = await GetUser();
+
+      console.log(message, success, user);
+      if (success && user) {
+        setUser(user);
+      } else {
+        // here we need to activate global errors
+        // console.log(message)
+      }
+    });
+  }, [session]);
 
   return (
     <>
@@ -83,7 +91,9 @@ export const Navbar = () => {
                       startTransistion(async () => {
                         const msg = await Logout();
 
-                        setMessage(msg);
+                        if (msg.success) {
+                          router.push("/login");
+                        }
                       })
                     }
                   >
@@ -110,6 +120,27 @@ export const Navbar = () => {
           <NavbarItem className="hidden sm:flex gap-2">
             <ThemeSwitch />
           </NavbarItem>
+          {
+          session &&
+          <NavbarItem className="hidden sm:flex items-center">
+            {userPending || !user ? (
+              <div className="max-w-[300px] w-full flex items-center gap-3">
+                <div className="w-full flex">
+                  <Skeleton className="rounded-full w-11 h-11" />
+                </div>
+                <div className="w-full flex flex-col gap-2">
+                  <Skeleton className="h-3 w-40 rounded-lg" />
+                  <Skeleton className="h-2 w-15 rounded-lg" />
+                </div>
+              </div>
+            ) : (
+              <User
+                description={`کاربر سطح ${Math.log2(user!.permission_mask) + 1}`}
+                name={user!.email}
+              />
+            )}
+          </NavbarItem>
+          }
         </NavbarContent>
 
         <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
@@ -137,7 +168,9 @@ export const Navbar = () => {
                         startTransistion(async () => {
                           const msg = await Logout();
 
-                          setMessage(msg);
+                          if (msg.success) {
+                            router.push("/login");
+                          }
                         })
                       }
                     >

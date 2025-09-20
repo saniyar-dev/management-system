@@ -1,9 +1,9 @@
 import { ClientType, Row } from "../types";
 import { supabase } from "../utils";
-import { businessRuleValidators } from "../utils/persian-validation";
 import { checkEntityDependencies } from "../utils/dependency-checker";
 
 import { GetRowsFn, GetTotalRowsFn, ServerActionState } from "./type";
+import { GetUser } from "./auth";
 
 import { Status } from "@/app/dashboard/clients/types";
 import { ClientData } from "@/app/dashboard/clients/types";
@@ -60,12 +60,26 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
   limit,
   page,
 ) => {
-  const { data, error } = await supabase.rpc("filter_client_paginated", {
-    _statuses: status,
-    _types: clientType,
-    _limit: searchTerm === "" ? limit : 1000,
-    _offset: searchTerm === "" ? (page - 1) * limit : 0,
-  });
+  const { data: user, success, message } = await GetUser();
+
+  if (!success || !user) {
+    return {
+      success,
+      message,
+    };
+  }
+
+  const { data, error } = await supabase.rpc(
+    "get_filtered_clients_with_permissions",
+    {
+      requesting_user_id: user.id,
+      requesting_user_mask: user.permission_mask,
+      _statuses: status,
+      _types: clientType,
+      _limit: searchTerm === "" ? limit : 1000,
+      _offset: searchTerm === "" ? (page - 1) * limit : 0,
+    },
+  );
 
   if (error) {
     return {
@@ -113,6 +127,7 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           },
           status: client.status as Status,
           type: client.type as ClientType,
+          isMutable: client.is_mutable,
         };
       }
       if (client.type === "personal" && client.person_id !== null) {
@@ -144,6 +159,7 @@ export const GetClients: GetRowsFn<ClientData, Status> = async (
           },
           status: client.status as Status,
           type: client.type as ClientType,
+          isMutable: client.is_mutable,
         };
       }
 
@@ -209,12 +225,13 @@ export async function UpdateClient(
         postal_code: postalCode,
       })
       .eq("id", clientData.company_id!);
-    
+
     if (companyError) {
       return "خطا در به‌روزرسانی اطلاعات شرکت.";
     }
-    return null
-  }
+
+    return null;
+  };
 
   const updatePersonal = async (formData: FormData): Promise<string | null> => {
     const name = formData.get("name") as string;
@@ -239,12 +256,14 @@ export async function UpdateClient(
     if (personError) {
       return "خطا در به‌روزرسانی اطلاعات شخصی.";
     }
-    return null
-  }
+
+    return null;
+  };
 
   // Update the appropriate table (person or company)
   if (clientData.person_id) {
     const personError = await updatePersonal(formData);
+
     if (personError) {
       return {
         message: personError,
@@ -255,6 +274,7 @@ export async function UpdateClient(
 
   if (clientData.company_id) {
     const companyError = await updateCompany(formData);
+
     if (companyError) {
       return {
         message: companyError,
@@ -271,6 +291,15 @@ export async function UpdateClient(
 }
 
 export async function AddClient(formData: FormData) {
+  const { data: user, success, message } = await GetUser();
+
+  if (!success || !user) {
+    return {
+      success,
+      message,
+    };
+  }
+
   const createCompany = async (formData: FormData): Promise<string | null> => {
     const name = formData.get("company_name") as string;
     const ssn = formData.get("company_ssn") as string;
@@ -339,6 +368,8 @@ export async function AddClient(formData: FormData) {
         company_id,
         type: company_id ? "company" : "personal",
         status: "todo",
+        panel_user_id: user.id,
+        permission_mask: 16 - user.permission_mask,
       })
       .select();
 

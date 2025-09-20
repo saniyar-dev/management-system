@@ -57,6 +57,52 @@ export type Database = {
       [_ in never]: never;
     };
   };
+  private_secrets: {
+    Tables: {
+      api_keys: {
+        Row: {
+          api_key: string;
+          service_name: string;
+        };
+        Insert: {
+          api_key: string;
+          service_name: string;
+        };
+        Update: {
+          api_key?: string;
+          service_name?: string;
+        };
+        Relationships: [];
+      };
+      secrets: {
+        Row: {
+          key: string;
+          value: string;
+        };
+        Insert: {
+          key: string;
+          value: string;
+        };
+        Update: {
+          key?: string;
+          value?: string;
+        };
+        Relationships: [];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
       client: {
@@ -64,6 +110,8 @@ export type Database = {
           company_id: string | null;
           created_at: string;
           id: string;
+          panel_user_id: string | null;
+          permission_mask: number;
           person_id: string | null;
           status: string;
           type: string;
@@ -72,6 +120,8 @@ export type Database = {
           company_id?: string | null;
           created_at?: string;
           id?: string;
+          panel_user_id?: string | null;
+          permission_mask?: number;
           person_id?: string | null;
           status: string;
           type: string;
@@ -80,6 +130,8 @@ export type Database = {
           company_id?: string | null;
           created_at?: string;
           id?: string;
+          panel_user_id?: string | null;
+          permission_mask?: number;
           person_id?: string | null;
           status?: string;
           type?: string;
@@ -89,6 +141,12 @@ export type Database = {
             foreignKeyName: "public_client_company_id_fkey";
             columns: ["company_id"];
             referencedRelation: "company";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "public_client_panel_user_id_fkey";
+            columns: ["panel_user_id"];
+            referencedRelation: "panel_users";
             referencedColumns: ["id"];
           },
           {
@@ -208,6 +266,33 @@ export type Database = {
           },
         ];
       };
+      panel_users: {
+        Row: {
+          created_at: string;
+          email: string;
+          id: string;
+          name: string;
+          permission_mask: number;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          email: string;
+          id?: string;
+          name: string;
+          permission_mask: number;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          email?: string;
+          id?: string;
+          name?: string;
+          permission_mask?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       person: {
         Row: {
           address: string | null;
@@ -283,6 +368,12 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      custom_send_sms_hook: {
+        Args: {
+          payload: Json;
+        };
+        Returns: Json;
+      };
       filter_client_paginated: {
         Args: {
           _types: string[];
@@ -294,6 +385,8 @@ export type Database = {
           company_id: string | null;
           created_at: string;
           id: string;
+          panel_user_id: string | null;
+          permission_mask: number;
           person_id: string | null;
           status: string;
           type: string;
@@ -370,6 +463,35 @@ export type Database = {
           _client_id: string;
         };
         Returns: string;
+      };
+      get_filtered_clients_total_with_permissions: {
+        Args: {
+          requesting_user_mask: number;
+          _types?: string[];
+          _statuses?: string[];
+        };
+        Returns: number;
+      };
+      get_filtered_clients_with_permissions: {
+        Args: {
+          requesting_user_id: string;
+          requesting_user_mask: number;
+          _types?: string[];
+          _statuses?: string[];
+          _limit?: number;
+          _offset?: number;
+        };
+        Returns: {
+          id: string;
+          created_at: string;
+          type: string;
+          status: string;
+          person_id: string;
+          company_id: string;
+          permission_mask: number;
+          panel_user_id: string;
+          is_mutable: boolean;
+        }[];
       };
       search_company_by_name: {
         Args: {

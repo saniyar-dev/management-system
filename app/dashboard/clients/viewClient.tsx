@@ -52,9 +52,14 @@ const defaultViewFields: ViewFieldConfig<ClientData>[] = [
 interface ViewClientProps {
   entity: Row<ClientData, Status>;
   onSuccess?: () => void;
+  isDisabled?: boolean;
 }
 
-export function ViewClientComponent({ entity, onSuccess }: ViewClientProps) {
+export function ViewClientComponent({
+  entity,
+  onSuccess,
+  isDisabled = false,
+}: ViewClientProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Get client job configuration for view operation
@@ -74,8 +79,9 @@ export function ViewClientComponent({ entity, onSuccess }: ViewClientProps) {
         ...defaultViewFields,
       ];
     }
+
     return defaultViewFields;
-  }, [entity.type])
+  }, [entity.type]);
 
   const handleClose = () => {
     onClose();
@@ -86,19 +92,25 @@ export function ViewClientComponent({ entity, onSuccess }: ViewClientProps) {
 
   return (
     <>
-      <span
-        className="text-lg text-default-400 cursor-pointer active:opacity-50"
-        role="button"
-        tabIndex={0}
-        onClick={onOpen}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            onOpen();
-          }
-        }}
-      >
-        <EyeIcon />
-      </span>
+      {isDisabled ? (
+        <span className="text-lg text-default-400 cursor-not-allowed">
+          <EyeIcon />
+        </span>
+      ) : (
+        <span
+          className="text-lg text-default-400 cursor-pointer active:opacity-50"
+          role="button"
+          tabIndex={0}
+          onClick={onOpen}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              onOpen();
+            }
+          }}
+        >
+          <EyeIcon />
+        </span>
+      )}
 
       <ViewModal
         entity={entity}

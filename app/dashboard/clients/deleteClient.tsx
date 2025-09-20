@@ -43,11 +43,13 @@ const clientDisplayFields = [
 interface DeleteClientProps {
   entity: Row<ClientData, Status>;
   onSuccess?: () => void;
+  isDisabled?: boolean;
 }
 
 export function DeleteClientComponent({
   entity,
   onSuccess,
+  isDisabled = false,
 }: DeleteClientProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -83,19 +85,25 @@ export function DeleteClientComponent({
 
   return (
     <>
-      <span
-        className="text-lg text-danger cursor-pointer active:opacity-50"
-        role="button"
-        tabIndex={0}
-        onClick={onOpen}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            onOpen();
-          }
-        }}
-      >
-        <DeleteIcon />
-      </span>
+      {isDisabled ? (
+        <span className="text-lg text-danger-100 cursor-not-allowed">
+          <DeleteIcon />
+        </span>
+      ) : (
+        <span
+          className="text-lg text-danger cursor-pointer active:opacity-50"
+          role="button"
+          tabIndex={0}
+          onClick={onOpen}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              onOpen();
+            }
+          }}
+        >
+          <DeleteIcon />
+        </span>
+      )}
 
       <DeleteModal
         dependencyCheck={handleDependencyCheck}

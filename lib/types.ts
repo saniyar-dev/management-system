@@ -10,6 +10,7 @@ export type Row<T extends RowData, S> = {
   type: ClientType;
   data: T;
   status: S;
+  isMutable: boolean;
 };
 
 export type RowData = {
@@ -31,4 +32,11 @@ export const jobStatusColorMap: Record<
   pending: "warning",
   done: "success",
   error: "danger",
+};
+
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  permission_mask: 1 | 2 | 4 | 8;
 };
