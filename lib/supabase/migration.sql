@@ -309,6 +309,8 @@ CREATE OR REPLACE FUNCTION public.get_filtered_clients_with_permissions(
     _limit integer DEFAULT 50,
     _offset integer DEFAULT 0
 )
+-- Define the return shape: all columns from the 'client' table, plus your custom column.
+-- NOTE: You must list the columns of your 'client' table here manually.
 RETURNS TABLE(
     id uuid,
     created_at timestamp with time zone,
@@ -318,32 +320,20 @@ RETURNS TABLE(
     company_id uuid,
     permission_mask integer,
     panel_user_id uuid,
+    -- Your new custom column is added at the end
     is_mutable boolean
-) AS $$
+) 
+LANGUAGE plpgsql STABLE SECURITY INVOKER AS $$
 DECLARE
     three_weeks_ago timestamp with time zone;
 BEGIN
-    -- Calculate the threshold date for mutability (3 weeks ago)
     three_weeks_ago := NOW() - INTERVAL '3 weeks';
     
-    -- Validate input parameters
-    IF requesting_user_mask IS NULL OR requesting_user_mask NOT IN (1, 2, 4, 8) THEN
-        -- Return empty result set for invalid permission masks
-        RETURN;
-    END IF;
-    
-    -- Return filtered clients with permission checks and mutability calculation
     RETURN QUERY
     SELECT 
-        c.id,
-        c.created_at,
-        c.type,
-        c.status,
-        c.person_id,
-        c.company_id,
-        c.permission_mask,
-        c.panel_user_id,
-        -- Mutability logic: true if user owns the client OR client is older than 3 weeks
+        -- This selects all columns from the client table 'c'
+        c.*,
+        -- This calculates and adds your new column
         CASE 
             WHEN c.panel_user_id = requesting_user_id THEN true
             WHEN c.created_at < three_weeks_ago THEN true
@@ -351,22 +341,16 @@ BEGIN
         END as is_mutable
     FROM public.client c
     WHERE 
-        -- Permission check: (user_mask & client_mask) = user_mask
         (requesting_user_mask & c.permission_mask) = requesting_user_mask
-        -- Type filtering
         AND ('all' = ANY(_types) OR c.type = ANY(_types))
-        -- Status filtering  
         AND ('all' = ANY(_statuses) OR c.status = ANY(_statuses))
-    ORDER BY c.created_at DESC
+    ORDER BY 
+    is_mutable DESC,
+    c.created_at DESC
     LIMIT _limit
     OFFSET _offset;
-    
-EXCEPTION
-    WHEN OTHERS THEN
-        -- Log error and return empty result set
-        RAISE WARNING 'Error in get_filtered_clients_with_permissions: %', SQLERRM;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 -- Supporting count function for pagination with permission filtering
 CREATE OR REPLACE FUNCTION public.get_filtered_clients_total_with_permissions(
     requesting_user_mask integer,
