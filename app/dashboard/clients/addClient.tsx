@@ -35,7 +35,7 @@ const personalClientFields: AddFieldConfig<ClientData>[] = [
     key: "ssn",
     label: "کد ملی",
     type: "input",
-    required: true,
+    required: false,
     placeholder: "۰۳۱۲۸۲۹۸۰۴",
     validation: persianValidationRules.persianSSN,
   },
@@ -55,7 +55,7 @@ const personalClientFields: AddFieldConfig<ClientData>[] = [
     key: "town",
     label: "شهرستان / بخش",
     type: "select",
-    required: true,
+    required: false,
     options: (formData) => {
       const selectedCounty = formData["county"];
 
@@ -79,7 +79,7 @@ const personalClientFields: AddFieldConfig<ClientData>[] = [
     key: "address",
     label: "جزئیات آدرس",
     type: "textarea",
-    required: true,
+    required: false,
     placeholder: "خیابان مریم، پلاک ۱۰۲",
     validation: persianValidationRules.persianText,
   },
@@ -87,7 +87,7 @@ const personalClientFields: AddFieldConfig<ClientData>[] = [
     key: "postal_code",
     label: "کد پستی",
     type: "input",
-    required: true,
+    required: false,
     placeholder: "۴۴۸۸۹۱۱۰۲",
     validation: persianValidationRules.persianPostalCode,
   },
@@ -109,7 +109,7 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     fieldName: "company_ssn",
     label: "شناسه ملی کارخانه/کارگاه/شرکت",
     type: "input",
-    required: true,
+    required: false,
     placeholder: "شناسه ملی شرکت",
     validation: persianValidationRules.persianSSN,
   },
@@ -136,7 +136,7 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     fieldName: "ssn",
     label: "کد ملی مدیرعامل/نماینده",
     type: "input",
-    required: true,
+    required: false,
     placeholder: "۰۳۱۲۸۲۹۸۰۴",
     validation: persianValidationRules.persianSSN,
   },
@@ -156,7 +156,7 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     key: "town",
     label: "شهرستان / بخش",
     type: "select",
-    required: true,
+    required: false,
     options: (formData) => {
       const selectedCounty = formData["county"];
 
@@ -181,7 +181,7 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     key: "address",
     label: "جزئیات آدرس",
     type: "textarea",
-    required: true,
+    required: false,
     placeholder: "خیابان مریم، پلاک ۱۰۲",
     validation: persianValidationRules.persianText,
   },
@@ -189,7 +189,7 @@ const companyClientFields: AddFieldConfig<ClientData>[] = [
     key: "postal_code",
     label: "کد پستی کارخانه/کارگاه/شرکت",
     type: "input",
-    required: true,
+    required: false,
     placeholder: "۴۴۸۸۹۱۱۰۲",
     validation: persianValidationRules.persianPostalCode,
   },
@@ -271,54 +271,4 @@ export function AddClientComponent({ onSuccess }: AddClientProps = {}) {
       )}
     </>
   );
-}
-
-// Wrapper component for useTableLogic compatibility
-export function AddClientButtonComponent() {
-  return <AddClientComponent />;
-}
-
-// Hook for using AddClient component
-export function useAddClient() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const AddClientModal = React.useCallback(
-    ({ onSuccess }: AddClientProps) => {
-      const jobsConfig = getEntityJobConfig("client", "add");
-
-      const handleAdd = async (formData: FormData) => {
-        return await AddClient(formData);
-      };
-
-      const handleSuccess = () => {
-        // Refresh the page or update the table data
-        window.location.reload();
-        if (onSuccess) {
-          onSuccess();
-        }
-      };
-
-      return (
-        <AddModal
-          fields={personalClientFields}
-          isOpen={isOpen}
-          jobsConfig={jobsConfig}
-          tabs={clientTabs}
-          title="ایجاد مشتری جدید"
-          validationRules={clientValidationRules}
-          onAdd={handleAdd}
-          onClose={onClose}
-          onSuccess={handleSuccess}
-        />
-      );
-    },
-    [isOpen, onClose],
-  );
-
-  return {
-    isOpen,
-    onOpen,
-    onClose,
-    AddClientModal,
-  };
 }

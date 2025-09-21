@@ -91,7 +91,7 @@ export const formatPersianDate = (date: Date | string): string => {
 export const persianValidationRules: PersianValidationRules = {
   persianText: (value: string): string | null => {
     if (!value || value.trim() === "") {
-      return "این فیلد الزامی است";
+      return null
     }
     if (!PERSIAN_TEXT_REGEX.test(value.trim())) {
       return "لطفاً متن را به فارسی وارد کنید";
@@ -102,7 +102,7 @@ export const persianValidationRules: PersianValidationRules = {
 
   persianName: (value: string): string | null => {
     if (!value || value.trim() === "") {
-      return "نام الزامی است";
+      return null
     }
     if (value.trim().length < 2) {
       return "نام باید حداقل ۲ کاراکتر باشد";
@@ -116,7 +116,7 @@ export const persianValidationRules: PersianValidationRules = {
 
   persianPhone: (value: string): string | null => {
     if (!value || value.trim() === "") {
-      return "شماره تلفن الزامی است";
+      return null
     }
 
     const englishValue = convertPersianToEnglish(value.trim());
@@ -130,7 +130,7 @@ export const persianValidationRules: PersianValidationRules = {
 
   persianSSN: (value: string): string | null => {
     if (!value || value.trim() === "") {
-      return "کد ملی الزامی است";
+      return null
     }
 
     const englishValue = convertPersianToEnglish(value.trim());
@@ -160,7 +160,7 @@ export const persianValidationRules: PersianValidationRules = {
 
   persianPostalCode: (value: string): string | null => {
     if (!value || value.trim() === "") {
-      return "کد پستی الزامی است";
+      return null
     }
 
     const englishValue = convertPersianToEnglish(value.trim());
@@ -174,7 +174,7 @@ export const persianValidationRules: PersianValidationRules = {
 
   currency: (value: string | number): string | null => {
     if (value === "" || value === null || value === undefined) {
-      return "مبلغ الزامی است";
+      return null
     }
 
     const numValue =
@@ -195,7 +195,7 @@ export const persianValidationRules: PersianValidationRules = {
 
   positiveNumber: (value: string | number): string | null => {
     if (value === "" || value === null || value === undefined) {
-      return "این فیلد الزامی است";
+      return null
     }
 
     const numValue =

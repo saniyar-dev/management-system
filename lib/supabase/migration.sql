@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.person (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     name text NOT NULL,
-    ssn text NOT NULL,
+    ssn text NULL,
     address text NULL,
     phone text NULL,
     postal_code text NULL
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS public.company (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     name text NOT NULL,
-    ssn text NOT NULL,
+    ssn text NULL,
     address text NULL,
     phone text NULL,
     postal_code text NULL
